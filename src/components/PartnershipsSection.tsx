@@ -1,54 +1,67 @@
 
 import React from "react";
+import { ChevronRight } from "lucide-react";
 
 const partners = [
   {
-    name: "TechLearn",
-    logo: "https://via.placeholder.com/200x80?text=TechLearn",
+    name: "EduTech Solutions",
+    description: "Educational technology for interactive learning",
+    image: "https://picsum.photos/100/100?random=1"
   },
   {
-    name: "EduConnect",
-    logo: "https://via.placeholder.com/200x80?text=EduConnect",
+    name: "CodeMentor",
+    description: "Programming mentorship platform",
+    image: "https://picsum.photos/100/100?random=2"
   },
   {
-    name: "FutureSkills",
-    logo: "https://via.placeholder.com/200x80?text=FutureSkills",
+    name: "MedPrep Institute",
+    description: "Specialized medical entrance coaching",
+    image: "https://picsum.photos/100/100?random=3"
   },
   {
-    name: "DataMinds",
-    logo: "https://via.placeholder.com/200x80?text=DataMinds",
+    name: "EngineeringHub",
+    description: "Resources for engineering aspirants",
+    image: "https://picsum.photos/100/100?random=4"
   },
   {
-    name: "InnoTech",
-    logo: "https://via.placeholder.com/200x80?text=InnoTech",
-  },
+    name: "DataScience.ai",
+    description: "Data science learning platform",
+    image: "https://picsum.photos/100/100?random=5"
+  }
 ];
 
 const PartnershipsSection = () => {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900">Our Initiative Companies</h2>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-            Partnering with innovative companies to provide the best resources and opportunities for our students.
+          <h2 className="text-4xl font-bold text-gray-900">Our Initiative Companies</h2>
+          <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+            Student-founded and partnered companies working to transform education
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-12">
-          {partners.map((partner, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center p-6 rounded-xl bg-gray-50 shadow-card transition-all duration-300 hover:shadow-premium hover:-translate-y-1"
-            >
-              <img
-                src={partner.logo}
-                alt={`${partner.name} logo`}
-                className="h-16 object-contain mb-4"
-              />
-              <p className="text-gray-700 font-medium">{partner.name}</p>
-            </div>
-          ))}
+        <div className="relative">
+          <div className="flex overflow-x-auto space-x-6 pb-4 hide-scrollbar">
+            {partners.map((partner, index) => (
+              <div key={index} className="flex-none w-64 border rounded-lg p-6 bg-white shadow-sm">
+                <div className="flex justify-center mb-4">
+                  <img 
+                    src={partner.image} 
+                    alt={partner.name} 
+                    className="w-24 h-24 rounded-full object-cover"
+                  />
+                </div>
+                <h3 className="text-xl font-bold text-center mb-2">{partner.name}</h3>
+                <p className="text-gray-600 text-center text-sm">{partner.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="absolute -right-4 top-1/2 transform -translate-y-1/2">
+            <button className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center">
+              <ChevronRight size={20} />
+            </button>
+          </div>
         </div>
       </div>
     </section>
