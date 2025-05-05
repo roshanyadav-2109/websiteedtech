@@ -11,7 +11,7 @@ const NewsletterSection = () => {
   };
 
   return (
-    <section className="py-20 bg-[#F1F5F9] text-gray-900">
+    <section className="py-20 bg-gradient-to-r from-royal/10 to-royal/5 text-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Stay Updated with Unknown IITians</h2>
@@ -30,10 +30,10 @@ const NewsletterSection = () => {
                 type="email" 
                 placeholder="Your email address" 
                 required
-                className="pl-10 h-12 w-full"
+                className="pl-10 h-12 w-full border-royal/20 focus:border-royal"
               />
             </div>
-            <Button type="submit" className="bg-royal hover:bg-royal-dark text-white px-6 h-12">
+            <Button type="submit" className="bg-gradient-to-r from-royal to-royal-dark hover:from-royal-dark hover:to-royal text-white px-6 h-12 rounded-md">
               Subscribe
             </Button>
           </form>
