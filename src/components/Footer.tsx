@@ -60,13 +60,13 @@ const Footer = () => {
             <h3 className="text-white text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/resources/jee" className="hover:text-white transition-colors">JEE Resources</Link>
+                <Link to="/exam-preparation/jee" className="hover:text-white transition-colors">JEE Resources</Link>
               </li>
               <li>
-                <Link to="/resources/neet" className="hover:text-white transition-colors">NEET Resources</Link>
+                <Link to="/exam-preparation/neet" className="hover:text-white transition-colors">NEET Resources</Link>
               </li>
               <li>
-                <Link to="/resources/iitm-bs" className="hover:text-white transition-colors">IITM BS Resources</Link>
+                <Link to="/exam-preparation/iitm-bs" className="hover:text-white transition-colors">IITM BS Resources</Link>
               </li>
               <li>
                 <Link to="/resources/skills" className="hover:text-white transition-colors">Skill Enhancement</Link>
@@ -94,12 +94,15 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-10 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} Unknown IITians. All rights reserved.</p>
-          <div className="mt-4 md:mt-0 flex space-x-6">
-            <Link to="/privacy-policy" className="text-sm hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/terms-of-service" className="text-sm hover:text-white transition-colors">Terms of Service</Link>
-            <Link to="/faq" className="text-sm hover:text-white transition-colors">FAQ</Link>
+        <div className="border-t border-gray-800 mt-10 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p>&copy; {new Date().getFullYear()} Unknown IITians. All rights reserved.</p>
+            <div className="mt-4 md:mt-0 flex flex-wrap gap-4">
+              <Link to="/privacy-policy" className="text-sm hover:text-white transition-colors">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="text-sm hover:text-white transition-colors">Terms of Service</Link>
+              <Link to="/employee-verification" className="text-sm hover:text-white transition-colors">Employee Verification</Link>
+              <Link to="/faq" className="text-sm hover:text-white transition-colors">FAQ</Link>
+            </div>
           </div>
         </div>
       </div>

@@ -1,23 +1,26 @@
 
-import React from "react";
+import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Star, Users, Briefcase, GraduationCap, PenTool } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { CheckCircle, Star, Users, Briefcase, GraduationCap, PenTool, Calendar, MessageSquare } from "lucide-react";
 
 const CareerEmailSubscription = () => {
   return (
     <div className="max-w-xl mx-auto mb-16">
       <form id="emailForm" className="flex flex-col sm:flex-row gap-4 w-full">
-        <input 
-          type="email" 
-          id="emailInput" 
-          placeholder="Enter your email for updates on hirings" 
-          required
-          className="flex-grow h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-royal focus:border-transparent" 
-        />
+        <div className="flex-grow relative">
+          <input 
+            type="email" 
+            id="emailInput" 
+            placeholder="Enter your email for updates on hirings" 
+            required
+            className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-royal focus:border-transparent" 
+          />
+        </div>
         <Button 
           type="submit" 
           id="subscribeBtn" 
@@ -58,6 +61,159 @@ const CareerEmailSubscription = () => {
   );
 };
 
+const JobOpenings = () => {
+  const openings = [
+    {
+      title: "Content Developer - NEET",
+      type: "Remote",
+      duration: "3 months",
+      skills: ["Biology Knowledge", "Content Writing", "PDF Creation"],
+      applyBy: "November 15, 2024"
+    },
+    {
+      title: "UI/UX Designer",
+      type: "Hybrid",
+      duration: "6 months",
+      skills: ["Figma", "User Research", "Interface Design"],
+      applyBy: "November 10, 2024"
+    },
+    {
+      title: "Data Science Mentor",
+      type: "Remote",
+      duration: "Ongoing",
+      skills: ["Python", "Machine Learning", "Teaching Experience"],
+      applyBy: "November 30, 2024"
+    }
+  ];
+
+  return (
+    <section className="bg-gray-50 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold text-center mb-12">Current Openings</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {openings.map((job, index) => (
+            <Card key={index} className="border-none shadow-premium overflow-hidden hover:shadow-xl transition-all duration-300 h-full">
+              <CardHeader className="bg-gradient-to-r from-royal/5 to-royal/10 pb-4">
+                <CardTitle className="text-2xl">{job.title}</CardTitle>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {job.type}
+                  </span>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    {job.duration}
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent className="py-4">
+                <div className="mb-4">
+                  <p className="font-semibold text-gray-700 mb-2">Skills Required:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {job.skills.map((skill, i) => (
+                      <span key={i} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center text-gray-600">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  <p className="text-sm">Apply by: {job.applyBy}</p>
+                </div>
+              </CardContent>
+              <CardFooter className="bg-white pt-0">
+                <Button className="w-full bg-royal hover:bg-royal-dark text-white">
+                  Apply Now
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+        
+        <div className="text-center mt-10">
+          <p className="text-lg text-gray-600 mb-4">Don't see a position that matches your skills?</p>
+          <Button variant="outline" className="border-royal text-royal hover:bg-royal hover:text-white">
+            <MessageSquare className="w-4 h-4 mr-2" /> Contact Us
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const InternVerification = () => {
+  const [verificationId, setVerificationId] = useState("");
+  const [name, setName] = useState("");
+  const [verificationResult, setVerificationResult] = useState<null | { verified: boolean, message: string }>(null);
+
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, this would call an API to verify the intern
+    // Mocked response for demo purposes
+    if (verificationId && name) {
+      setVerificationResult({
+        verified: true,
+        message: "Verification successful! This person was an intern at Unknown IITians."
+      });
+    } else {
+      setVerificationResult({
+        verified: false,
+        message: "Verification failed. No records found."
+      });
+    }
+  };
+
+  return (
+    <section className="py-12 bg-white">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl font-bold text-center mb-8">Intern Verification Portal</h2>
+        
+        <Card className="border-none shadow-md">
+          <CardContent className="p-6">
+            <form onSubmit={handleVerify} className="space-y-4">
+              <div>
+                <label htmlFor="intern-id" className="block text-sm font-medium text-gray-700 mb-1">
+                  Intern ID
+                </label>
+                <Input
+                  id="intern-id"
+                  placeholder="Enter the intern ID"
+                  value={verificationId}
+                  onChange={(e) => setVerificationId(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="intern-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name
+                </label>
+                <Input
+                  id="intern-name"
+                  placeholder="Enter the intern's full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <Button type="submit" className="w-full bg-royal hover:bg-royal-dark">
+                Verify
+              </Button>
+            </form>
+            
+            {verificationResult && (
+              <div className={`mt-4 p-4 rounded-md ${verificationResult.verified ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                {verificationResult.message}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+};
+
 const Career = () => {
   return (
     <>
@@ -73,6 +229,9 @@ const Career = () => {
             </p>
           </div>
         </section>
+        
+        {/* Current Job Openings */}
+        <JobOpenings />
 
         {/* Main content */}
         <section className="py-16 bg-white">
@@ -139,6 +298,9 @@ const Career = () => {
                 ))}
               </div>
             </div>
+
+            {/* Intern Verification Portal */}
+            <InternVerification />
 
             {/* How do we make remarkable change */}
             <div className="mb-16">

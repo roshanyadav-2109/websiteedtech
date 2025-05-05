@@ -28,7 +28,7 @@ const WelcomeSection = () => {
             <img
               src="public/lovable-uploads/95898053-4686-4b17-a361-9edb89a0e93d.png"
               alt="Unknown IITians Team"
-              className="w-full h-auto object-cover rounded-xl"
+              className="w-full h-auto max-h-96 object-cover rounded-xl"
             />
           </div>
         </div>
