@@ -1,12 +1,18 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { loadRazorpayScript, initializeRazorpayCheckout } from "@/services/RazorpayService";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 import { 
   BookOpen, 
   GraduationCap, 
@@ -14,12 +20,18 @@ import {
   Users, 
   Calendar, 
   CheckCircle,
-  Filter
+  Loader2
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Courses = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [enrollmentLoading, setEnrollmentLoading] = useState(false);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const categories = [
     { id: "all", name: "All Courses" },
@@ -29,116 +41,146 @@ const Courses = () => {
     { id: "placement", name: "Placement" }
   ];
 
-  const courses = [
-    {
-      id: 1,
-      title: "IITM BS Qualifier Crash Course",
-      description: "Comprehensive preparation for IITM BS Qualifier exam covering all required subjects with expert guidance.",
-      category: "iitm-bs",
-      price: "₹4,999",
-      discountedPrice: "₹2,999",
-      duration: "2 months",
-      students: 240,
-      rating: 4.8,
-      features: ["Live Classes", "Study Material", "Doubt Sessions", "Mock Tests"],
-      bestseller: true
-    },
-    {
-      id: 2,
-      title: "NEET Complete Biology",
-      description: "Master Biology for NEET with in-depth coverage of Botany and Zoology. Perfect for serious NEET aspirants.",
-      category: "neet",
-      price: "₹5,999",
-      discountedPrice: "₹3,999",
-      duration: "4 months",
-      students: 320,
-      rating: 4.9,
-      features: ["Recorded Lectures", "Study Material", "Weekly Tests", "PYQ Analysis"],
-      bestseller: true
-    },
-    {
-      id: 3,
-      title: "JEE Advanced Mathematics",
-      description: "Advanced level mathematics course designed specifically for JEE Advanced aspirants.",
-      category: "jee",
-      price: "₹6,999",
-      discountedPrice: "₹4,999",
-      duration: "5 months",
-      students: 185,
-      rating: 4.7,
-      features: ["Live Classes", "Formula Booklet", "Daily Practice", "Mock Tests"],
-      bestseller: false
-    },
-    {
-      id: 4,
-      title: "IITM BS Data Science Foundation",
-      description: "Strong foundation in Mathematics, Statistics, and Programming for IITM BS Data Science degree.",
-      category: "iitm-bs",
-      price: "₹7,999",
-      discountedPrice: "₹5,999",
-      duration: "6 months",
-      students: 120,
-      rating: 4.8,
-      features: ["Live Classes", "Coding Assignments", "Project Work", "Industry Connect"],
-      bestseller: false
-    },
-    {
-      id: 5,
-      title: "NEET Physics Mastery",
-      description: "Complete Physics preparation for NEET with concept clarity and problem-solving techniques.",
-      category: "neet",
-      price: "₹4,499",
-      discountedPrice: "₹2,999",
-      duration: "3 months",
-      students: 210,
-      rating: 4.6,
-      features: ["Recorded Lectures", "Formula Handbook", "Weekly Tests", "Doubt Clearing"],
-      bestseller: false
-    },
-    {
-      id: 6,
-      title: "JEE Mains Chemistry",
-      description: "Comprehensive Chemistry course covering Organic, Inorganic and Physical Chemistry for JEE Mains.",
-      category: "jee",
-      price: "₹4,999",
-      discountedPrice: "₹3,499",
-      duration: "4 months",
-      students: 245,
-      rating: 4.7,
-      features: ["Live Classes", "Study Material", "Weekly Tests", "PYQ Discussion"],
-      bestseller: true
-    },
-    {
-      id: 7,
-      title: "Placement Preparation - Coding",
-      description: "Data Structures, Algorithms and Problem Solving to crack technical interviews at top companies.",
-      category: "placement",
-      price: "₹8,999",
-      discountedPrice: "₹5,999",
-      duration: "3 months",
-      students: 310,
-      rating: 4.9,
-      features: ["Live Classes", "100+ Practice Problems", "Mock Interviews", "Resume Building"],
-      bestseller: true
-    },
-    {
-      id: 8,
-      title: "IITM BS Electronic Systems Pathway",
-      description: "Comprehensive course to help you succeed in the Electronic Systems stream of IITM BS program.",
-      category: "iitm-bs",
-      price: "₹6,999",
-      discountedPrice: "₹4,999",
-      duration: "5 months",
-      students: 95,
-      rating: 4.8,
-      features: ["Live Classes", "Lab Sessions", "Projects", "Mock Tests"],
-      bestseller: false
+  // Fetch courses from Supabase
+  const { data: courses = [], isLoading: coursesLoading } = useQuery({
+    queryKey: ["courses"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("*")
+        .order("bestseller", { ascending: false });
+      
+      if (error) throw error;
+      return data;
     }
-  ];
+  });
+
+  // Check if user is enrolled in a course
+  const { data: enrollments = [], isLoading: enrollmentsLoading } = useQuery({
+    queryKey: ["enrollments", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
+        .from("enrollments")
+        .select("course_id")
+        .eq("user_id", user.id);
+      
+      if (error) throw error;
+      return data.map(e => e.course_id);
+    },
+    enabled: !!user
+  });
 
   const filteredCourses = selectedCategory === "all" 
     ? courses 
     : courses.filter(course => course.category === selectedCategory);
+
+  const handleEnrollClick = (course: any) => {
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please sign in to enroll in this course",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    setSelectedCourse(course);
+    setIsPaymentDialogOpen(true);
+  };
+
+  const isEnrolled = (courseId: string) => {
+    return enrollments.includes(courseId);
+  };
+
+  const handlePayment = async () => {
+    if (!selectedCourse) return;
+    
+    try {
+      setEnrollmentLoading(true);
+      
+      // Check if Razorpay script is loaded
+      const isRazorpayLoaded = await loadRazorpayScript();
+      if (!isRazorpayLoaded) {
+        throw new Error("Failed to load payment gateway");
+      }
+      
+      // Create order via Supabase Edge Function
+      const { data: orderData, error: orderError } = await supabase.functions.invoke("create-order", {
+        body: {
+          courseId: selectedCourse.id,
+          amount: selectedCourse.discounted_price || selectedCourse.price
+        }
+      });
+      
+      if (orderError) throw new Error(orderError.message);
+      
+      const { order, key } = orderData;
+      if (!order || !key) throw new Error("Invalid order response");
+
+      // Open Razorpay checkout
+      const options = {
+        key: key,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Unknown IITians",
+        description: `Enrollment for ${selectedCourse.title}`,
+        order_id: order.id,
+        handler: async (response: any) => {
+          try {
+            // Verify payment and record enrollment
+            const { data: verifyData, error: verifyError } = await supabase.functions.invoke("verify-payment", {
+              body: {
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+                courseId: selectedCourse.id
+              }
+            });
+            
+            if (verifyError) throw new Error(verifyError.message);
+            
+            // Close dialog and show success message
+            setIsPaymentDialogOpen(false);
+            toast({
+              title: "Enrollment Successful!",
+              description: `You've successfully enrolled in ${selectedCourse.title}`,
+            });
+            
+            // Invalidate enrollments query to refresh data
+            // Note: Since we're not using React Query's useQueryClient, we'll set a timeout to reload the page
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          } catch (error: any) {
+            toast({
+              title: "Verification Failed",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        },
+        prefill: {
+          name: user?.user_metadata?.full_name || "",
+          email: user?.email || "",
+        },
+        theme: {
+          color: "#4F46E5",
+        },
+      };
+      
+      await initializeRazorpayCheckout(options);
+    } catch (error: any) {
+      toast({
+        title: "Payment Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setEnrollmentLoading(false);
+    }
+  };
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -173,7 +215,7 @@ const Courses = () => {
 
         <section className="py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-center mb-8">
+            <div className="flex items-center justify-between mb-8">
               <div className="bg-white rounded-lg shadow-md p-1 inline-flex">
                 {categories.map((category) => (
                   <button
@@ -189,70 +231,128 @@ const Courses = () => {
                   </button>
                 ))}
               </div>
+
+              {user && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Logged in as </span>
+                  <Badge variant="outline" className="font-normal bg-gray-100">
+                    {user.email}
+                  </Badge>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      toast({
+                        title: "Signed out",
+                        description: "You've been signed out successfully",
+                      });
+                    }}
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              )}
+
+              {!user && !authLoading && (
+                <Button 
+                  className="bg-royal hover:bg-royal-dark" 
+                  onClick={() => navigate("/auth")}
+                >
+                  Sign In
+                </Button>
+              )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredCourses.map((course, index) => (
-                <motion.div
-                  key={course.id}
-                  variants={fadeInUp}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                >
-                  <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-300">
-                    {course.bestseller && (
-                      <div className="absolute top-0 right-0">
-                        <Badge className="m-2 bg-amber-500 hover:bg-amber-600">
-                          <Star className="h-3 w-3 mr-1 fill-current" /> Bestseller
-                        </Badge>
-                      </div>
-                    )}
-                    <div className={`h-2 ${course.bestseller ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-royal to-royal-dark'}`}></div>
-                    <CardHeader className="pb-2">
-                      <CardTitle>{course.title}</CardTitle>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="h-4 w-4 mr-1" /> 
-                        {course.duration}
-                        <Users className="h-4 w-4 ml-4 mr-1" /> 
-                        {course.students} students
-                      </div>
-                      <div className="flex items-center mt-1">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`h-4 w-4 ${i < Math.floor(course.rating) ? 'text-amber-500 fill-amber-500' : 'text-gray-300'}`} 
-                            />
+            {coursesLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-royal" />
+                <span className="ml-2 text-lg text-gray-600">Loading courses...</span>
+              </div>
+            ) : filteredCourses.length === 0 ? (
+              <div className="text-center py-20">
+                <h3 className="text-xl text-gray-600">No courses found for this category</h3>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredCourses.map((course, index) => (
+                  <motion.div
+                    key={course.id}
+                    variants={fadeInUp}
+                    initial="hidden"
+                    animate="visible"
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-300">
+                      {course.bestseller && (
+                        <div className="absolute top-0 right-0">
+                          <Badge className="m-2 bg-amber-500 hover:bg-amber-600">
+                            <Star className="h-3 w-3 mr-1 fill-current" /> Bestseller
+                          </Badge>
+                        </div>
+                      )}
+                      <div className={`h-2 ${course.bestseller ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-royal to-royal-dark'}`}></div>
+                      <CardHeader className="pb-2">
+                        <CardTitle>{course.title}</CardTitle>
+                        <div className="flex items-center text-sm text-gray-500">
+                          <Calendar className="h-4 w-4 mr-1" /> 
+                          {course.duration}
+                          <Users className="h-4 w-4 ml-4 mr-1" /> 
+                          {course.students} students
+                        </div>
+                        <div className="flex items-center mt-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`h-4 w-4 ${i < Math.floor(course.rating) ? 'text-amber-500 fill-amber-500' : 'text-gray-300'}`} 
+                              />
+                            ))}
+                          </div>
+                          <span className="ml-2 text-sm font-medium">{course.rating}</span>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <CardDescription className="text-gray-600 mb-4">{course.description}</CardDescription>
+                        <div className="grid grid-cols-2 gap-2">
+                          {course.features?.map((feature: string, i: number) => (
+                            <div key={i} className="flex items-center text-sm">
+                              <CheckCircle className="h-3 w-3 mr-1 text-green-500" /> 
+                              {feature}
+                            </div>
                           ))}
                         </div>
-                        <span className="ml-2 text-sm font-medium">{course.rating}</span>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="text-gray-600 mb-4">{course.description}</CardDescription>
-                      <div className="grid grid-cols-2 gap-2">
-                        {course.features.map((feature, i) => (
-                          <div key={i} className="flex items-center text-sm">
-                            <CheckCircle className="h-3 w-3 mr-1 text-green-500" /> 
-                            {feature}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="border-t pt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                      <div className="mb-3 sm:mb-0">
-                        <span className="text-xl font-bold text-royal">{course.discountedPrice}</span>
-                        <span className="ml-2 text-gray-500 line-through">{course.price}</span>
-                      </div>
-                      <Button className={`${course.bestseller ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' : 'bg-royal hover:bg-royal-dark'} text-white px-5 py-2`}>
-                        Enroll Now
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+                      </CardContent>
+                      <CardFooter className="border-t pt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                        <div className="mb-3 sm:mb-0">
+                          <span className="text-xl font-bold text-royal">
+                            ₹{course.discounted_price || course.price}
+                          </span>
+                          {course.discounted_price && (
+                            <span className="ml-2 text-gray-500 line-through">
+                              ₹{course.price}
+                            </span>
+                          )}
+                        </div>
+                        
+                        {!isEnrolled(course.id) ? (
+                          <Button
+                            onClick={() => handleEnrollClick(course)}
+                            className={`${course.bestseller ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' : 'bg-royal hover:bg-royal-dark'} text-white px-5 py-2`}
+                          >
+                            Enroll Now
+                          </Button>
+                        ) : (
+                          <Badge className="py-2 px-4 bg-green-100 text-green-800 hover:bg-green-200 border border-green-200">
+                            <CheckCircle className="h-4 w-4 mr-2" /> Enrolled
+                          </Badge>
+                        )}
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -284,6 +384,51 @@ const Courses = () => {
             </div>
           </div>
         </section>
+
+        {/* Payment Dialog */}
+        <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Complete Your Enrollment</DialogTitle>
+              <DialogDescription>
+                You're about to enroll in the following course:
+              </DialogDescription>
+            </DialogHeader>
+            {selectedCourse && (
+              <div className="py-4">
+                <h3 className="font-medium text-lg">{selectedCourse.title}</h3>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-gray-600">{selectedCourse.duration} course</span>
+                  <span className="font-bold text-royal">₹{selectedCourse.discounted_price || selectedCourse.price}</span>
+                </div>
+                <div className="mt-4 bg-gray-50 p-3 rounded-md">
+                  <p className="text-sm text-gray-600">
+                    By proceeding with the payment, you agree to our terms of service and refund policy.
+                  </p>
+                </div>
+              </div>
+            )}
+            <DialogFooter className="sm:justify-between">
+              <Button variant="outline" onClick={() => setIsPaymentDialogOpen(false)} disabled={enrollmentLoading}>
+                Cancel
+              </Button>
+              <Button 
+                className="bg-royal hover:bg-royal-dark"
+                onClick={handlePayment}
+                disabled={enrollmentLoading}
+              >
+                {enrollmentLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Pay Now"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
 
       <Footer />
