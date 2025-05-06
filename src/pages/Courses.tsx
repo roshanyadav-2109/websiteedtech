@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -101,12 +100,19 @@ const Courses = () => {
       setEnrollmentLoading(true);
       
       // Check if Razorpay script is loaded
+      console.log("Loading Razorpay script");
       const isRazorpayLoaded = await loadRazorpayScript();
       if (!isRazorpayLoaded) {
         throw new Error("Failed to load payment gateway");
       }
+      console.log("Razorpay script loaded successfully");
       
       // Create order via Supabase Edge Function
+      console.log("Creating order", {
+        courseId: selectedCourse.id,
+        amount: selectedCourse.discounted_price || selectedCourse.price
+      });
+      
       const { data: orderData, error: orderError } = await supabase.functions.invoke("create-order", {
         body: {
           courseId: selectedCourse.id,
@@ -114,10 +120,26 @@ const Courses = () => {
         }
       });
       
-      if (orderError) throw new Error(orderError.message);
+      console.log("Order creation response:", orderData, orderError);
+      
+      if (orderError) {
+        console.error("Order creation error:", orderError);
+        throw new Error(orderError.message || "Failed to create order");
+      }
+      
+      if (!orderData) {
+        console.error("No order data returned");
+        throw new Error("Invalid response from server");
+      }
       
       const { order, key } = orderData;
-      if (!order || !key) throw new Error("Invalid order response");
+      if (!order || !key) {
+        console.error("Invalid order data:", orderData);
+        throw new Error("Invalid order response");
+      }
+      
+      console.log("Order created:", order);
+      console.log("Using Razorpay key:", key);
 
       // Open Razorpay checkout
       const options = {
@@ -129,6 +151,7 @@ const Courses = () => {
         order_id: order.id,
         handler: async (response: any) => {
           try {
+            console.log("Payment successful, verifying...", response);
             // Verify payment and record enrollment
             const { data: verifyData, error: verifyError } = await supabase.functions.invoke("verify-payment", {
               body: {
@@ -139,7 +162,12 @@ const Courses = () => {
               }
             });
             
-            if (verifyError) throw new Error(verifyError.message);
+            console.log("Verification response:", verifyData, verifyError);
+            
+            if (verifyError) {
+              console.error("Verification error:", verifyError);
+              throw new Error(verifyError.message || "Payment verification failed");
+            }
             
             // Close dialog and show success message
             setIsPaymentDialogOpen(false);
@@ -149,14 +177,14 @@ const Courses = () => {
             });
             
             // Invalidate enrollments query to refresh data
-            // Note: Since we're not using React Query's useQueryClient, we'll set a timeout to reload the page
             setTimeout(() => {
               window.location.reload();
             }, 1500);
           } catch (error: any) {
+            console.error("Payment verification error:", error);
             toast({
               title: "Verification Failed",
-              description: error.message,
+              description: error.message || "Failed to verify payment",
               variant: "destructive",
             });
           }
@@ -168,13 +196,21 @@ const Courses = () => {
         theme: {
           color: "#4F46E5",
         },
+        modal: {
+          ondismiss: function() {
+            console.log("Payment modal dismissed");
+            setEnrollmentLoading(false);
+          }
+        }
       };
       
+      console.log("Initializing Razorpay checkout with options:", options);
       await initializeRazorpayCheckout(options);
     } catch (error: any) {
+      console.error("Payment error:", error);
       toast({
         title: "Payment Failed",
-        description: error.message,
+        description: error.message || "Something went wrong with your payment",
         variant: "destructive",
       });
     } finally {

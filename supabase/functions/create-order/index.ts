@@ -14,8 +14,12 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Create order function called");
+    
     // Get request data
     const { courseId, amount } = await req.json();
+    
+    console.log(`Request data: courseId = ${courseId}, amount = ${amount}`);
     
     if (!courseId || !amount) {
       throw new Error("Course ID and amount are required");
@@ -36,8 +40,11 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
+      console.error("Authentication error:", userError);
       throw new Error("User not authenticated");
     }
+
+    console.log(`Authenticated user: ${user.id}`);
 
     // Get course details for verification
     const { data: course, error: courseError } = await supabase
@@ -47,12 +54,16 @@ serve(async (req) => {
       .single();
     
     if (courseError || !course) {
+      console.error("Course error:", courseError);
       throw new Error("Course not found");
     }
+    
+    console.log(`Found course: ${course.title}`);
 
     // Verify amount matches course price
     const coursePrice = course.discounted_price || course.price;
     if (parseFloat(amount) !== parseFloat(coursePrice.toString())) {
+      console.error(`Amount mismatch: expected ${coursePrice}, got ${amount}`);
       throw new Error("Amount mismatch");
     }
 
@@ -61,8 +72,11 @@ serve(async (req) => {
     const razorpaySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
     
     if (!razorpayKey || !razorpaySecret) {
+      console.error("Razorpay keys not configured");
       throw new Error("Razorpay keys not configured");
     }
+
+    console.log("Creating Razorpay order");
 
     const auth = btoa(`${razorpayKey}:${razorpaySecret}`);
     
@@ -79,12 +93,15 @@ serve(async (req) => {
       })
     });
 
+    const responseText = await orderResponse.text();
+    console.log(`Razorpay API response status: ${orderResponse.status}`);
+    console.log(`Razorpay API response: ${responseText}`);
+
     if (!orderResponse.ok) {
-      const errorData = await orderResponse.json();
-      throw new Error(`Razorpay error: ${JSON.stringify(errorData)}`);
+      throw new Error(`Razorpay error: Status ${orderResponse.status}, Response: ${responseText}`);
     }
 
-    const orderData = await orderResponse.json();
+    const orderData = JSON.parse(responseText);
     
     return new Response(
       JSON.stringify({
@@ -98,6 +115,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
+    console.error("Error in create-order function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 

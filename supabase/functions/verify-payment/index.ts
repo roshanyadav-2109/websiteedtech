@@ -15,7 +15,11 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Verify payment function called");
+    
     const { paymentId, orderId, signature, courseId } = await req.json();
+    
+    console.log(`Request data: paymentId = ${paymentId}, orderId = ${orderId}, courseId = ${courseId}`);
     
     if (!paymentId || !orderId || !signature || !courseId) {
       throw new Error("Missing payment verification parameters");
@@ -36,8 +40,11 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
+      console.error("Authentication error:", userError);
       throw new Error("User not authenticated");
     }
+
+    console.log(`Authenticated user: ${user.id}`);
 
     // Get course details
     const { data: course, error: courseError } = await supabase
@@ -47,25 +54,36 @@ serve(async (req) => {
       .single();
     
     if (courseError || !course) {
+      console.error("Course error:", courseError);
       throw new Error("Course not found");
     }
+    
+    console.log(`Found course: ${course.title}`);
 
     // Verify payment signature
     const razorpaySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
     if (!razorpaySecret) {
+      console.error("Razorpay secret key not configured");
       throw new Error("Razorpay secret key not configured");
     }
+
+    console.log("Verifying payment signature");
 
     const payload = orderId + "|" + paymentId;
     const hmac = createHmac("sha256", razorpaySecret);
     const digest = hmac.update(payload).digest("hex");
     
     if (digest !== signature) {
+      console.error("Invalid payment signature");
       throw new Error("Invalid payment signature");
     }
 
+    console.log("Payment signature verified");
+
     // Record enrollment in database
     const amount = course.discounted_price || course.price;
+    
+    console.log("Recording enrollment in database");
     
     const { data: enrollment, error: enrollmentError } = await supabase
       .from("enrollments")
@@ -81,6 +99,8 @@ serve(async (req) => {
       .single();
 
     if (enrollmentError) {
+      console.error("Enrollment error:", enrollmentError);
+      
       // If error is due to unique constraint (already enrolled)
       if (enrollmentError.message.includes('duplicate key value violates unique constraint')) {
         // Just return success as they are already enrolled
@@ -95,6 +115,8 @@ serve(async (req) => {
       throw new Error(`Enrollment error: ${enrollmentError.message}`);
     }
     
+    console.log("Enrollment recorded successfully");
+    
     return new Response(
       JSON.stringify({ 
         success: true, 
@@ -106,6 +128,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
+    console.error("Error in verify-payment function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
