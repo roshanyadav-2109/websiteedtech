@@ -85,9 +85,8 @@ const ExamPreparation = () => {
                   initial="hidden"
                   animate="visible"
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex"
                 >
-                  <Link to={exam.path} className="block w-full h-full">
+                  <Link to={exam.path} className="block h-full">
                     <Card className="h-full hover:shadow-xl transition-all duration-300 border-none shadow-premium overflow-hidden group">
                       <div className={`h-2 bg-gradient-to-r ${exam.color}`}></div>
                       <CardContent className="p-8 flex flex-col h-full">
@@ -130,7 +129,7 @@ const ExamPreparation = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
                 {
                   title: "Expert Educators",
