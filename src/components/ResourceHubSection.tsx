@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { FileText, BookOpen, Code } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -52,17 +51,21 @@ type IITMBranch = {
   "electronic-systems": IITMNotes;
 };
 
+interface NEETData {
+  biology: BiologySubtype;
+  physics: SubjectNotes;
+  chemistry: ChemistrySubtype;
+}
+
+interface JEEData {
+  math: SubjectNotes;
+  physics: SubjectNotes;
+  chemistry: ChemistrySubtype;
+}
+
 interface NotesData {
-  neet: {
-    biology: BiologySubtype;
-    physics: SubjectNotes;
-    chemistry: ChemistrySubtype;
-  };
-  jee: {
-    math: SubjectNotes;
-    physics: SubjectNotes;
-    chemistry: ChemistrySubtype;
-  };
+  neet: NEETData;
+  jee: JEEData;
   iitm: IITMBranch;
 }
 
@@ -712,25 +715,43 @@ const ResourceHubSection = ({ examType = "neet" }: ResourceHubSectionProps) => {
       return [];
     }
     
-    const examData = notesData[examType as keyof typeof notesData];
-    if (!selectedSubject) return [];
+    if (examType === "neet") {
+      const neetData = notesData.neet;
+      
+      if (!selectedSubject) return [];
+      
+      if (selectedSubject === "biology") {
+        if (!selectedSubType || !selectedClass) return [];
+        return neetData.biology[selectedSubType as keyof BiologySubtype][selectedClass] || [];
+      } 
+      else if (selectedSubject === "chemistry") {
+        if (!selectedSubType || !selectedClass) return [];
+        return neetData.chemistry[selectedSubType as keyof ChemistrySubtype][selectedClass] || [];
+      } 
+      else if (selectedSubject === "physics") {
+        if (!selectedClass) return [];
+        return neetData.physics[selectedClass] || [];
+      }
+    }
+    else if (examType === "jee") {
+      const jeeData = notesData.jee;
+      
+      if (!selectedSubject) return [];
+      
+      if (selectedSubject === "math") {
+        if (!selectedClass) return [];
+        return jeeData.math[selectedClass] || [];
+      }
+      else if (selectedSubject === "chemistry") {
+        if (!selectedSubType || !selectedClass) return [];
+        return jeeData.chemistry[selectedSubType as keyof ChemistrySubtype][selectedClass] || [];
+      } 
+      else if (selectedSubject === "physics") {
+        if (!selectedClass) return [];
+        return jeeData.physics[selectedClass] || [];
+      }
+    }
     
-    if (selectedSubject === "biology") {
-      if (!selectedSubType || !selectedClass) return [];
-      return examData.biology[selectedSubType as keyof typeof examData.biology][selectedClass] || [];
-    } 
-    else if (selectedSubject === "chemistry") {
-      if (!selectedSubType || !selectedClass) return [];
-      return examData.chemistry[selectedSubType as keyof typeof examData.chemistry][selectedClass] || [];
-    } 
-    else if (selectedSubject === "physics" && examData.physics) {
-      if (!selectedClass) return [];
-      return examData.physics[selectedClass] || [];
-    }
-    else if (selectedSubject === "math" && examType === "jee" && notesData.jee.math) {
-      if (!selectedClass) return [];
-      return notesData.jee.math[selectedClass] || [];
-    }
     return [];
   };
 
@@ -859,7 +880,13 @@ const ResourceHubSection = ({ examType = "neet" }: ResourceHubSectionProps) => {
         </div>
       );
     } else {
-      const examLinks = communityLinks[examType as keyof typeof communityLinks];
+      // For NEET or JEE
+      const examLinks = examType === "neet" 
+        ? communityLinks.neet 
+        : examType === "jee" 
+          ? communityLinks.jee 
+          : null;
+          
       if (!examLinks) return null;
 
       return (
