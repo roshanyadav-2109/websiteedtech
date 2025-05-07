@@ -20,8 +20,83 @@ const tabsData = [
   },
 ];
 
+// Define types for better TypeScript support
+type NoteItem = {
+  id: string;
+  title: string;
+  description: string;
+  link: string;
+};
+
+type SubjectNotes = {
+  [className: string]: NoteItem[];
+};
+
+type ChemistrySubtype = {
+  organic: { [className: string]: NoteItem[] };
+  inorganic: { [className: string]: NoteItem[] };
+  physical: { [className: string]: NoteItem[] };
+};
+
+type BiologySubtype = {
+  botany: { [className: string]: NoteItem[] };
+  zoology: { [className: string]: NoteItem[] };
+};
+
+type IITMNotes = {
+  [level: string]: NoteItem[];
+};
+
+type IITMBranch = {
+  "data-science": IITMNotes;
+  "electronic-systems": IITMNotes;
+};
+
+interface NotesData {
+  neet: {
+    biology: BiologySubtype;
+    physics: SubjectNotes;
+    chemistry: ChemistrySubtype;
+  };
+  jee: {
+    math: SubjectNotes;
+    physics: SubjectNotes;
+    chemistry: ChemistrySubtype;
+  };
+  iitm: IITMBranch;
+}
+
+type WhatsappGroup = {
+  title: string;
+  link: string;
+};
+
+type TelegramGroup = {
+  title: string;
+  link: string;
+};
+
+type NEETJEECommunityLinks = {
+  telegram: TelegramGroup;
+  whatsapp: WhatsappGroup;
+};
+
+type IITMBranchCommunityLinks = {
+  telegram: TelegramGroup;
+  whatsapp: WhatsappGroup[];
+};
+
+interface CommunityLinks {
+  neet: NEETJEECommunityLinks;
+  jee: NEETJEECommunityLinks;
+  iitm: {
+    "data-science": IITMBranchCommunityLinks;
+    "electronic-systems": IITMBranchCommunityLinks;
+  };
+}
+
 // Resources data by type
-const notesData = {
+const notesData: NotesData = {
   neet: {
     biology: {
       botany: {
@@ -471,7 +546,7 @@ const notesData = {
 };
 
 // Community links based on the new rules
-const communityLinks = {
+const communityLinks: CommunityLinks = {
   neet: {
     telegram: {
       title: "NEET Main Telegram Group",
@@ -559,7 +634,11 @@ const skillData = [
   },
 ];
 
-const ResourceHubSection = ({ examType = "neet" }) => {
+interface ResourceHubSectionProps {
+  examType?: "neet" | "jee" | "iitm";
+}
+
+const ResourceHubSection = ({ examType = "neet" }: ResourceHubSectionProps) => {
   const [activeTab, setActiveTab] = useState("notes");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
@@ -625,7 +704,10 @@ const ResourceHubSection = ({ examType = "neet" }) => {
   const getFilteredNotes = () => {
     if (examType === "iitm") {
       if (selectedBranch && selectedLevel) {
-        return notesData.iitm[selectedBranch as keyof typeof notesData.iitm][selectedLevel as keyof typeof notesData.iitm[keyof typeof notesData.iitm]] || [];
+        const branch = notesData.iitm[selectedBranch as keyof typeof notesData.iitm];
+        if (branch) {
+          return branch[selectedLevel as keyof typeof branch] || [];
+        }
       }
       return [];
     }
@@ -633,13 +715,23 @@ const ResourceHubSection = ({ examType = "neet" }) => {
     const examData = notesData[examType as keyof typeof notesData];
     if (!selectedSubject) return [];
     
-    if (selectedSubject === "biology" || selectedSubject === "chemistry") {
+    if (selectedSubject === "biology") {
       if (!selectedSubType || !selectedClass) return [];
-      return examData[selectedSubject][selectedSubType as keyof typeof examData[typeof selectedSubject]][selectedClass] || [];
-    } else {
+      return examData.biology[selectedSubType as keyof typeof examData.biology][selectedClass] || [];
+    } 
+    else if (selectedSubject === "chemistry") {
+      if (!selectedSubType || !selectedClass) return [];
+      return examData.chemistry[selectedSubType as keyof typeof examData.chemistry][selectedClass] || [];
+    } 
+    else if (selectedSubject === "physics" && examData.physics) {
       if (!selectedClass) return [];
-      return examData[selectedSubject as keyof typeof examData][selectedClass] || [];
+      return examData.physics[selectedClass] || [];
     }
+    else if (selectedSubject === "math" && examType === "jee" && notesData.jee.math) {
+      if (!selectedClass) return [];
+      return notesData.jee.math[selectedClass] || [];
+    }
+    return [];
   };
 
   const needsSubTypeFilter = () => {
