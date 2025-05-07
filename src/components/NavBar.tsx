@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import {
@@ -41,6 +42,11 @@ const NavBar = () => {
                   <NavigationMenuItem>
                     <Link to="/career" className="text-gray-700 hover:text-royal">
                       Career
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <Link to="/intern-verification" className="text-gray-700 hover:text-royal">
+                      Intern Verification
                     </Link>
                   </NavigationMenuItem>
                   <NavigationMenuItem>
