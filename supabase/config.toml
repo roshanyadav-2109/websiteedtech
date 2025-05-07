@@ -1,8 +1,1 @@
-
 project_id = "qzrvctpwefhmcduariuw"
-
-[functions.create-order]
-verify_jwt = true
-
-[functions.verify-payment]
-verify_jwt = true
