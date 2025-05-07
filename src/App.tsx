@@ -14,7 +14,6 @@ import JEEPrep from "./pages/JEEPrep";
 import IITMBSPrep from "./pages/IITMBSPrep";
 import Career from "./pages/Career";
 import EmployeeVerification from "./pages/EmployeeVerification";
-import InternVerification from "./pages/InternVerification";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +33,7 @@ const App = () => (
           <Route path="/exam-preparation/iitm-bs" element={<IITMBSPrep />} />
           <Route path="/career" element={<Career />} />
           <Route path="/employee-verification" element={<EmployeeVerification />} />
-          <Route path="/intern-verification" element={<InternVerification />} />
+          <Route path="/intern-verification" element={<EmployeeVerification />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
