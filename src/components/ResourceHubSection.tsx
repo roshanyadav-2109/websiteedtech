@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { FileText, BookOpen, Code } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import ImprovedToggleGroup from "./ImprovedToggleGroup";
 
 const tabsData = [
   {
@@ -101,22 +102,21 @@ const ResourceHubSection = () => {
 
         {/* Tabs */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex bg-white rounded-lg shadow-sm">
-            {tabsData.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center px-6 py-4 ${
-                  activeTab === tab.id
-                    ? "bg-white text-royal font-medium"
-                    : "bg-gray-50 text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                <tab.icon className="mr-2 h-5 w-5" />
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
+          <ImprovedToggleGroup
+            value={activeTab}
+            onValueChange={setActiveTab}
+            items={tabsData.map(tab => ({
+              value: tab.id,
+              label: (
+                <div className="flex items-center">
+                  <tab.icon className="mr-2 h-5 w-5" />
+                  <span>{tab.label}</span>
+                </div>
+              ) as unknown as string,
+            }))}
+            className="bg-white p-2 rounded-lg shadow-sm"
+            itemClassName="px-4 py-2"
+          />
         </div>
 
         {/* Content */}
