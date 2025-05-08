@@ -1,6 +1,14 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/components/ui/carousel";
 
 const carouselImages = [
   {
@@ -53,7 +61,7 @@ const HeroCarousel = () => {
             <img
               src="https://placehold.co/2000x450/4C51BF/FFFFFF?text=Unknown+IITians"
               alt="Unknown IITians"
-              className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[450px] object-cover"
+              className="w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover"
             />
             <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-4 text-center">
               <div className="max-w-3xl">
@@ -81,7 +89,7 @@ const HeroCarousel = () => {
             <img
               src="https://placehold.co/2000x450/4C51BF/FFFFFF?text=Exam+Preparation"
               alt="Exam Preparation"
-              className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[450px] object-cover"
+              className="w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover"
             />
             <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-4 text-center">
               <div className="max-w-3xl">
@@ -109,7 +117,7 @@ const HeroCarousel = () => {
             <img
               src="https://placehold.co/2000x450/4C51BF/FFFFFF?text=IIT+Mentors"
               alt="IIT Mentors"
-              className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[450px] object-cover"
+              className="w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover"
             />
             <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-4 text-center">
               <div className="max-w-3xl">

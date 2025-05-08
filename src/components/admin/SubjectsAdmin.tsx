@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface Subject {
   id: string;
@@ -27,18 +27,21 @@ interface Subject {
 const SubjectsList = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
         setIsLoading(true);
-        const { data, error } = await supabase
+        // Using any here temporarily until we have proper types
+        const { data, error } = await (supabase as any)
           .from('subjects')
           .select('*')
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setSubjects(data || []);
+        // Cast the data to our Subject interface
+        setSubjects((data || []) as Subject[]);
       } catch (error: any) {
         toast({
           title: "Error fetching subjects",
@@ -55,7 +58,7 @@ const SubjectsList = () => {
 
   const deleteSubject = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('subjects')
         .delete()
         .eq('id', id);
@@ -135,6 +138,7 @@ const SubjectForm = ({ isEditing = false }) => {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,7 +155,7 @@ const SubjectForm = ({ isEditing = false }) => {
     try {
       setIsSubmitting(true);
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('subjects')
         .insert([
           { name, category },
