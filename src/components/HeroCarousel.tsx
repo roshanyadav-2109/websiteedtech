@@ -1,14 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-} from "@/components/ui/carousel";
 
 const carouselImages = [
   {
@@ -54,95 +46,52 @@ const HeroCarousel = () => {
   }
 
   return (
-    <Carousel className="overflow-hidden" autoPlay>
-      <CarouselContent>
-        <CarouselItem>
-          <div className="relative">
-            <img
-              src="https://placehold.co/2000x450/4C51BF/FFFFFF?text=Unknown+IITians"
-              alt="Unknown IITians"
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-4 text-center">
-              <div className="max-w-3xl">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-                  Learn from IIT Students
-                </h2>
-                <p className="text-md sm:text-lg md:text-xl text-white mb-6">
-                  Courses, study materials and guidance from IIT mentors
-                </p>
-                <div className="flex flex-wrap justify-center gap-4">
-                  <Button className="bg-royal hover:bg-royal-dark text-white">
-                    Explore Courses
-                  </Button>
-                  <Button variant="outline" className="bg-white/10 text-white border-white">
-                    Join Community
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CarouselItem>
-        
-        <CarouselItem>
-          <div className="relative">
-            <img
-              src="https://placehold.co/2000x450/4C51BF/FFFFFF?text=Exam+Preparation"
-              alt="Exam Preparation"
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-4 text-center">
-              <div className="max-w-3xl">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-                  Ace Your Entrance Exams
-                </h2>
-                <p className="text-md sm:text-lg md:text-xl text-white mb-6">
-                  NEET, JEE & IITM BS preparation resources crafted by experts
-                </p>
-                <div className="flex flex-wrap justify-center gap-4">
-                  <Button className="bg-royal hover:bg-royal-dark text-white">
-                    NEET Resources
-                  </Button>
-                  <Button variant="outline" className="bg-white/10 text-white border-white">
-                    JEE Materials
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CarouselItem>
-        
-        <CarouselItem>
-          <div className="relative">
-            <img
-              src="https://placehold.co/2000x450/4C51BF/FFFFFF?text=IIT+Mentors"
-              alt="IIT Mentors"
-              className="w-full h-[200px] sm:h-[250px] md:h-[300px] lg:h-[400px] object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50 flex flex-col justify-center items-center p-4 text-center">
-              <div className="max-w-3xl">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-                  Learn From The Best
-                </h2>
-                <p className="text-md sm:text-lg md:text-xl text-white mb-6">
-                  Direct guidance from top IIT students who've mastered the path
-                </p>
-                <div className="flex flex-wrap justify-center gap-4">
-                  <Button className="bg-royal hover:bg-royal-dark text-white">
-                    Meet Our Mentors
-                  </Button>
-                  <Button variant="outline" className="bg-white/10 text-white border-white">
-                    Join Mentorship Program
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CarouselItem>
-      </CarouselContent>
-      <CarouselPrevious className="left-4" />
-      <CarouselNext className="right-4" />
-    </Carousel>
+    <div className="relative w-full h-[600px] mt-16">
+      {/* Navigation buttons */}
+      <button
+        className="absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
+        onClick={prevSlide}
+      >
+        <ChevronLeft size={24} />
+      </button>
+      <button
+        className="absolute right-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
+        onClick={nextSlide}
+      >
+        <ChevronRight size={24} />
+      </button>
+
+      {/* Carousel images */}
+      {carouselImages.map((image, index) => (
+        <div
+          key={index}
+          className={`absolute w-full h-full transition-opacity duration-500 ease-in-out ${
+            index === current ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ zIndex: index === current ? 1 : 0 }}
+        >
+          <img
+            src={image.src}
+            alt={image.alt}
+            className="object-cover w-full h-full"
+          />
+          <div className="absolute inset-0 bg-black/20"></div>
+        </div>
+      ))}
+
+      {/* Navigation dots */}
+      <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+        {carouselImages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === current ? "bg-white scale-125" : "bg-white/50"
+            }`}
+          ></button>
+        ))}
+      </div>
+    </div>
   );
 };
 
