@@ -17,11 +17,11 @@ import {
   Bell, 
   Download, 
   Search, 
-  Filter, 
   Star,
   Link as LinkIcon,
-  FileCheck 
+  FileCheck,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 const NEETPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,8 +48,15 @@ const NEETPrep = () => {
     "chemistry-inorganic-11-ch1": 36,
     "chemistry-physical-11-ch1": 29,
   });
-
+  
+  const { user, signInWithGoogle } = useAuth();
+  
   const handleDownload = (id: string) => {
+    if (!user) {
+      // Prompt for login if not logged in
+      return;
+    }
+    
     setDownloads(prev => ({
       ...prev,
       [id]: prev[id] + 1
@@ -207,23 +214,33 @@ const NEETPrep = () => {
       return chapters.physics[classFilter as keyof typeof chapters.physics] || [];
     }
   };
+  
+  const requiresLogin = !user;
+  
+  const handleAccessResource = (resource: string) => {
+    if (requiresLogin) {
+      signInWithGoogle();
+      return false;
+    }
+    return true;
+  };
 
   return (
     <>
       <NavBar />
       
       <main className="pt-20">
-        <section className="bg-gradient-to-r from-royal to-royal-dark text-white py-16">
+        <section className="bg-gradient-to-r from-royal to-royal-dark text-white py-12 md:py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-6">NEET Preparation</h1>
-            <p className="text-xl max-w-3xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6">NEET Preparation</h1>
+            <p className="text-lg md:text-xl max-w-3xl mx-auto">
               Comprehensive resources to help you excel in your NEET examination
             </p>
           </div>
         </section>
 
         {/* Search Section */}
-        <section className="py-8 bg-gray-50">
+        <section className="py-6 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center max-w-md mx-auto">
               <Input
@@ -241,23 +258,24 @@ const NEETPrep = () => {
         </section>
 
         {/* Main Content */}
-        <section className="py-16 bg-white">
+        <section className="py-8 md:py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="notes" className="w-full">
-              <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 w-full mb-8 bg-gray-100 p-1 rounded-lg">
-                <TabsTrigger value="notes" className="rounded-md">Notes</TabsTrigger>
-                <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
-                <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
-                <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
-                <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
-                <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
-                <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
+              {/* Responsive tabs list */}
+              <TabsList className="mb-8 w-full overflow-x-auto flex whitespace-nowrap md:grid md:grid-cols-7 p-1 rounded-lg bg-gray-100">
+                <TabsTrigger value="notes" className="rounded-md flex-shrink-0">Notes</TabsTrigger>
+                <TabsTrigger value="pyqs" className="rounded-md flex-shrink-0">PYQs</TabsTrigger>
+                <TabsTrigger value="community" className="rounded-md flex-shrink-0">Padhai Mitra</TabsTrigger>
+                <TabsTrigger value="syllabus" className="rounded-md flex-shrink-0">Syllabus</TabsTrigger>
+                <TabsTrigger value="news" className="rounded-md flex-shrink-0">News Updates</TabsTrigger>
+                <TabsTrigger value="dates" className="rounded-md flex-shrink-0">Important Dates</TabsTrigger>
+                <TabsTrigger value="mock" className="rounded-md flex-shrink-0">Mock Tests</TabsTrigger>
               </TabsList>
 
               <TabsContent value="notes">
                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
                   <h3 className="text-xl font-bold mb-4">Filter Notes</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
                       <Select 
@@ -343,20 +361,29 @@ const NEETPrep = () => {
                 </div>
 
                 {(classFilter === "all" || subjectFilter === "all") ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {filterResources(notes).map((note) => (
-                      <Card key={note.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                      <Card key={note.id} className="border hover:shadow-lg transition-shadow">
                         <CardHeader>
                           <CardTitle>{note.title}</CardTitle>
                           <CardDescription>{note.description}</CardDescription>
                         </CardHeader>
                         <CardFooter className="flex justify-between">
-                          <Button 
-                            onClick={() => handleDownload(note.id)}
-                            className="bg-royal hover:bg-royal-dark text-white"
-                          >
-                            <Download className="h-4 w-4 mr-2" /> Download
-                          </Button>
+                          {requiresLogin ? (
+                            <Button 
+                              onClick={() => signInWithGoogle()}
+                              className="bg-royal hover:bg-royal-dark text-white"
+                            >
+                              Login to Download
+                            </Button>
+                          ) : (
+                            <Button 
+                              onClick={() => handleDownload(note.id)}
+                              className="bg-royal hover:bg-royal-dark text-white"
+                            >
+                              <Download className="h-4 w-4 mr-2" /> Download
+                            </Button>
+                          )}
                           <span className="text-sm text-gray-500">{downloads[note.id]} downloads</span>
                         </CardFooter>
                       </Card>
@@ -365,9 +392,9 @@ const NEETPrep = () => {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {getFilteredChapters().map((chapter) => (
-                      <Card key={chapter.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                      <Card key={chapter.id} className="border hover:shadow-lg transition-shadow">
                         <CardHeader>
-                          <div className="flex justify-between items-start">
+                          <div className="flex justify-between items-start mb-2">
                             <CardTitle>{chapter.title}</CardTitle>
                             <Badge variant="outline" className="ml-2">
                               Class {classFilter}
@@ -376,12 +403,21 @@ const NEETPrep = () => {
                           <CardDescription>{chapter.description}</CardDescription>
                         </CardHeader>
                         <CardFooter className="flex justify-between">
-                          <Button 
-                            onClick={() => handleDownload(chapter.id)}
-                            className="bg-royal hover:bg-royal-dark text-white"
-                          >
-                            <Download className="h-4 w-4 mr-2" /> Download
-                          </Button>
+                          {requiresLogin ? (
+                            <Button 
+                              onClick={() => signInWithGoogle()}
+                              className="bg-royal hover:bg-royal-dark text-white"
+                            >
+                              Login to Download
+                            </Button>
+                          ) : (
+                            <Button 
+                              onClick={() => handleDownload(chapter.id)}
+                              className="bg-royal hover:bg-royal-dark text-white"
+                            >
+                              <Download className="h-4 w-4 mr-2" /> Download
+                            </Button>
+                          )}
                           <span className="text-sm text-gray-500">{downloads[chapter.id] || 0} downloads</span>
                         </CardFooter>
                       </Card>
@@ -391,20 +427,29 @@ const NEETPrep = () => {
               </TabsContent>
 
               <TabsContent value="pyqs">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {filterResources(pyqs).map((pyq) => (
-                    <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                    <Card key={pyq.id} className="border hover:shadow-lg transition-shadow">
                       <CardHeader>
                         <CardTitle>{pyq.title}</CardTitle>
                         <CardDescription>{pyq.description}</CardDescription>
                       </CardHeader>
                       <CardFooter className="flex justify-between">
-                        <Button 
-                          onClick={() => handleDownload(pyq.id)}
-                          className="bg-royal hover:bg-royal-dark text-white"
-                        >
-                          <Download className="h-4 w-4 mr-2" /> Download
-                        </Button>
+                        {requiresLogin ? (
+                          <Button 
+                            onClick={() => signInWithGoogle()}
+                            className="bg-royal hover:bg-royal-dark text-white"
+                          >
+                            Login to Download
+                          </Button>
+                        ) : (
+                          <Button 
+                            onClick={() => handleDownload(pyq.id)}
+                            className="bg-royal hover:bg-royal-dark text-white"
+                          >
+                            <Download className="h-4 w-4 mr-2" /> Download
+                          </Button>
+                        )}
                         <span className="text-sm text-gray-500">{downloads[pyq.id]} downloads</span>
                       </CardFooter>
                     </Card>
@@ -413,94 +458,107 @@ const NEETPrep = () => {
               </TabsContent>
 
               <TabsContent value="community">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                  <div className="lg:col-span-8">
-                    <h3 className="text-2xl font-bold mb-6">Community Links</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {communityLinks.map((link, index) => (
-                        <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
-                          <CardHeader className="pb-2">
-                            <div className="flex items-center">
-                              <div className="rounded-full bg-royal/10 p-2 mr-3">
-                                <Users className="h-5 w-5 text-royal" />
-                              </div>
-                              <div>
-                                <CardTitle className="text-lg">{link.title}</CardTitle>
-                                <CardDescription>{link.type} Group</CardDescription>
-                              </div>
-                            </div>
-                          </CardHeader>
-                          <CardFooter>
-                            <Button asChild className="w-full bg-royal hover:bg-royal-dark text-white">
-                              <a href={link.link} target="_blank" rel="noopener noreferrer">
-                                Join Group
-                              </a>
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                    </div>
+                {requiresLogin ? (
+                  <div className="text-center py-16 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    <Users className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-900 mb-3">Login Required</h3>
+                    <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                      Please login to access our Padhai Mitra community groups and study with other students.
+                    </p>
+                    <Button onClick={() => signInWithGoogle()}>
+                      Login to Access
+                    </Button>
                   </div>
-
-                  <div className="lg:col-span-4">
-                    <h3 className="text-2xl font-bold mb-6">NEET Telegram Community</h3>
-                    <Card className="border-none shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-50 to-indigo-50">
-                      <CardHeader>
-                        <div className="flex items-center">
-                          <div className="rounded-full bg-blue-500 p-3 mr-4">
-                            <LinkIcon className="h-5 w-5 text-white" />
-                          </div>
-                          <div>
-                            <CardTitle>Official Telegram Group</CardTitle>
-                            <CardDescription>Join our main community channel</CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600">
-                          Connect with fellow NEET aspirants, share resources, and get your doubts resolved in our official Telegram community
-                        </p>
-                      </CardContent>
-                      <CardFooter>
-                        <Button asChild className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                          <a href="https://t.me/example-neet" target="_blank" rel="noopener noreferrer">
-                            Join Telegram Group
-                          </a>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-
-                    <div className="mt-6">
-                      <h3 className="text-2xl font-bold mb-6">Study Guides</h3>
-                      <div className="grid grid-cols-1 gap-4">
-                        {studyGuides.map((guide, index) => (
-                          <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
+                ) : (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-8">
+                      <h3 className="text-2xl font-bold mb-6">Community Links</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {communityLinks.map((link, index) => (
+                          <Card key={index} className="border hover:shadow-lg transition-shadow">
                             <CardHeader className="pb-2">
                               <div className="flex items-center">
                                 <div className="rounded-full bg-royal/10 p-2 mr-3">
-                                  <BookOpen className="h-5 w-5 text-royal" />
+                                  <Users className="h-5 w-5 text-royal" />
                                 </div>
                                 <div>
-                                  <CardTitle className="text-lg">{guide.title}</CardTitle>
-                                  <CardDescription>{guide.description}</CardDescription>
+                                  <CardTitle className="text-lg">{link.title}</CardTitle>
+                                  <CardDescription>{link.type} Group</CardDescription>
                                 </div>
                               </div>
                             </CardHeader>
                             <CardFooter>
-                              <Button className="w-full bg-royal hover:bg-royal-dark text-white">
-                                <Download className="h-4 w-4 mr-2" /> Download Guide
+                              <Button asChild className="w-full bg-royal hover:bg-royal-dark text-white">
+                                <a href={link.link} target="_blank" rel="noopener noreferrer">
+                                  Join Group
+                                </a>
                               </Button>
                             </CardFooter>
                           </Card>
                         ))}
                       </div>
                     </div>
+
+                    <div className="lg:col-span-4">
+                      <h3 className="text-2xl font-bold mb-6">NEET Telegram Community</h3>
+                      <Card className="border hover:shadow-lg transition-shadow bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <CardHeader>
+                          <div className="flex items-center">
+                            <div className="rounded-full bg-blue-500 p-3 mr-4">
+                              <LinkIcon className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <CardTitle>Official Telegram Group</CardTitle>
+                              <CardDescription>Join our main community channel</CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-gray-600">
+                            Connect with fellow NEET aspirants, share resources, and get your doubts resolved in our official Telegram community
+                          </p>
+                        </CardContent>
+                        <CardFooter>
+                          <Button asChild className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                            <a href="https://t.me/example-neet" target="_blank" rel="noopener noreferrer">
+                              Join Telegram Group
+                            </a>
+                          </Button>
+                        </CardFooter>
+                      </Card>
+
+                      <div className="mt-6">
+                        <h3 className="text-2xl font-bold mb-6">Study Guides</h3>
+                        <div className="grid grid-cols-1 gap-4">
+                          {studyGuides.map((guide, index) => (
+                            <Card key={index} className="border hover:shadow-lg transition-shadow">
+                              <CardHeader className="pb-2">
+                                <div className="flex items-center">
+                                  <div className="rounded-full bg-royal/10 p-2 mr-3">
+                                    <BookOpen className="h-5 w-5 text-royal" />
+                                  </div>
+                                  <div>
+                                    <CardTitle className="text-lg">{guide.title}</CardTitle>
+                                    <CardDescription>{guide.description}</CardDescription>
+                                  </div>
+                                </div>
+                              </CardHeader>
+                              <CardFooter>
+                                <Button className="w-full bg-royal hover:bg-royal-dark text-white">
+                                  <Download className="h-4 w-4 mr-2" /> Download Guide
+                                </Button>
+                              </CardFooter>
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </TabsContent>
 
               <TabsContent value="syllabus">
-                <Card className="border-none shadow-lg">
+                <Card className="border shadow-lg">
                   <CardHeader className="bg-gray-50 border-b">
                     <CardTitle>NEET Syllabus (2025)</CardTitle>
                     <CardDescription>Complete syllabus for all subjects in NEET examination</CardDescription>
@@ -542,12 +600,21 @@ const NEETPrep = () => {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between bg-gray-50 border-t">
-                    <Button 
-                      onClick={() => handleDownload("full-syllabus")}
-                      className="bg-royal hover:bg-royal-dark text-white"
-                    >
-                      <Download className="h-4 w-4 mr-2" /> Download Full Syllabus
-                    </Button>
+                    {requiresLogin ? (
+                      <Button 
+                        onClick={() => signInWithGoogle()}
+                        className="bg-royal hover:bg-royal-dark text-white"
+                      >
+                        Login to Download
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={() => handleDownload("full-syllabus")}
+                        className="bg-royal hover:bg-royal-dark text-white"
+                      >
+                        <Download className="h-4 w-4 mr-2" /> Download Full Syllabus
+                      </Button>
+                    )}
                     <span className="text-sm text-gray-500">{downloads["full-syllabus"]} downloads</span>
                   </CardFooter>
                 </Card>
@@ -557,7 +624,7 @@ const NEETPrep = () => {
                 <div className="space-y-6">
                   <h3 className="text-2xl font-bold mb-4">Latest News & Updates</h3>
                   {newsUpdates.map((news, index) => (
-                    <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
+                    <Card key={index} className="border hover:shadow-lg transition-shadow">
                       <CardHeader className="pb-2 bg-gray-50 border-b">
                         <div className="flex justify-between items-center">
                           <CardTitle className="text-xl">{news.title}</CardTitle>
@@ -613,19 +680,32 @@ const NEETPrep = () => {
               </TabsContent>
 
               <TabsContent value="mock">
-                <div className="text-center py-12 bg-white rounded-lg shadow-md">
-                  <div className="rounded-full bg-royal/10 p-6 inline-flex mb-6">
-                    <Star className="h-12 w-12 text-royal" />
+                {requiresLogin ? (
+                  <div className="text-center py-16 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    <Star className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-900 mb-3">Login Required</h3>
+                    <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                      Please login to access our mock tests and assess your preparation.
+                    </p>
+                    <Button onClick={() => signInWithGoogle()}>
+                      Login to Access
+                    </Button>
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">NEET Mock Tests</h3>
-                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    Access our comprehensive NEET mock tests to practice and evaluate your preparation. 
-                    Our mock tests are designed to simulate the actual exam experience and help you identify your strengths and weaknesses.
-                  </p>
-                  <Button className="bg-royal hover:bg-royal-dark text-white px-8 py-6 text-lg">
-                    Start Mock Test
-                  </Button>
-                </div>
+                ) : (
+                  <div className="text-center py-12 bg-white rounded-lg shadow-md">
+                    <div className="rounded-full bg-royal/10 p-6 inline-flex mb-6">
+                      <Star className="h-12 w-12 text-royal" />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-4">NEET Mock Tests</h3>
+                    <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                      Access our comprehensive NEET mock tests to practice and evaluate your preparation. 
+                      Our mock tests are designed to simulate the actual exam experience and help you identify your strengths and weaknesses.
+                    </p>
+                    <Button className="bg-royal hover:bg-royal-dark text-white px-8 py-6 text-lg">
+                      Start Mock Test
+                    </Button>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>

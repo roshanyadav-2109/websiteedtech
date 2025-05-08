@@ -1,142 +1,217 @@
-
-import React, { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import LoginButton from "./LoginButton";
+import { useAuth } from "@/lib/auth";
 
 const NavBar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showExamDropdown, setShowExamDropdown] = useState(false);
+  const [showMobileExamDropdown, setShowMobileExamDropdown] = useState(false);
+  const examDropdownRef = useRef<HTMLDivElement>(null);
+  
+  const { user } = useAuth();
+  
+  const handleClickOutside = (event: MouseEvent) => {
+    if (examDropdownRef.current && !examDropdownRef.current.contains(event.target as Node)) {
+      setShowExamDropdown(false);
+    }
+  };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
-    <nav
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-md shadow-md py-2"
-          : "bg-transparent py-4"
-      }`}
-    >
+    <header className="fixed w-full top-0 z-50 bg-royal text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-royal">Unknown</span>
-              <span className="text-2xl font-bold text-golden">IITians</span>
-            </Link>
-          </div>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-6">
-              <Link to="/" className="text-gray-700 hover:text-royal font-medium">
+        <div className="flex justify-between h-16">
+          {/* Logo and main navigation */}
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <Link to="/" className="text-xl font-bold">
+                Unknown IITians
+              </Link>
+            </div>
+            <nav className="hidden md:ml-6 md:flex md:space-x-4 items-center">
+              <Link to="/" className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
                 Home
               </Link>
-              <Link to="/courses" className="text-golden-dark font-medium border-b-2 border-golden">
+              <Link to="/about" className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
+                About
+              </Link>
+              <Link to="/courses" className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
                 Courses
               </Link>
-              <Link to="/exam-preparation" className="text-gray-700 hover:text-royal font-medium">
-                Exam Preparation
-              </Link>
-              <Link to="/career" className="text-gray-700 hover:text-royal font-medium">
-                Career
-              </Link>
-              <Link to="/about" className="text-gray-700 hover:text-royal font-medium">
-                About Us
-              </Link>
-              <div className="flex space-x-2">
-                <Button variant="outline" className="rounded-md">
-                  Login
-                </Button>
-                <Button className="bg-royal hover:bg-royal-dark rounded-md">
-                  Sign Up
-                </Button>
+              
+              {/* Dropdown for Exam Preparation */}
+              <div className="relative" ref={examDropdownRef}>
+                <button
+                  onClick={() => setShowExamDropdown(!showExamDropdown)}
+                  className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium flex items-center"
+                >
+                  Exam Preparation
+                  <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {showExamDropdown && (
+                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                    <Link 
+                      to="/exam-preparation/neet" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowExamDropdown(false)}
+                    >
+                      NEET
+                    </Link>
+                    <Link 
+                      to="/exam-preparation/jee" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowExamDropdown(false)}
+                    >
+                      JEE
+                    </Link>
+                    <Link 
+                      to="/exam-preparation/iitm-bs" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowExamDropdown(false)}
+                    >
+                      IIT-M BS
+                    </Link>
+                  </div>
+                )}
               </div>
-            </div>
+              
+              {user && (
+                <Link to="/career" className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
+                  Career
+                </Link>
+              )}
+
+              {user && (
+                <Link to="/dashboard" className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
+                  Dashboard
+                </Link>
+              )}
+            </nav>
           </div>
           
+          {/* Button Section */}
+          <div className="hidden md:flex items-center">
+            <LoginButton />
+          </div>
+
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="flex items-center md:hidden">
             <button
-              onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-200 focus:outline-none"
             >
-              <span className="sr-only">Open main menu</span>
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              <svg 
+                className={`${isMobileMenuOpen ? 'hidden' : 'block'} h-6 w-6`} 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              <svg 
+                className={`${isMobileMenuOpen ? 'block' : 'hidden'} h-6 w-6`} 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden bg-white shadow-lg rounded-b-lg mt-1">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link
-              to="/"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-royal hover:bg-gray-50 rounded-md"
-              onClick={toggleMenu}
-            >
-              Home
-            </Link>
-            <Link
-              to="/courses"
-              className="block px-3 py-2 text-base font-medium text-golden-dark hover:text-golden bg-gray-50 rounded-md"
-              onClick={toggleMenu}
-            >
-              Courses
-            </Link>
-            <Link
-              to="/exam-preparation"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-royal hover:bg-gray-50 rounded-md"
-              onClick={toggleMenu}
-            >
-              Exam Preparation
-            </Link>
-            <Link
-              to="/career"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-royal hover:bg-gray-50 rounded-md"
-              onClick={toggleMenu}
+      {/* Mobile menu */}
+      <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:hidden bg-royal-dark`}>
+        <div className="px-2 pt-2 pb-3 space-y-1">
+          <Link 
+            to="/" 
+            className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link 
+            to="/about" 
+            className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            About
+          </Link>
+          <Link 
+            to="/courses" 
+            className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Courses
+          </Link>
+          <button
+            onClick={() => setShowMobileExamDropdown(!showMobileExamDropdown)}
+            className="text-white hover:text-gray-200 w-full text-left px-3 py-2 rounded-md text-base font-medium flex justify-between items-center"
+          >
+            Exam Preparation
+            <svg className={`h-4 w-4 transform ${showMobileExamDropdown ? 'rotate-180' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {showMobileExamDropdown && (
+            <div className="pl-4 border-l-2 border-royal-light ml-3">
+              <Link 
+                to="/exam-preparation/neet" 
+                className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                NEET
+              </Link>
+              <Link 
+                to="/exam-preparation/jee" 
+                className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                JEE
+              </Link>
+              <Link 
+                to="/exam-preparation/iitm-bs" 
+                className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                IIT-M BS
+              </Link>
+            </div>
+          )}
+          {user && (
+            <Link 
+              to="/career" 
+              className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               Career
             </Link>
-            <Link
-              to="/about"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-royal hover:bg-gray-50 rounded-md"
-              onClick={toggleMenu}
+          )}
+          {user && (
+            <Link 
+              to="/dashboard" 
+              className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
-              About Us
+              Dashboard
             </Link>
-            <div className="flex flex-col space-y-2 mt-4 px-3">
-              <Button variant="outline" className="w-full justify-center rounded-md">
-                Login
-              </Button>
-              <Button className="w-full justify-center bg-royal hover:bg-royal-dark rounded-md">
-                Sign Up
-              </Button>
-            </div>
+          )}
+          <div className="pt-2">
+            <LoginButton />
           </div>
         </div>
-      )}
-    </nav>
+      </div>
+    </header>
   );
 };
 
