@@ -66,7 +66,9 @@ const IITMBSPrep = () => {
                   <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
                   <TabsTrigger value="tools" className="rounded-md">Tools</TabsTrigger>
                   <TabsTrigger value="communities" className="rounded-md">Communities</TabsTrigger>
-                  <TabsTrigger value="paid-courses" className="rounded-md">Paid Courses</TabsTrigger>
+                  <TabsTrigger value="paid-courses" className="rounded-md bg-gradient-to-r from-amber-400 to-yellow-500 text-white font-medium shadow-md hover:shadow-amber-200/50">
+                    ✨ PAID COURSES
+                  </TabsTrigger>
                   <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
                   <TabsTrigger value="news" className="rounded-md">News</TabsTrigger>
                   <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>

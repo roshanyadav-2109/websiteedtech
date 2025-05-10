@@ -4,15 +4,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const carouselImages = [
   {
-    src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=2000&h=600",
+    src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=2000&h=500",
     alt: "Educational technology and programming",
   },
   {
-    src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=2000&h=600",
+    src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=2000&h=500",
     alt: "Coding and software development education",
   },
   {
-    src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=2000&h=600",
+    src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&q=80&w=2000&h=500",
     alt: "Student working on laptop",
   },
 ];
@@ -46,7 +46,7 @@ const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative w-full h-[600px] mt-16">
+    <div className="relative w-full h-[450px] mt-16">
       {/* Navigation buttons */}
       <button
         className="absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
