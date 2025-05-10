@@ -1,11 +1,9 @@
-
-import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubjectChapters from "./SubjectChapters";
-import SubjectPyqs from "./SubjectPyqs";
 
 interface SubjectBlockProps {
   subject: string;
@@ -99,81 +97,54 @@ const chemistryChapters = {
   }
 };
 
-const neetPyqs = {
-  "2024": [
-    { id: "neet-2024-set-a", title: "NEET 2024 Set A", description: "Complete paper with solutions" },
-    { id: "neet-2024-set-b", title: "NEET 2024 Set B", description: "Complete paper with solutions" },
-  ],
-  "2023": [
-    { id: "neet-2023-set-a", title: "NEET 2023 Set A", description: "Complete paper with solutions" },
-    { id: "neet-2023-set-b", title: "NEET 2023 Set B", description: "Complete paper with solutions" },
-  ],
-  "2022": [
-    { id: "neet-2022-set-a", title: "NEET 2022 Set A", description: "Complete paper with solutions" },
-    { id: "neet-2022-set-b", title: "NEET 2022 Set B", description: "Complete paper with solutions" },
-  ],
-};
-
 const NEETSubjectBlock = ({ subject, downloads, onDownload }: SubjectBlockProps) => {
-  const [activeTab, setActiveTab] = useState("notes");
   const [subType, setSubType] = useState(""); // For biology and chemistry
   
   let contentToDisplay;
   
-  if (activeTab === "notes") {
-    if (subject === "biology") {
-      contentToDisplay = (
-        <div>
-          <div className="mb-6">
-            <Tabs defaultValue={subType || "botany"} onValueChange={setSubType}>
-              <TabsList className="w-full max-w-md">
-                <TabsTrigger value="botany">Botany</TabsTrigger>
-                <TabsTrigger value="zoology">Zoology</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
-          {subType && <SubjectChapters 
-            chapters={biologyChapters[subType]}
-            downloads={downloads}
-            onDownload={onDownload}
-          />}
+  if (subject === "biology") {
+    contentToDisplay = (
+      <div>
+        <div className="mb-6">
+          <Tabs defaultValue={subType || "botany"} onValueChange={setSubType}>
+            <TabsList className="w-full max-w-md">
+              <TabsTrigger value="botany">Botany</TabsTrigger>
+              <TabsTrigger value="zoology">Zoology</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
-      );
-    } else if (subject === "chemistry") {
-      contentToDisplay = (
-        <div>
-          <div className="mb-6">
-            <Tabs defaultValue={subType || "organic"} onValueChange={setSubType}>
-              <TabsList className="w-full max-w-md">
-                <TabsTrigger value="organic">Organic</TabsTrigger>
-                <TabsTrigger value="inorganic">Inorganic</TabsTrigger>
-                <TabsTrigger value="physical">Physical</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
-          {subType && <SubjectChapters 
-            chapters={chemistryChapters[subType]}
-            downloads={downloads}
-            onDownload={onDownload}
-          />}
-        </div>
-      );
-    } else if (subject === "physics") {
-      contentToDisplay = (
-        <SubjectChapters 
-          chapters={physicsChapters}
+        
+        {subType && <SubjectChapters 
+          chapters={biologyChapters[subType]}
           downloads={downloads}
           onDownload={onDownload}
-        />
-      );
-    }
-  } else if (activeTab === "pyqs") {
+        />}
+      </div>
+    );
+  } else if (subject === "chemistry") {
     contentToDisplay = (
-      <SubjectPyqs
-        years={["2024", "2023", "2022"]}
-        pyqsByYear={neetPyqs}
+      <div>
+        <div className="mb-6">
+          <Tabs defaultValue={subType || "organic"} onValueChange={setSubType}>
+            <TabsList className="w-full max-w-md">
+              <TabsTrigger value="organic">Organic</TabsTrigger>
+              <TabsTrigger value="inorganic">Inorganic</TabsTrigger>
+              <TabsTrigger value="physical">Physical</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        
+        {subType && <SubjectChapters 
+          chapters={chemistryChapters[subType]}
+          downloads={downloads}
+          onDownload={onDownload}
+        />}
+      </div>
+    );
+  } else if (subject === "physics") {
+    contentToDisplay = (
+      <SubjectChapters 
+        chapters={physicsChapters}
         downloads={downloads}
         onDownload={onDownload}
       />
@@ -183,21 +154,7 @@ const NEETSubjectBlock = ({ subject, downloads, onDownload }: SubjectBlockProps)
   return (
     <div className="my-8">
       <h2 className="text-2xl font-bold mb-4 capitalize">{subject}</h2>
-      
-      <Tabs defaultValue="notes" onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="notes">Notes</TabsTrigger>
-          <TabsTrigger value="pyqs">Previous Year Papers</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="notes" className="mt-0">
-          {contentToDisplay}
-        </TabsContent>
-        
-        <TabsContent value="pyqs" className="mt-0">
-          {contentToDisplay}
-        </TabsContent>
-      </Tabs>
+      {contentToDisplay}
     </div>
   );
 };

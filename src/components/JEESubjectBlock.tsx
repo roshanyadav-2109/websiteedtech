@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import SubjectChapters from "./SubjectChapters";
-import SubjectPyqs from "./SubjectPyqs";
 
 interface SubjectBlockProps {
   subject: string;
@@ -76,76 +75,43 @@ const chemistryChapters = {
   }
 };
 
-const jeePyqs = {
-  "2024": [
-    { id: "jee-2024-jan-shift1", title: "JEE Main 2024 January Shift 1", description: "Complete paper with solutions" },
-    { id: "jee-2024-jan-shift2", title: "JEE Main 2024 January Shift 2", description: "Complete paper with solutions" },
-    { id: "jee-2024-apr-shift1", title: "JEE Main 2024 April Shift 1", description: "Complete paper with solutions" },
-    { id: "jee-2024-apr-shift2", title: "JEE Main 2024 April Shift 2", description: "Complete paper with solutions" },
-  ],
-  "2023": [
-    { id: "jee-2023-jan-shift1", title: "JEE Main 2023 January Shift 1", description: "Complete paper with solutions" },
-    { id: "jee-2023-jan-shift2", title: "JEE Main 2023 January Shift 2", description: "Complete paper with solutions" },
-    { id: "jee-2023-apr-shift1", title: "JEE Main 2023 April Shift 1", description: "Complete paper with solutions" },
-    { id: "jee-2023-apr-shift2", title: "JEE Main 2023 April Shift 2", description: "Complete paper with solutions" },
-  ],
-  "2022": [
-    { id: "jee-2022-jun-shift1", title: "JEE Main 2022 June Shift 1", description: "Complete paper with solutions" },
-    { id: "jee-2022-jun-shift2", title: "JEE Main 2022 June Shift 2", description: "Complete paper with solutions" },
-    { id: "jee-2022-jul-shift1", title: "JEE Main 2022 July Shift 1", description: "Complete paper with solutions" },
-    { id: "jee-2022-jul-shift2", title: "JEE Main 2022 July Shift 2", description: "Complete paper with solutions" },
-  ],
-};
-
 const JEESubjectBlock = ({ subject, downloads, onDownload }: SubjectBlockProps) => {
-  const [activeTab, setActiveTab] = useState("notes");
   const [subType, setSubType] = useState(""); // For chemistry
   
   let contentToDisplay;
   
-  if (activeTab === "notes") {
-    if (subject === "math") {
-      contentToDisplay = (
-        <SubjectChapters 
-          chapters={mathChapters}
-          downloads={downloads}
-          onDownload={onDownload}
-        />
-      );
-    } else if (subject === "chemistry") {
-      contentToDisplay = (
-        <div>
-          <div className="mb-6">
-            <Tabs defaultValue={subType || "organic"} onValueChange={setSubType}>
-              <TabsList className="w-full max-w-md">
-                <TabsTrigger value="organic">Organic</TabsTrigger>
-                <TabsTrigger value="inorganic">Inorganic</TabsTrigger>
-                <TabsTrigger value="physical">Physical</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
-          {subType && <SubjectChapters 
-            chapters={chemistryChapters[subType]}
-            downloads={downloads}
-            onDownload={onDownload}
-          />}
-        </div>
-      );
-    } else if (subject === "physics") {
-      contentToDisplay = (
-        <SubjectChapters 
-          chapters={physicsChapters}
-          downloads={downloads}
-          onDownload={onDownload}
-        />
-      );
-    }
-  } else if (activeTab === "pyqs") {
+  if (subject === "math") {
     contentToDisplay = (
-      <SubjectPyqs
-        years={["2024", "2023", "2022"]}
-        pyqsByYear={jeePyqs}
+      <SubjectChapters 
+        chapters={mathChapters}
+        downloads={downloads}
+        onDownload={onDownload}
+      />
+    );
+  } else if (subject === "chemistry") {
+    contentToDisplay = (
+      <div>
+        <div className="mb-6">
+          <Tabs defaultValue={subType || "organic"} onValueChange={setSubType}>
+            <TabsList className="w-full max-w-md">
+              <TabsTrigger value="organic">Organic</TabsTrigger>
+              <TabsTrigger value="inorganic">Inorganic</TabsTrigger>
+              <TabsTrigger value="physical">Physical</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        
+        {subType && <SubjectChapters 
+          chapters={chemistryChapters[subType]}
+          downloads={downloads}
+          onDownload={onDownload}
+        />}
+      </div>
+    );
+  } else if (subject === "physics") {
+    contentToDisplay = (
+      <SubjectChapters 
+        chapters={physicsChapters}
         downloads={downloads}
         onDownload={onDownload}
       />
@@ -155,21 +121,7 @@ const JEESubjectBlock = ({ subject, downloads, onDownload }: SubjectBlockProps) 
   return (
     <div className="my-8">
       <h2 className="text-2xl font-bold mb-4 capitalize">{subject}</h2>
-      
-      <Tabs defaultValue="notes" onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="notes">Notes</TabsTrigger>
-          <TabsTrigger value="pyqs">Previous Year Papers</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="notes" className="mt-0">
-          {contentToDisplay}
-        </TabsContent>
-        
-        <TabsContent value="pyqs" className="mt-0">
-          {contentToDisplay}
-        </TabsContent>
-      </Tabs>
+      {contentToDisplay}
     </div>
   );
 };
