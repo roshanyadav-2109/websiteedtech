@@ -17,11 +17,12 @@ import SyllabusTab from "@/components/iitm/SyllabusTab";
 import NewsTab from "@/components/iitm/NewsTab";
 import ImportantDatesTab from "@/components/iitm/ImportantDatesTab";
 import PaidCoursesTab from "@/components/iitm/PaidCoursesTab";
-import TelegramBanner from "@/components/iitm/TelegramBanner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const IITMBSPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("branch-notes");
+  const isMobile = useIsMobile();
 
   return (
     <>
@@ -55,19 +56,12 @@ const IITMBSPrep = () => {
           </div>
         </section>
 
-        {/* Telegram Banner */}
-        <section className="py-6 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <TelegramBanner />
-          </div>
-        </section>
-
         {/* Main Content */}
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="branch-notes" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="overflow-x-auto">
-                <TabsList className="w-full mb-8 bg-gray-100 p-1 rounded-lg inline-flex">
+                <TabsList className="w-full mb-8 bg-gray-100 p-1 rounded-lg inline-flex whitespace-nowrap">
                   <TabsTrigger value="branch-notes" className="rounded-md">Branch Notes</TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
                   <TabsTrigger value="tools" className="rounded-md">Tools</TabsTrigger>

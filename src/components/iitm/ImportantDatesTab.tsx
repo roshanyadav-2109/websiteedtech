@@ -1,236 +1,237 @@
 
-import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Download, Bell } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 interface DateEvent {
   id: string;
   title: string;
-  description: string;
   date: string;
-  category: string;
-  upcoming: boolean;
+  description: string;
+  term: string;
+  type: string;
 }
 
 const ImportantDatesTab = () => {
-  const [downloads, setDownloads] = React.useState({
-    "calendar-ics": 356,
-  });
+  const [activeTerm, setActiveTerm] = useState("2024-may");
   
-  const handleDownload = (id: string) => {
-    setDownloads(prev => ({
-      ...prev,
-      [id]: (prev[id] || 0) + 1
-    }));
-    // Actual download logic would go here
+  const terms = [
+    { id: "2024-may", label: "May 2024" },
+    { id: "2024-sept", label: "September 2024" },
+    { id: "2025-jan", label: "January 2025" },
+  ];
+  
+  const dateEvents: DateEvent[] = [
+    // May 2024 Term
+    {
+      id: "may-2024-registration",
+      title: "Term Registration",
+      date: "Apr 15 - May 2, 2024",
+      description: "Registration period for May 2024 term",
+      term: "2024-may",
+      type: "registration"
+    },
+    {
+      id: "may-2024-term-start",
+      title: "Term Start",
+      date: "May 6, 2024",
+      description: "Official start of May 2024 term",
+      term: "2024-may",
+      type: "term"
+    },
+    {
+      id: "may-2024-quiz1",
+      title: "Quiz 1",
+      date: "Jun 10-12, 2024",
+      description: "First quiz for May 2024 term",
+      term: "2024-may",
+      type: "exam"
+    },
+    {
+      id: "may-2024-quiz2",
+      title: "Quiz 2",
+      date: "Jul 15-17, 2024",
+      description: "Second quiz for May 2024 term",
+      term: "2024-may",
+      type: "exam"
+    },
+    {
+      id: "may-2024-end-term",
+      title: "End Term Exam",
+      date: "Aug 19-23, 2024",
+      description: "End term examination for May 2024 term",
+      term: "2024-may",
+      type: "exam"
+    },
+    {
+      id: "may-2024-term-end",
+      title: "Term End",
+      date: "Aug 25, 2024",
+      description: "Official end of May 2024 term",
+      term: "2024-may",
+      type: "term"
+    },
+    
+    // September 2024 Term
+    {
+      id: "sept-2024-registration",
+      title: "Term Registration",
+      date: "Aug 12-30, 2024",
+      description: "Registration period for September 2024 term",
+      term: "2024-sept",
+      type: "registration"
+    },
+    {
+      id: "sept-2024-term-start",
+      title: "Term Start",
+      date: "Sep 2, 2024",
+      description: "Official start of September 2024 term",
+      term: "2024-sept",
+      type: "term"
+    },
+    {
+      id: "sept-2024-quiz1",
+      title: "Quiz 1",
+      date: "Oct 7-9, 2024",
+      description: "First quiz for September 2024 term",
+      term: "2024-sept",
+      type: "exam"
+    },
+    {
+      id: "sept-2024-quiz2",
+      title: "Quiz 2",
+      date: "Nov 11-13, 2024",
+      description: "Second quiz for September 2024 term",
+      term: "2024-sept",
+      type: "exam"
+    },
+    {
+      id: "sept-2024-end-term",
+      title: "End Term Exam",
+      date: "Dec 16-20, 2024",
+      description: "End term examination for September 2024 term",
+      term: "2024-sept",
+      type: "exam"
+    },
+    {
+      id: "sept-2024-term-end",
+      title: "Term End",
+      date: "Dec 22, 2024",
+      description: "Official end of September 2024 term",
+      term: "2024-sept",
+      type: "term"
+    },
+    
+    // January 2025 Term
+    {
+      id: "jan-2025-registration",
+      title: "Term Registration",
+      date: "Dec 9-27, 2024",
+      description: "Registration period for January 2025 term",
+      term: "2025-jan",
+      type: "registration"
+    },
+    {
+      id: "jan-2025-term-start",
+      title: "Term Start",
+      date: "Jan 6, 2025",
+      description: "Official start of January 2025 term",
+      term: "2025-jan",
+      type: "term"
+    },
+    {
+      id: "jan-2025-quiz1",
+      title: "Quiz 1",
+      date: "Feb 10-12, 2025",
+      description: "First quiz for January 2025 term",
+      term: "2025-jan",
+      type: "exam"
+    },
+    {
+      id: "jan-2025-quiz2",
+      title: "Quiz 2",
+      date: "Mar 17-19, 2025",
+      description: "Second quiz for January 2025 term",
+      term: "2025-jan",
+      type: "exam"
+    },
+    {
+      id: "jan-2025-end-term",
+      title: "End Term Exam",
+      date: "Apr 21-25, 2025",
+      description: "End term examination for January 2025 term",
+      term: "2025-jan",
+      type: "exam"
+    },
+    {
+      id: "jan-2025-term-end",
+      title: "Term End",
+      date: "Apr 27, 2025",
+      description: "Official end of January 2025 term",
+      term: "2025-jan",
+      type: "term"
+    }
+  ];
+  
+  const filteredEvents = dateEvents.filter(event => event.term === activeTerm);
+  
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "registration": return "bg-blue-100 text-blue-700";
+      case "exam": return "bg-red-100 text-red-700";
+      case "term": return "bg-green-100 text-green-700";
+      default: return "bg-gray-100 text-gray-700";
+    }
   };
-  
-  const [events] = React.useState<DateEvent[]>([
-    {
-      id: "jan-2025-app",
-      title: "January 2025 Cohort Application Window Opens",
-      description: "Applications open for the January 2025 intake",
-      date: "2024-09-15",
-      category: "admissions",
-      upcoming: false
-    },
-    {
-      id: "jan-2025-app-close",
-      title: "January 2025 Cohort Application Deadline",
-      description: "Last date to submit applications for January 2025 intake",
-      date: "2024-11-30",
-      category: "admissions",
-      upcoming: false
-    },
-    {
-      id: "jan-2025-qual-exam",
-      title: "January 2025 Qualifier Exam",
-      description: "Online qualifier examination for all applicants",
-      date: "2024-12-15",
-      category: "exam",
-      upcoming: false
-    },
-    {
-      id: "jan-2025-start",
-      title: "January 2025 Term Start",
-      description: "Classes begin for the January 2025 cohort",
-      date: "2025-01-20",
-      category: "term",
-      upcoming: false
-    },
-    {
-      id: "jul-2025-app",
-      title: "July 2025 Cohort Application Window Opens",
-      description: "Applications open for the July 2025 intake",
-      date: "2025-03-01",
-      category: "admissions",
-      upcoming: true
-    },
-    {
-      id: "jul-2025-app-close",
-      title: "July 2025 Cohort Application Deadline",
-      description: "Last date to submit applications for July 2025 intake",
-      date: "2025-05-15",
-      category: "admissions",
-      upcoming: true
-    },
-    {
-      id: "jul-2025-qual-exam",
-      title: "July 2025 Qualifier Exam",
-      description: "Online qualifier examination for all applicants",
-      date: "2025-06-01",
-      category: "exam",
-      upcoming: true
-    },
-    {
-      id: "jul-2025-start",
-      title: "July 2025 Term Start",
-      description: "Classes begin for the July 2025 cohort",
-      date: "2025-07-20",
-      category: "term",
-      upcoming: true
-    },
-    {
-      id: "quiz1-deadline",
-      title: "Quiz 1 Deadline",
-      description: "Last date to complete Quiz 1 for all courses",
-      date: "2025-03-15",
-      category: "assessment",
-      upcoming: true
-    },
-    {
-      id: "assignment-deadline",
-      title: "Assignments Submission Deadline",
-      description: "Final date to submit all pending assignments",
-      date: "2025-04-30",
-      category: "assessment",
-      upcoming: true
-    },
-    {
-      id: "endterm-exam",
-      title: "End Term Examinations",
-      description: "Final examinations for all courses",
-      date: "2025-05-01",
-      category: "exam",
-      upcoming: true
-    },
-    {
-      id: "result-declaration",
-      title: "Results Declaration",
-      description: "Publication of results for the term",
-      date: "2025-06-15",
-      category: "results",
-      upcoming: true
-    }
-  ]);
-  
-  // Sort events by date
-  const sortedEvents = [...events].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  
-  // Group events by month and year
-  const groupedEvents: Record<string, DateEvent[]> = {};
-  sortedEvents.forEach(event => {
-    const date = new Date(event.date);
-    const monthYear = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-    
-    if (!groupedEvents[monthYear]) {
-      groupedEvents[monthYear] = [];
-    }
-    
-    groupedEvents[monthYear].push(event);
-  });
 
   return (
-    <div className="space-y-6">
-      <div className="bg-royal/5 p-6 rounded-lg border border-royal/20">
-        <div className="flex items-center mb-4">
-          <Bell className="h-5 w-5 text-royal mr-2" />
-          <h3 className="text-lg font-medium text-royal">Upcoming Important Dates</h3>
-        </div>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold mb-6 flex items-center">
+          <Calendar className="h-6 w-6 mr-2 text-royal" />
+          Important Dates & Deadlines
+        </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sortedEvents.filter(event => event.upcoming).slice(0, 4).map((event) => (
-            <Card key={event.id} className="bg-white border-none shadow-sm">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-center">
-                  <Badge className={`
-                    ${event.category === 'admissions' ? 'bg-blue-100 text-blue-800' : ''}
-                    ${event.category === 'exam' ? 'bg-red-100 text-red-800' : ''}
-                    ${event.category === 'term' ? 'bg-green-100 text-green-800' : ''}
-                    ${event.category === 'assessment' ? 'bg-yellow-100 text-yellow-800' : ''}
-                    ${event.category === 'results' ? 'bg-purple-100 text-purple-800' : ''}
-                  `}>
-                    {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
-                  </Badge>
-                  <div className="flex items-center font-medium">
-                    <Calendar className="h-4 w-4 mr-1 text-gray-500" />
-                    {new Date(event.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </div>
+        <Tabs value={activeTerm} onValueChange={setActiveTerm} className="w-full">
+          <TabsList className="w-full max-w-lg grid grid-cols-3 mb-6">
+            {terms.map(term => (
+              <TabsTrigger key={term.id} value={term.id}>{term.label}</TabsTrigger>
+            ))}
+          </TabsList>
+          
+          {terms.map(term => (
+            <TabsContent key={term.id} value={term.id}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredEvents.map(event => (
+                  <Card key={event.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg">{event.title}</CardTitle>
+                        <Badge variant="outline" className={getTypeColor(event.type)}>
+                          {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                        </Badge>
+                      </div>
+                      <CardDescription>{event.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="bg-gray-50 p-3 rounded-md flex items-center justify-between">
+                        <span className="font-medium">{event.date}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              {filteredEvents.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No events found for this term.
                 </div>
-                <CardTitle className="text-md mt-1">{event.title}</CardTitle>
-                <CardDescription>{event.description}</CardDescription>
-              </CardHeader>
-            </Card>
+              )}
+            </TabsContent>
           ))}
-        </div>
-        
-        <div className="mt-4 flex justify-center">
-          <Button variant="outline" className="text-royal border-royal hover:bg-royal hover:text-white">
-            Add to Calendar
-          </Button>
-        </div>
-      </div>
-      
-      <div className="space-y-8">
-        {Object.entries(groupedEvents).map(([monthYear, events]) => (
-          <div key={monthYear} className="space-y-4">
-            <h3 className="text-xl font-bold border-b pb-2">{monthYear}</h3>
-            
-            <div className="space-y-3">
-              {events.map((event) => (
-                <div key={event.id} className="flex flex-col sm:flex-row gap-3 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
-                  <div className="flex-shrink-0 sm:w-32 font-medium">
-                    {new Date(event.date).toLocaleDateString('en-US', {
-                      day: 'numeric',
-                      month: 'short'
-                    })}
-                  </div>
-                  <div className="flex-grow">
-                    <h4 className="text-md font-medium">{event.title}</h4>
-                    <p className="text-sm text-gray-600">{event.description}</p>
-                  </div>
-                  <div className="sm:self-center mt-2 sm:mt-0">
-                    <Badge className={`
-                      ${event.category === 'admissions' ? 'bg-blue-100 text-blue-800' : ''}
-                      ${event.category === 'exam' ? 'bg-red-100 text-red-800' : ''}
-                      ${event.category === 'term' ? 'bg-green-100 text-green-800' : ''}
-                      ${event.category === 'assessment' ? 'bg-yellow-100 text-yellow-800' : ''}
-                      ${event.category === 'results' ? 'bg-purple-100 text-purple-800' : ''}
-                    `}>
-                      {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="mt-8 text-center">
-        <Button 
-          onClick={() => handleDownload("calendar-ics")}
-          className="bg-royal hover:bg-royal-dark text-white"
-        >
-          <Download className="h-4 w-4 mr-2" /> Download Academic Calendar
-        </Button>
-        <p className="text-sm text-gray-500 mt-2">{downloads["calendar-ics"]} downloads</p>
+        </Tabs>
       </div>
     </div>
   );

@@ -2,22 +2,21 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Users, Clock } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Star } from "lucide-react";
 
 interface Course {
   id: string;
   title: string;
   description: string;
-  price: number;
-  discountedPrice?: number;
-  features: string[];
-  duration: string;
-  students: number;
-  level: string;
   branch: string;
-  bestseller: boolean;
+  level: string;
+  price: number;
+  enrollments: number;
+  duration: string;
+  isPremium: boolean;
+  features: string[];
 }
 
 const PaidCoursesTab = () => {
@@ -26,217 +25,195 @@ const PaidCoursesTab = () => {
   
   const courses: Course[] = [
     {
-      id: "course-ds-python",
-      title: "Python Programming Mastery",
-      description: "Comprehensive Python course tailored for Data Science applications",
-      price: 4999,
-      discountedPrice: 2999,
-      features: [
-        "50+ hours of video content",
-        "100+ practice problems",
-        "10 real-world projects",
-        "Certificate of completion",
-        "Lifetime access"
-      ],
-      duration: "10 weeks",
-      students: 1547,
+      id: "ds-python-mastery",
+      title: "Python Mastery for Data Science",
+      description: "Comprehensive course covering Python programming for data science applications",
+      branch: "data-science",
       level: "foundation",
-      branch: "data-science",
-      bestseller: true
+      price: 2999,
+      enrollments: 1256,
+      duration: "6 weeks",
+      isPremium: true,
+      features: ["24/7 Mentor Support", "Capstone Project", "Industry Certification"]
     },
     {
-      id: "course-ds-ml",
-      title: "Machine Learning Foundations",
-      description: "Master machine learning algorithms and implementations",
-      price: 5999,
-      discountedPrice: 4499,
-      features: [
-        "40+ hours of video content",
-        "Hands-on ML projects",
-        "Model deployment tutorials",
-        "Interview preparation",
-        "1:1 doubt sessions"
-      ],
-      duration: "12 weeks",
-      students: 1235,
+      id: "ds-ml-specialization",
+      title: "Machine Learning Specialization",
+      description: "Advanced course covering machine learning algorithms and their applications",
+      branch: "data-science",
       level: "diploma",
-      branch: "data-science",
-      bestseller: true
+      price: 4999,
+      enrollments: 857,
+      duration: "10 weeks",
+      isPremium: true,
+      features: ["1-on-1 Mentoring", "Real-world Projects", "Job Placement Assistance"]
     },
     {
-      id: "course-ds-dl",
-      title: "Deep Learning Specialization",
-      description: "Neural networks, CNNs, RNNs, and advanced architectures",
-      price: 7999,
-      features: [
-        "60+ hours of video content",
-        "GPU-enabled notebooks",
-        "Research paper implementations",
-        "Industry expert sessions",
-        "Capstone project"
-      ],
-      duration: "16 weeks",
-      students: 876,
-      level: "degree",
+      id: "ds-stats-bootcamp",
+      title: "Statistics Bootcamp",
+      description: "Intensive course on statistics for data science",
       branch: "data-science",
-      bestseller: false
+      level: "foundation",
+      price: 1999,
+      enrollments: 952,
+      duration: "4 weeks",
+      isPremium: false,
+      features: ["Practice Problems", "Weekly Assignments"]
     },
     {
-      id: "course-es-circuits",
-      title: "Circuit Analysis Fundamentals",
-      description: "Master the basics of electrical circuits and analysis techniques",
+      id: "es-circuit-design",
+      title: "Advanced Circuit Design",
+      description: "In-depth course on circuit design principles and applications",
+      branch: "electronic-systems",
+      level: "diploma",
       price: 3999,
-      discountedPrice: 2499,
-      features: [
-        "30+ hours of video content",
-        "Circuit simulation labs",
-        "Problem-solving sessions",
-        "Quizzes and assessments",
-        "Discussion forums"
-      ],
+      enrollments: 512,
       duration: "8 weeks",
-      students: 923,
+      isPremium: true,
+      features: ["Circuit Simulation Tools", "Hardware Kit", "Live Sessions"]
+    },
+    {
+      id: "es-digital-electronics",
+      title: "Digital Electronics Masterclass",
+      description: "Complete guide to digital electronics and design",
+      branch: "electronic-systems",
       level: "foundation",
-      branch: "electronic-systems",
-      bestseller: true
+      price: 2499,
+      enrollments: 689,
+      duration: "6 weeks",
+      isPremium: false,
+      features: ["Weekly Assignments", "Discussion Forum"]
     },
     {
-      id: "course-es-digital",
-      title: "Digital Electronics Design",
-      description: "Learn digital circuit design and implementation techniques",
-      price: 4999,
-      features: [
-        "35+ hours of video content",
-        "FPGA programming labs",
-        "HDL coding tutorials",
-        "Digital system projects",
-        "Hardware simulation"
-      ],
-      duration: "10 weeks",
-      students: 712,
-      level: "diploma",
-      branch: "electronic-systems",
-      bestseller: false
-    },
-    {
-      id: "course-es-vlsi",
-      title: "VLSI Design and Verification",
-      description: "Advanced course on VLSI chip design and verification",
-      price: 8999,
-      discountedPrice: 6999,
-      features: [
-        "50+ hours of video content",
-        "Industry-standard EDA tools",
-        "Layout and verification techniques",
-        "Tapeout preparation",
-        "Advanced testing methods"
-      ],
-      duration: "14 weeks",
-      students: 584,
+      id: "ds-deep-learning",
+      title: "Deep Learning Specialization",
+      description: "Comprehensive course on neural networks and deep learning",
+      branch: "data-science",
       level: "degree",
+      price: 5999,
+      enrollments: 423,
+      duration: "12 weeks",
+      isPremium: true,
+      features: ["GPU Access", "Industry Projects", "Expert Reviews"]
+    },
+    {
+      id: "ds-math-for-ml",
+      title: "Mathematics for Machine Learning",
+      description: "Essential mathematics concepts for machine learning applications",
+      branch: "data-science",
+      level: "foundation",
+      price: 1799,
+      enrollments: 1089,
+      duration: "5 weeks",
+      isPremium: false,
+      features: ["Interactive Exercises", "Quizzes"]
+    },
+    {
+      id: "es-embedded-systems",
+      title: "Embedded Systems Design",
+      description: "Design and implementation of embedded systems",
       branch: "electronic-systems",
-      bestseller: false
+      level: "degree",
+      price: 4499,
+      enrollments: 378,
+      duration: "10 weeks",
+      isPremium: true,
+      features: ["Hardware Kit", "Project-based", "Industry Certification"]
     }
   ];
   
-  const filteredCourses = courses.filter(course => 
-    (branch === "all" || course.branch === branch) &&
-    (level === "all" || course.level === level)
-  );
-  
+  const filteredCourses = courses.filter(course => {
+    const branchMatch = branch === "all" || course.branch === branch;
+    const levelMatch = level === "all" || course.level === level;
+    return branchMatch && levelMatch;
+  });
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="mb-4 sm:mb-0 flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Branch</label>
-          <Tabs value={branch} onValueChange={setBranch} className="w-full">
-            <TabsList className="w-full grid grid-cols-3">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="data-science">Data Science</TabsTrigger>
-              <TabsTrigger value="electronic-systems">Electronic Systems</TabsTrigger>
-            </TabsList>
-          </Tabs>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Branch</label>
+          <Select value={branch} onValueChange={setBranch}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Branch" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Branches</SelectItem>
+              <SelectItem value="data-science">Data Science</SelectItem>
+              <SelectItem value="electronic-systems">Electronic Systems</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Level</label>
-          <Tabs value={level} onValueChange={setLevel} className="w-full">
-            <TabsList className="w-full grid grid-cols-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="foundation">Foundation</TabsTrigger>
-              <TabsTrigger value="diploma">Diploma</TabsTrigger>
-              <TabsTrigger value="degree">Degree</TabsTrigger>
-            </TabsList>
-          </Tabs>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
+          <Select value={level} onValueChange={setLevel}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Levels</SelectItem>
+              <SelectItem value="qualifier">Qualifier</SelectItem>
+              <SelectItem value="foundation">Foundation</SelectItem>
+              <SelectItem value="diploma">Diploma</SelectItem>
+              <SelectItem value="degree">Degree</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredCourses.map((course) => (
-          <Card key={course.id} className="border-none shadow-md hover:shadow-lg transition-all">
-            <CardHeader className="pb-2 relative">
-              {course.bestseller && (
-                <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
-                  <Badge className="bg-yellow-400 text-yellow-900 font-medium">Bestseller</Badge>
-                </div>
-              )}
-              <div className="flex justify-between items-start">
-                <div>
-                  <Badge className={`
-                    ${course.branch === 'data-science' ? 'bg-blue-100 text-blue-800' : ''}
-                    ${course.branch === 'electronic-systems' ? 'bg-purple-100 text-purple-800' : ''}
-                  `}>
-                    {course.branch === 'data-science' ? 'Data Science' : 'Electronic Systems'}
-                  </Badge>
-                  <Badge className="ml-2 bg-gray-100 text-gray-800">
-                    {course.level.charAt(0).toUpperCase() + course.level.slice(1)} Level
-                  </Badge>
-                </div>
+          <Card 
+            key={course.id} 
+            className={`border-none shadow-md hover:shadow-xl transition-all ${course.isPremium ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-300' : ''}`}
+          >
+            <CardHeader>
+              <div className="flex justify-between items-start mb-2">
+                <CardTitle className="text-xl">
+                  {course.title}
+                  {course.isPremium && (
+                    <Badge className="ml-2 bg-amber-500 text-white">
+                      <Star className="h-3 w-3 mr-1 fill-current" /> Premium
+                    </Badge>
+                  )}
+                </CardTitle>
+                <Badge variant="outline" className={`${course.level === 'foundation' ? 'bg-blue-100 text-blue-700' : course.level === 'diploma' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'}`}>
+                  {course.level.charAt(0).toUpperCase() + course.level.slice(1)}
+                </Badge>
               </div>
-              <CardTitle className="text-xl mt-2">{course.title}</CardTitle>
               <CardDescription className="text-base">{course.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-gray-500">Course Features:</h4>
-                  <ul className="space-y-1">
-                    {course.features.map((feature, index) => (
-                      <li key={index} className="flex items-start">
-                        <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <p className="text-sm text-gray-500">Duration</p>
+                  <p className="font-medium">{course.duration}</p>
                 </div>
-                
-                <div className="flex justify-between text-sm">
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1 text-gray-500" />
-                    <span>{course.duration}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 mr-1 text-gray-500" />
-                    <span>{course.students.toLocaleString()} students</span>
-                  </div>
+                <div>
+                  <p className="text-sm text-gray-500">Enrolled</p>
+                  <p className="font-medium">{course.enrollments}+ students</p>
                 </div>
+              </div>
+              
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Key Features:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  {course.features.map((feature, index) => (
+                    <li key={index} className="text-sm">{feature}</li>
+                  ))}
+                </ul>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col">
-              <div className="flex items-center justify-between w-full mb-4">
-                {course.discountedPrice ? (
-                  <div className="flex items-baseline">
-                    <span className="text-2xl font-bold text-royal">₹{course.discountedPrice}</span>
-                    <span className="text-base text-gray-500 line-through ml-2">₹{course.price}</span>
-                    <Badge className="ml-2 bg-green-100 text-green-800">
-                      {Math.round((1 - course.discountedPrice / course.price) * 100)}% OFF
-                    </Badge>
-                  </div>
-                ) : (
-                  <span className="text-2xl font-bold text-royal">₹{course.price}</span>
-                )}
+            <CardFooter className="flex justify-between items-center">
+              <div className="flex items-center">
+                <span className={`text-xl font-bold ${course.isPremium ? 'text-amber-600' : ''}`}>₹{course.price}</span>
               </div>
-              <Button className="w-full bg-royal hover:bg-royal-dark text-white">
+              <Button 
+                className={course.isPremium ? 
+                  "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white" : 
+                  "bg-royal hover:bg-royal-dark text-white"}
+              >
                 Enroll Now
               </Button>
             </CardFooter>
@@ -244,8 +221,8 @@ const PaidCoursesTab = () => {
         ))}
         
         {filteredCourses.length === 0 && (
-          <div className="col-span-full text-center py-12 text-gray-500">
-            No courses available for the selected filters. Please try a different combination.
+          <div className="col-span-2 text-center py-8 text-gray-500">
+            No courses found matching your criteria. Please try different filters.
           </div>
         )}
       </div>

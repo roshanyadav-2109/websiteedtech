@@ -22,6 +22,7 @@ import {
   FileCheck 
 } from "lucide-react";
 import NEETSubjectBlock from "@/components/NEETSubjectBlock";
+import NEETPYQTab from "@/components/NEETPYQTab";
 
 const NEETPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -171,14 +172,17 @@ const NEETPrep = () => {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="subjects" className="w-full">
-              <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 w-full mb-8 bg-gray-100 p-1 rounded-lg">
-                <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
-                <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
-                <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
-                <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
-                <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
-                <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
-              </TabsList>
+              <div className="overflow-x-auto">
+                <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 w-full mb-8 bg-gray-100 p-1 rounded-lg inline-flex">
+                  <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
+                  <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
+                  <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
+                  <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
+                  <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
+                  <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
+                  <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="subjects">
                 {activeSubject ? (
@@ -221,6 +225,13 @@ const NEETPrep = () => {
                     ))}
                   </div>
                 )}
+              </TabsContent>
+              
+              <TabsContent value="pyqs">
+                <NEETPYQTab 
+                  downloads={downloads}
+                  onDownload={handleDownload}
+                />
               </TabsContent>
 
               <TabsContent value="community">
