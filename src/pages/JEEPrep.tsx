@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -23,14 +22,11 @@ import {
   Link as LinkIcon,
   FileCheck
 } from "lucide-react";
+import JEESubjectBlock from "@/components/JEESubjectBlock";
 
 const JEEPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [classFilter, setClassFilter] = useState("all"); // "all", "11", "12"
-  const [subjectFilter, setSubjectFilter] = useState("all"); // "all", "physics", "chemistry", "math"
-  const [chapterFilter, setChapterFilter] = useState("");
-  const [sessionFilter, setSessionFilter] = useState("all"); // "all", "session1", "session2"
-  const [yearFilter, setYearFilter] = useState("all"); // "all", "2024", "2023", "2022"
+  const [activeSubject, setActiveSubject] = useState<string | null>(null);
   
   const [downloads, setDownloads] = useState({
     "math-notes": 145,
@@ -42,11 +38,44 @@ const JEEPrep = () => {
     "chemistry-pyq": 92,
     "math-11-ch1": 53,
     "math-11-ch2": 47,
+    "math-11-ch3": 42,
+    "math-11-ch4": 38,
+    "math-11-ch5": 35,
+    "math-11-ch6": 32,
+    "math-12-ch1": 49,
+    "math-12-ch2": 45,
+    "math-12-ch3": 41,
+    "math-12-ch4": 37,
     "physics-11-ch1": 62,
     "physics-11-ch2": 58,
+    "physics-11-ch3": 54,
+    "physics-12-ch1": 60,
+    "physics-12-ch2": 56,
+    "physics-12-ch3": 52,
     "chemistry-11-organic-ch1": 76,
+    "chemistry-11-organic-ch2": 72,
+    "chemistry-12-organic-ch1": 74,
+    "chemistry-12-organic-ch2": 70,
     "chemistry-11-inorganic-ch1": 41,
+    "chemistry-11-inorganic-ch2": 37,
+    "chemistry-12-inorganic-ch1": 39,
+    "chemistry-12-inorganic-ch2": 35,
     "chemistry-11-physical-ch1": 38,
+    "chemistry-11-physical-ch2": 34,
+    "chemistry-12-physical-ch1": 36,
+    "chemistry-12-physical-ch2": 32,
+    "jee-2024-jan-shift1": 68,
+    "jee-2024-jan-shift2": 65,
+    "jee-2024-apr-shift1": 62,
+    "jee-2024-apr-shift2": 59,
+    "jee-2023-jan-shift1": 78,
+    "jee-2023-jan-shift2": 75,
+    "jee-2023-apr-shift1": 72,
+    "jee-2023-apr-shift2": 69,
+    "jee-2022-jun-shift1": 88,
+    "jee-2022-jun-shift2": 85,
+    "jee-2022-jul-shift1": 82,
+    "jee-2022-jul-shift2": 79,
   });
 
   const handleDownload = (id: string) => {
@@ -56,109 +85,30 @@ const JEEPrep = () => {
     }));
     // Actual download logic would go here
   };
-
-  // Filter resources based on search query
-  const filterResources = (items: any[]) => {
-    if (!searchQuery) return items;
-    return items.filter(item => item.title.toLowerCase().includes(searchQuery.toLowerCase()));
-  };
-
-  const notes = [
-    { id: "math-notes", title: "Mathematics Complete Notes", description: "Comprehensive notes covering all topics in JEE Mathematics" },
-    { id: "physics-notes", title: "Physics Complete Notes", description: "Detailed notes covering all topics in JEE Physics" },
-    { id: "chemistry-notes", title: "Chemistry Complete Notes", description: "In-depth notes covering all topics in JEE Chemistry" },
+  
+  const subjectCards = [
+    { 
+      id: "physics", 
+      title: "Physics", 
+      description: "Comprehensive notes and previous year papers", 
+      color: "bg-blue-100 text-blue-700",
+      icon: <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+    },
+    { 
+      id: "chemistry", 
+      title: "Chemistry", 
+      description: "Organic, Inorganic, and Physical Chemistry resources", 
+      color: "bg-green-100 text-green-700",
+      icon: <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+    },
+    { 
+      id: "math", 
+      title: "Mathematics", 
+      description: "Complete mathematics materials for JEE preparation", 
+      color: "bg-purple-100 text-purple-700",
+      icon: <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+    },
   ];
-
-  const chapters = {
-    "math": {
-      "11": [
-        { id: "math-11-ch1", title: "Sets, Relations and Functions", description: "Class 11 Mathematics Chapter 1" },
-        { id: "math-11-ch2", title: "Complex Numbers and Quadratic Equations", description: "Class 11 Mathematics Chapter 2" },
-        { id: "math-11-ch3", title: "Matrices and Determinants", description: "Class 11 Mathematics Chapter 3" },
-        { id: "math-11-ch4", title: "Permutations and Combinations", description: "Class 11 Mathematics Chapter 4" },
-        { id: "math-11-ch5", title: "Mathematical Induction", description: "Class 11 Mathematics Chapter 5" },
-        { id: "math-11-ch6", title: "Binomial Theorem", description: "Class 11 Mathematics Chapter 6" },
-      ],
-      "12": [
-        { id: "math-12-ch1", title: "Differential Calculus", description: "Class 12 Mathematics Chapter 1" },
-        { id: "math-12-ch2", title: "Integral Calculus", description: "Class 12 Mathematics Chapter 2" },
-        { id: "math-12-ch3", title: "Vectors and 3D Geometry", description: "Class 12 Mathematics Chapter 3" },
-        { id: "math-12-ch4", title: "Probability", description: "Class 12 Mathematics Chapter 4" },
-      ]
-    },
-    "physics": {
-      "11": [
-        { id: "physics-11-ch1", title: "Physics and Measurement", description: "Class 11 Physics Chapter 1" },
-        { id: "physics-11-ch2", title: "Kinematics", description: "Class 11 Physics Chapter 2" },
-        { id: "physics-11-ch3", title: "Laws of Motion", description: "Class 11 Physics Chapter 3" },
-      ],
-      "12": [
-        { id: "physics-12-ch1", title: "Electrostatics", description: "Class 12 Physics Chapter 1" },
-        { id: "physics-12-ch2", title: "Current Electricity", description: "Class 12 Physics Chapter 2" },
-        { id: "physics-12-ch3", title: "Magnetic Effects", description: "Class 12 Physics Chapter 3" },
-      ]
-    },
-    "chemistry": {
-      "organic": {
-        "11": [
-          { id: "chemistry-11-organic-ch1", title: "Basic Organic Chemistry", description: "Class 11 Organic Chemistry Chapter 1" },
-          { id: "chemistry-11-organic-ch2", title: "Hydrocarbons", description: "Class 11 Organic Chemistry Chapter 2" },
-        ],
-        "12": [
-          { id: "chemistry-12-organic-ch1", title: "Alcohols, Phenols and Ethers", description: "Class 12 Organic Chemistry Chapter 1" },
-          { id: "chemistry-12-organic-ch2", title: "Aldehydes, Ketones and Carboxylic Acids", description: "Class 12 Organic Chemistry Chapter 2" },
-        ]
-      },
-      "inorganic": {
-        "11": [
-          { id: "chemistry-11-inorganic-ch1", title: "Periodic Table and Properties", description: "Class 11 Inorganic Chemistry Chapter 1" },
-          { id: "chemistry-11-inorganic-ch2", title: "Chemical Bonding", description: "Class 11 Inorganic Chemistry Chapter 2" },
-        ],
-        "12": [
-          { id: "chemistry-12-inorganic-ch1", title: "d and f Block Elements", description: "Class 12 Inorganic Chemistry Chapter 1" },
-          { id: "chemistry-12-inorganic-ch2", title: "Coordination Compounds", description: "Class 12 Inorganic Chemistry Chapter 2" },
-        ]
-      },
-      "physical": {
-        "11": [
-          { id: "chemistry-11-physical-ch1", title: "States of Matter", description: "Class 11 Physical Chemistry Chapter 1" },
-          { id: "chemistry-11-physical-ch2", title: "Thermodynamics", description: "Class 11 Physical Chemistry Chapter 2" },
-        ],
-        "12": [
-          { id: "chemistry-12-physical-ch1", title: "Solutions", description: "Class 12 Physical Chemistry Chapter 1" },
-          { id: "chemistry-12-physical-ch2", title: "Electrochemistry", description: "Class 12 Physical Chemistry Chapter 2" },
-        ]
-      }
-    }
-  };
-
-  const pyqs = {
-    "session1": {
-      "2024": [
-        { id: "jee-s1-2024-paper1", title: "JEE Main 2024 Session 1 - Paper 1", description: "Complete question paper with solutions" },
-        { id: "jee-s1-2024-paper2", title: "JEE Main 2024 Session 1 - Paper 2", description: "Complete question paper with solutions" },
-      ],
-      "2023": [
-        { id: "jee-s1-2023-paper1", title: "JEE Main 2023 Session 1 - Paper 1", description: "Complete question paper with solutions" },
-        { id: "jee-s1-2023-paper2", title: "JEE Main 2023 Session 1 - Paper 2", description: "Complete question paper with solutions" },
-      ],
-      "2022": [
-        { id: "jee-s1-2022-paper1", title: "JEE Main 2022 Session 1 - Paper 1", description: "Complete question paper with solutions" },
-      ]
-    },
-    "session2": {
-      "2024": [
-        { id: "jee-s2-2024-paper1", title: "JEE Main 2024 Session 2 - Paper 1", description: "Complete question paper with solutions" },
-      ],
-      "2023": [
-        { id: "jee-s2-2023-paper1", title: "JEE Main 2023 Session 2 - Paper 1", description: "Complete question paper with solutions" },
-        { id: "jee-s2-2023-paper2", title: "JEE Main 2023 Session 2 - Paper 2", description: "Complete question paper with solutions" },
-      ],
-      "2022": [
-        { id: "jee-s2-2022-paper1", title: "JEE Main 2022 Session 2 - Paper 1", description: "Complete question paper with solutions" },
-      ]
-    }
-  };
 
   const communityLinks = [
     { title: "JEE General Discussion", type: "WhatsApp", link: "https://chat.whatsapp.com/example-jee1" },
@@ -192,45 +142,6 @@ const JEEPrep = () => {
     { title: "NTA Announces New Exam Centers for JEE 2025", date: "September 20, 2024" },
     { title: "IITs Announce New B.Tech Programs for 2025", date: "September 5, 2024" },
   ];
-
-  // Filter PYQs based on the filters
-  const getFilteredPYQs = () => {
-    const session = sessionFilter === "all" ? ["session1", "session2"] : [sessionFilter];
-    const year = yearFilter === "all" ? ["2024", "2023", "2022"] : [yearFilter];
-    
-    let filtered: any[] = [];
-    
-    session.forEach(s => {
-      year.forEach(y => {
-        if (pyqs[s as keyof typeof pyqs] && pyqs[s as keyof typeof pyqs][y as keyof typeof pyqs["session1"]]) {
-          filtered = [...filtered, ...pyqs[s as keyof typeof pyqs][y as keyof typeof pyqs["session1"]]];
-        }
-      });
-    });
-    
-    return filtered;
-  };
-
-  // Get chapters based on the filters
-  const getFilteredChapters = () => {
-    if (subjectFilter === "all" || classFilter === "all") return [];
-
-    if (subjectFilter === "chemistry") {
-      // For chemistry, we need to handle the subchapters
-      if (chapterFilter === "organic") {
-        return chapters.chemistry.organic[classFilter as keyof typeof chapters.chemistry.organic] || [];
-      } else if (chapterFilter === "inorganic") {
-        return chapters.chemistry.inorganic[classFilter as keyof typeof chapters.chemistry.inorganic] || [];
-      } else if (chapterFilter === "physical") {
-        return chapters.chemistry.physical[classFilter as keyof typeof chapters.chemistry.physical] || [];
-      } else {
-        return [];
-      }
-    } else {
-      // For physics and math
-      return chapters[subjectFilter as "math" | "physics"][classFilter as keyof typeof chapters["math"]] || [];
-    }
-  };
 
   return (
     <>
@@ -267,10 +178,9 @@ const JEEPrep = () => {
         {/* Main Content */}
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Tabs defaultValue="notes" className="w-full">
+            <Tabs defaultValue="subjects" className="w-full">
               <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 w-full mb-8 bg-gray-100 p-1 rounded-lg">
-                <TabsTrigger value="notes" className="rounded-md">Notes</TabsTrigger>
-                <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
+                <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
                 <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
                 <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
                 <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
@@ -278,181 +188,47 @@ const JEEPrep = () => {
                 <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="notes">
-                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                  <h3 className="text-xl font-bold mb-4">Filter Notes</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                      <Select 
-                        value={classFilter} 
-                        onValueChange={(value) => {
-                          setClassFilter(value);
-                          setChapterFilter("");
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Class" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Classes</SelectItem>
-                          <SelectItem value="11">Class 11</SelectItem>
-                          <SelectItem value="12">Class 12</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+              <TabsContent value="subjects">
+                {activeSubject ? (
+                  <div>
+                    <Button 
+                      variant="outline" 
+                      className="mb-6"
+                      onClick={() => setActiveSubject(null)}
+                    >
+                      &larr; Back to Subjects
+                    </Button>
                     
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                      <Select 
-                        value={subjectFilter} 
-                        onValueChange={(value) => {
-                          setSubjectFilter(value);
-                          setChapterFilter("");
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Subject" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Subjects</SelectItem>
-                          <SelectItem value="physics">Physics</SelectItem>
-                          <SelectItem value="chemistry">Chemistry</SelectItem>
-                          <SelectItem value="math">Mathematics</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    {subjectFilter === "chemistry" && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Chemistry Type</label>
-                        <Select 
-                          value={chapterFilter} 
-                          onValueChange={setChapterFilter}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Chemistry Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">All Types</SelectItem>
-                            <SelectItem value="organic">Organic</SelectItem>
-                            <SelectItem value="inorganic">Inorganic</SelectItem>
-                            <SelectItem value="physical">Physical</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {(classFilter === "all" || subjectFilter === "all") ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filterResources(notes).map((note) => (
-                      <Card key={note.id} className="border-none shadow-md hover:shadow-lg transition-all">
-                        <CardHeader>
-                          <CardTitle>{note.title}</CardTitle>
-                          <CardDescription>{note.description}</CardDescription>
-                        </CardHeader>
-                        <CardFooter className="flex justify-between">
-                          <Button 
-                            onClick={() => handleDownload(note.id)}
-                            className="bg-royal hover:bg-royal-dark text-white"
-                          >
-                            <Download className="h-4 w-4 mr-2" /> Download
-                          </Button>
-                          <span className="text-sm text-gray-500">{downloads[note.id]} downloads</span>
-                        </CardFooter>
-                      </Card>
-                    ))}
+                    <JEESubjectBlock 
+                      subject={activeSubject}
+                      downloads={downloads}
+                      onDownload={handleDownload}
+                    />
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {getFilteredChapters().map((chapter) => (
-                      <Card key={chapter.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {subjectCards.map((subject) => (
+                      <Card 
+                        key={subject.id} 
+                        className="border-none shadow-md hover:shadow-xl transition-all cursor-pointer"
+                        onClick={() => setActiveSubject(subject.id)}
+                      >
                         <CardHeader>
-                          <div className="flex justify-between items-start">
-                            <CardTitle>{chapter.title}</CardTitle>
-                            <Badge variant="outline" className="ml-2">
-                              Class {classFilter}
-                            </Badge>
+                          <div className={`rounded-full ${subject.color} p-3 w-14 h-14 flex items-center justify-center mb-4`}>
+                            {subject.icon}
                           </div>
-                          <CardDescription>{chapter.description}</CardDescription>
+                          <CardTitle>{subject.title}</CardTitle>
+                          <CardDescription>{subject.description}</CardDescription>
                         </CardHeader>
-                        <CardFooter className="flex justify-between">
-                          <Button 
-                            onClick={() => handleDownload(chapter.id)}
-                            className="bg-royal hover:bg-royal-dark text-white"
-                          >
-                            <Download className="h-4 w-4 mr-2" /> Download
+                        <CardFooter>
+                          <Button className="w-full bg-royal hover:bg-royal-dark text-white">
+                            Explore Resources
                           </Button>
-                          <span className="text-sm text-gray-500">{downloads[chapter.id] || 0} downloads</span>
                         </CardFooter>
                       </Card>
                     ))}
                   </div>
                 )}
-              </TabsContent>
-
-              <TabsContent value="pyqs">
-                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                  <h3 className="text-xl font-bold mb-4">Filter Previous Year Papers</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
-                      <Select 
-                        value={sessionFilter} 
-                        onValueChange={setSessionFilter}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Session" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Sessions</SelectItem>
-                          <SelectItem value="session1">Session 1</SelectItem>
-                          <SelectItem value="session2">Session 2</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                      <Select 
-                        value={yearFilter} 
-                        onValueChange={setYearFilter}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Year" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Years</SelectItem>
-                          <SelectItem value="2024">2024</SelectItem>
-                          <SelectItem value="2023">2023</SelectItem>
-                          <SelectItem value="2022">2022</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {getFilteredPYQs().map((pyq) => (
-                    <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
-                      <CardHeader>
-                        <CardTitle>{pyq.title}</CardTitle>
-                        <CardDescription>{pyq.description}</CardDescription>
-                      </CardHeader>
-                      <CardFooter className="flex justify-between">
-                        <Button 
-                          onClick={() => handleDownload(pyq.id)}
-                          className="bg-royal hover:bg-royal-dark text-white"
-                        >
-                          <Download className="h-4 w-4 mr-2" /> Download
-                        </Button>
-                        <span className="text-sm text-gray-500">{downloads[pyq.id] || 0} downloads</span>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
               </TabsContent>
 
               <TabsContent value="community">

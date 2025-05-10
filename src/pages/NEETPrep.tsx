@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -22,13 +21,11 @@ import {
   Link as LinkIcon,
   FileCheck 
 } from "lucide-react";
+import NEETSubjectBlock from "@/components/NEETSubjectBlock";
 
 const NEETPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [classFilter, setClassFilter] = useState("all"); // "all", "11", "12"
-  const [subjectFilter, setSubjectFilter] = useState("all"); // "all", "biology", "physics", "chemistry"
-  const [biologyTypeFilter, setbiologyTypeFilter] = useState(""); // For Biology: "zoology", "botany"
-  const [chemistryTypeFilter, setChemistryTypeFilter] = useState(""); // For Chemistry: "organic", "inorganic", "physical"
+  const [activeSubject, setActiveSubject] = useState<string | null>(null);
   
   const [downloads, setDownloads] = useState({
     "biology-notes": 124,
@@ -40,13 +37,40 @@ const NEETPrep = () => {
     "chemistry-pyq": 71,
     "botany-11-ch1": 45,
     "botany-11-ch2": 38,
+    "botany-11-ch3": 42,
+    "botany-12-ch1": 36,
+    "botany-12-ch2": 33,
+    "botany-12-ch3": 30,
     "zoology-11-ch1": 52,
     "zoology-11-ch2": 47,
+    "zoology-11-ch3": 43,
+    "zoology-12-ch1": 39,
+    "zoology-12-ch2": 37,
+    "zoology-12-ch3": 34,
     "physics-11-ch1": 39,
     "physics-11-ch2": 31,
+    "physics-11-ch3": 28,
+    "physics-12-ch1": 35,
+    "physics-12-ch2": 30,
+    "physics-12-ch3": 27,
     "chemistry-organic-11-ch1": 42,
+    "chemistry-organic-11-ch2": 38,
+    "chemistry-organic-12-ch1": 36,
+    "chemistry-organic-12-ch2": 33,
     "chemistry-inorganic-11-ch1": 36,
+    "chemistry-inorganic-11-ch2": 32,
+    "chemistry-inorganic-12-ch1": 30,
+    "chemistry-inorganic-12-ch2": 27,
     "chemistry-physical-11-ch1": 29,
+    "chemistry-physical-11-ch2": 25,
+    "chemistry-physical-12-ch1": 28,
+    "chemistry-physical-12-ch2": 23,
+    "neet-2024-set-a": 58,
+    "neet-2024-set-b": 46,
+    "neet-2023-set-a": 72,
+    "neet-2023-set-b": 65,
+    "neet-2022-set-a": 89,
+    "neet-2022-set-b": 83,
   });
 
   const handleDownload = (id: string) => {
@@ -56,96 +80,29 @@ const NEETPrep = () => {
     }));
     // Actual download logic would go here
   };
-
-  // Filter resources based on search query
-  const filterResources = (items: any[]) => {
-    if (!searchQuery) return items;
-    return items.filter(item => item.title.toLowerCase().includes(searchQuery.toLowerCase()));
-  };
-
-  const notes = [
-    { id: "biology-notes", title: "Biology Complete Notes", description: "Comprehensive notes covering all topics in NEET Biology" },
-    { id: "physics-notes", title: "Physics Complete Notes", description: "Detailed notes covering all topics in NEET Physics" },
-    { id: "chemistry-notes", title: "Chemistry Complete Notes", description: "In-depth notes covering all topics in NEET Chemistry" },
-  ];
-
-  const chapters = {
-    "biology": {
-      "botany": {
-        "11": [
-          { id: "botany-11-ch1", title: "Cell: The Unit of Life", description: "Class 11 Botany Chapter 1" },
-          { id: "botany-11-ch2", title: "Plant Morphology", description: "Class 11 Botany Chapter 2" },
-          { id: "botany-11-ch3", title: "Plant Anatomy", description: "Class 11 Botany Chapter 3" },
-        ],
-        "12": [
-          { id: "botany-12-ch1", title: "Reproduction in Plants", description: "Class 12 Botany Chapter 1" },
-          { id: "botany-12-ch2", title: "Genetics and Evolution", description: "Class 12 Botany Chapter 2" },
-          { id: "botany-12-ch3", title: "Plant Physiology", description: "Class 12 Botany Chapter 3" },
-        ]
-      },
-      "zoology": {
-        "11": [
-          { id: "zoology-11-ch1", title: "Animal Kingdom", description: "Class 11 Zoology Chapter 1" },
-          { id: "zoology-11-ch2", title: "Structural Organization in Animals", description: "Class 11 Zoology Chapter 2" },
-          { id: "zoology-11-ch3", title: "Biomolecules", description: "Class 11 Zoology Chapter 3" },
-        ],
-        "12": [
-          { id: "zoology-12-ch1", title: "Human Reproduction", description: "Class 12 Zoology Chapter 1" },
-          { id: "zoology-12-ch2", title: "Human Health and Disease", description: "Class 12 Zoology Chapter 2" },
-          { id: "zoology-12-ch3", title: "Evolution", description: "Class 12 Zoology Chapter 3" },
-        ]
-      }
+  
+  const subjectCards = [
+    { 
+      id: "physics", 
+      title: "Physics", 
+      description: "Comprehensive notes and previous year papers", 
+      color: "bg-blue-100 text-blue-700",
+      icon: <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
     },
-    "physics": {
-      "11": [
-        { id: "physics-11-ch1", title: "Physical World and Measurement", description: "Class 11 Physics Chapter 1" },
-        { id: "physics-11-ch2", title: "Kinematics", description: "Class 11 Physics Chapter 2" },
-        { id: "physics-11-ch3", title: "Laws of Motion", description: "Class 11 Physics Chapter 3" },
-      ],
-      "12": [
-        { id: "physics-12-ch1", title: "Electrostatics", description: "Class 12 Physics Chapter 1" },
-        { id: "physics-12-ch2", title: "Current Electricity", description: "Class 12 Physics Chapter 2" },
-        { id: "physics-12-ch3", title: "Magnetic Effects of Current", description: "Class 12 Physics Chapter 3" },
-      ]
+    { 
+      id: "chemistry", 
+      title: "Chemistry", 
+      description: "Organic, Inorganic, and Physical Chemistry resources", 
+      color: "bg-green-100 text-green-700",
+      icon: <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
     },
-    "chemistry": {
-      "organic": {
-        "11": [
-          { id: "chemistry-organic-11-ch1", title: "Basic Organic Chemistry", description: "Class 11 Organic Chemistry Chapter 1" },
-          { id: "chemistry-organic-11-ch2", title: "Hydrocarbons", description: "Class 11 Organic Chemistry Chapter 2" },
-        ],
-        "12": [
-          { id: "chemistry-organic-12-ch1", title: "Alcohols, Phenols and Ethers", description: "Class 12 Organic Chemistry Chapter 1" },
-          { id: "chemistry-organic-12-ch2", title: "Aldehydes, Ketones and Carboxylic Acids", description: "Class 12 Organic Chemistry Chapter 2" },
-        ]
-      },
-      "inorganic": {
-        "11": [
-          { id: "chemistry-inorganic-11-ch1", title: "Classification of Elements", description: "Class 11 Inorganic Chemistry Chapter 1" },
-          { id: "chemistry-inorganic-11-ch2", title: "Chemical Bonding", description: "Class 11 Inorganic Chemistry Chapter 2" },
-        ],
-        "12": [
-          { id: "chemistry-inorganic-12-ch1", title: "p-Block Elements", description: "Class 12 Inorganic Chemistry Chapter 1" },
-          { id: "chemistry-inorganic-12-ch2", title: "d and f Block Elements", description: "Class 12 Inorganic Chemistry Chapter 2" },
-        ]
-      },
-      "physical": {
-        "11": [
-          { id: "chemistry-physical-11-ch1", title: "States of Matter", description: "Class 11 Physical Chemistry Chapter 1" },
-          { id: "chemistry-physical-11-ch2", title: "Thermodynamics", description: "Class 11 Physical Chemistry Chapter 2" },
-        ],
-        "12": [
-          { id: "chemistry-physical-12-ch1", title: "Solutions", description: "Class 12 Physical Chemistry Chapter 1" },
-          { id: "chemistry-physical-12-ch2", title: "Electrochemistry", description: "Class 12 Physical Chemistry Chapter 2" },
-        ]
-      }
-    }
-  };
-
-  const pyqs = [
-    { id: "biology-pyq", title: "Biology Previous Year Questions (2015-2024)", description: "Compiled PYQs with solutions" },
-    { id: "physics-pyq", title: "Physics Previous Year Questions (2015-2024)", description: "Compiled PYQs with solutions" },
-    { id: "chemistry-pyq", title: "Chemistry Previous Year Questions (2015-2024)", description: "Compiled PYQs with solutions" },
+    { 
+      id: "biology", 
+      title: "Biology", 
+      description: "Botany and Zoology study materials", 
+      color: "bg-purple-100 text-purple-700",
+      icon: <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+    },
   ];
 
   const communityLinks = [
@@ -177,36 +134,6 @@ const NEETPrep = () => {
     { title: "NMC Releases New Guidelines for MBBS Admissions", date: "September 15, 2024" },
     { title: "Changes in NEET Syllabus for 2025", date: "August 30, 2024" },
   ];
-
-  // Get chapters based on the filters
-  const getFilteredChapters = () => {
-    if (subjectFilter === "all" || classFilter === "all") return [];
-
-    if (subjectFilter === "biology") {
-      // For biology, we need to handle the subchapters
-      if (biologyTypeFilter === "botany") {
-        return chapters.biology.botany[classFilter as keyof typeof chapters.biology.botany] || [];
-      } else if (biologyTypeFilter === "zoology") {
-        return chapters.biology.zoology[classFilter as keyof typeof chapters.biology.zoology] || [];
-      } else {
-        return [];
-      }
-    } else if (subjectFilter === "chemistry") {
-      // For chemistry, we also need to handle the subchapters
-      if (chemistryTypeFilter === "organic") {
-        return chapters.chemistry.organic[classFilter as keyof typeof chapters.chemistry.organic] || [];
-      } else if (chemistryTypeFilter === "inorganic") {
-        return chapters.chemistry.inorganic[classFilter as keyof typeof chapters.chemistry.inorganic] || [];
-      } else if (chemistryTypeFilter === "physical") {
-        return chapters.chemistry.physical[classFilter as keyof typeof chapters.chemistry.physical] || [];
-      } else {
-        return [];
-      }
-    } else {
-      // For physics
-      return chapters.physics[classFilter as keyof typeof chapters.physics] || [];
-    }
-  };
 
   return (
     <>
@@ -243,10 +170,9 @@ const NEETPrep = () => {
         {/* Main Content */}
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Tabs defaultValue="notes" className="w-full">
+            <Tabs defaultValue="subjects" className="w-full">
               <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 w-full mb-8 bg-gray-100 p-1 rounded-lg">
-                <TabsTrigger value="notes" className="rounded-md">Notes</TabsTrigger>
-                <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
+                <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
                 <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
                 <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
                 <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
@@ -254,162 +180,47 @@ const NEETPrep = () => {
                 <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="notes">
-                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                  <h3 className="text-xl font-bold mb-4">Filter Notes</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                      <Select 
-                        value={classFilter} 
-                        onValueChange={(value) => {
-                          setClassFilter(value);
-                          setbiologyTypeFilter("");
-                          setChemistryTypeFilter("");
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Class" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Classes</SelectItem>
-                          <SelectItem value="11">Class 11</SelectItem>
-                          <SelectItem value="12">Class 12</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+              <TabsContent value="subjects">
+                {activeSubject ? (
+                  <div>
+                    <Button 
+                      variant="outline" 
+                      className="mb-6"
+                      onClick={() => setActiveSubject(null)}
+                    >
+                      &larr; Back to Subjects
+                    </Button>
                     
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                      <Select 
-                        value={subjectFilter} 
-                        onValueChange={(value) => {
-                          setSubjectFilter(value);
-                          setbiologyTypeFilter("");
-                          setChemistryTypeFilter("");
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Subject" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Subjects</SelectItem>
-                          <SelectItem value="biology">Biology</SelectItem>
-                          <SelectItem value="physics">Physics</SelectItem>
-                          <SelectItem value="chemistry">Chemistry</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    {subjectFilter === "biology" && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Biology Type</label>
-                        <Select 
-                          value={biologyTypeFilter} 
-                          onValueChange={setbiologyTypeFilter}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Biology Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">All Types</SelectItem>
-                            <SelectItem value="botany">Botany</SelectItem>
-                            <SelectItem value="zoology">Zoology</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                    
-                    {subjectFilter === "chemistry" && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Chemistry Type</label>
-                        <Select 
-                          value={chemistryTypeFilter} 
-                          onValueChange={setChemistryTypeFilter}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Chemistry Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">All Types</SelectItem>
-                            <SelectItem value="organic">Organic</SelectItem>
-                            <SelectItem value="inorganic">Inorganic</SelectItem>
-                            <SelectItem value="physical">Physical</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {(classFilter === "all" || subjectFilter === "all") ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filterResources(notes).map((note) => (
-                      <Card key={note.id} className="border-none shadow-md hover:shadow-lg transition-all">
-                        <CardHeader>
-                          <CardTitle>{note.title}</CardTitle>
-                          <CardDescription>{note.description}</CardDescription>
-                        </CardHeader>
-                        <CardFooter className="flex justify-between">
-                          <Button 
-                            onClick={() => handleDownload(note.id)}
-                            className="bg-royal hover:bg-royal-dark text-white"
-                          >
-                            <Download className="h-4 w-4 mr-2" /> Download
-                          </Button>
-                          <span className="text-sm text-gray-500">{downloads[note.id]} downloads</span>
-                        </CardFooter>
-                      </Card>
-                    ))}
+                    <NEETSubjectBlock 
+                      subject={activeSubject}
+                      downloads={downloads}
+                      onDownload={handleDownload}
+                    />
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {getFilteredChapters().map((chapter) => (
-                      <Card key={chapter.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {subjectCards.map((subject) => (
+                      <Card 
+                        key={subject.id} 
+                        className="border-none shadow-md hover:shadow-xl transition-all cursor-pointer"
+                        onClick={() => setActiveSubject(subject.id)}
+                      >
                         <CardHeader>
-                          <div className="flex justify-between items-start">
-                            <CardTitle>{chapter.title}</CardTitle>
-                            <Badge variant="outline" className="ml-2">
-                              Class {classFilter}
-                            </Badge>
+                          <div className={`rounded-full ${subject.color} p-3 w-14 h-14 flex items-center justify-center mb-4`}>
+                            {subject.icon}
                           </div>
-                          <CardDescription>{chapter.description}</CardDescription>
+                          <CardTitle>{subject.title}</CardTitle>
+                          <CardDescription>{subject.description}</CardDescription>
                         </CardHeader>
-                        <CardFooter className="flex justify-between">
-                          <Button 
-                            onClick={() => handleDownload(chapter.id)}
-                            className="bg-royal hover:bg-royal-dark text-white"
-                          >
-                            <Download className="h-4 w-4 mr-2" /> Download
+                        <CardFooter>
+                          <Button className="w-full bg-royal hover:bg-royal-dark text-white">
+                            Explore Resources
                           </Button>
-                          <span className="text-sm text-gray-500">{downloads[chapter.id] || 0} downloads</span>
                         </CardFooter>
                       </Card>
                     ))}
                   </div>
                 )}
-              </TabsContent>
-
-              <TabsContent value="pyqs">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filterResources(pyqs).map((pyq) => (
-                    <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
-                      <CardHeader>
-                        <CardTitle>{pyq.title}</CardTitle>
-                        <CardDescription>{pyq.description}</CardDescription>
-                      </CardHeader>
-                      <CardFooter className="flex justify-between">
-                        <Button 
-                          onClick={() => handleDownload(pyq.id)}
-                          className="bg-royal hover:bg-royal-dark text-white"
-                        >
-                          <Download className="h-4 w-4 mr-2" /> Download
-                        </Button>
-                        <span className="text-sm text-gray-500">{downloads[pyq.id]} downloads</span>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
               </TabsContent>
 
               <TabsContent value="community">
