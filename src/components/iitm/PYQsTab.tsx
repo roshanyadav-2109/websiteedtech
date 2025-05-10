@@ -28,11 +28,18 @@ const PYQsTab = () => {
     "ds-f-q2-2023-1": 143,
     "ds-f-et-2023-1": 198,
     "ds-d-q1-2022-1": 87,
+    "ds-q-q1-2023-1": 201,
+    "ds-q-q2-2023-1": 178,
     "es-f-q1-2023-1": 92,
+    "es-q-q1-2023-1": 115,
     // Add more as needed
   });
   
   const pyqs: PYQ[] = [
+    // Data Science - Qualifier - 2023
+    { id: "ds-q-q1-2023-1", title: "Quiz 1 Set A", description: "Computational Thinking", branch: "data-science", level: "qualifier", examType: "quiz1", year: "2023" },
+    { id: "ds-q-q2-2023-1", title: "Quiz 2 Set A", description: "Mathematics for Data Science I", branch: "data-science", level: "qualifier", examType: "quiz2", year: "2023" },
+    
     // Data Science - Foundation - 2023
     { id: "ds-f-q1-2023-1", title: "Quiz 1 Set A", description: "Programming & Data Structures", branch: "data-science", level: "foundation", examType: "quiz1", year: "2023" },
     { id: "ds-f-q1-2023-2", title: "Quiz 1 Set B", description: "Programming & Data Structures", branch: "data-science", level: "foundation", examType: "quiz1", year: "2023" },
@@ -53,6 +60,9 @@ const PYQsTab = () => {
     
     // Data Science - Diploma - 2022
     { id: "ds-d-q1-2022-1", title: "Quiz 1", description: "Data visualization", branch: "data-science", level: "diploma", examType: "quiz1", year: "2022" },
+    
+    // Electronic Systems - Qualifier - 2023
+    { id: "es-q-q1-2023-1", title: "Quiz 1", description: "Math for Electronics I", branch: "electronic-systems", level: "qualifier", examType: "quiz1", year: "2023" },
     
     // Electronic Systems - Foundation - 2023
     { id: "es-f-q1-2023-1", title: "Quiz 1", description: "Circuit basics", branch: "electronic-systems", level: "foundation", examType: "quiz1", year: "2023" },
@@ -87,34 +97,41 @@ const PYQsTab = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Branch</label>
-          <Tabs value={branch} onValueChange={setBranch} className="w-full">
-            <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="data-science">Data Science</TabsTrigger>
-              <TabsTrigger value="electronic-systems">Electronic Systems</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="overflow-x-auto pb-2">
+            <Tabs value={branch} onValueChange={setBranch} className="w-full">
+              <TabsList className="w-full grid grid-cols-2 min-w-max">
+                <TabsTrigger value="data-science">Data Science</TabsTrigger>
+                <TabsTrigger value="electronic-systems">Electronic Systems</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
-          <Tabs value={level} onValueChange={setLevel} className="w-full">
-            <TabsList className="w-full grid grid-cols-3">
-              <TabsTrigger value="foundation">Foundation</TabsTrigger>
-              <TabsTrigger value="diploma">Diploma</TabsTrigger>
-              <TabsTrigger value="degree">Degree</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="overflow-x-auto pb-2">
+            <Tabs value={level} onValueChange={setLevel} className="w-full">
+              <TabsList className="w-full grid grid-cols-4 min-w-max">
+                <TabsTrigger value="qualifier">Qualifier</TabsTrigger>
+                <TabsTrigger value="foundation">Foundation</TabsTrigger>
+                <TabsTrigger value="diploma">Diploma</TabsTrigger>
+                <TabsTrigger value="degree">Degree</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Exam Type</label>
-          <Tabs value={examType} onValueChange={setExamType} className="w-full">
-            <TabsList className="w-full grid grid-cols-3">
-              <TabsTrigger value="quiz1">Quiz 1</TabsTrigger>
-              <TabsTrigger value="quiz2">Quiz 2</TabsTrigger>
-              <TabsTrigger value="endterm">End Term</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="overflow-x-auto pb-2">
+            <Tabs value={examType} onValueChange={setExamType} className="w-full">
+              <TabsList className="w-full grid grid-cols-3 min-w-max">
+                <TabsTrigger value="quiz1">Quiz 1</TabsTrigger>
+                <TabsTrigger value="quiz2">Quiz 2</TabsTrigger>
+                <TabsTrigger value="endterm">End Term</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
         
         <div>

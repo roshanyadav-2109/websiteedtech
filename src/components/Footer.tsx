@@ -100,7 +100,7 @@ const Footer = () => {
             <div className="mt-4 md:mt-0 flex flex-wrap gap-4">
               <Link to="/privacy-policy" className="text-sm hover:text-white transition-colors">Privacy Policy</Link>
               <Link to="/terms-of-service" className="text-sm hover:text-white transition-colors">Terms of Service</Link>
-              <Link to="/employee-verification" className="text-sm hover:text-white transition-colors">Employee Verification</Link>
+              <Link to="/intern-verification" className="text-sm hover:text-white transition-colors">Intern Verification</Link>
               <Link to="/faq" className="text-sm hover:text-white transition-colors">FAQ</Link>
             </div>
           </div>

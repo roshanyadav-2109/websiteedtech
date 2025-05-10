@@ -60,13 +60,14 @@ const IITMBSPrep = () => {
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="branch-notes" value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="overflow-x-auto">
-                <TabsList className="w-full mb-8 bg-gray-100 p-1 rounded-lg inline-flex whitespace-nowrap">
+              <div className="overflow-x-auto pb-2">
+                <TabsList className="w-full mb-8 bg-gray-100 p-1 rounded-lg inline-flex min-w-max">
                   <TabsTrigger value="branch-notes" className="rounded-md">Branch Notes</TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
                   <TabsTrigger value="tools" className="rounded-md">Tools</TabsTrigger>
                   <TabsTrigger value="communities" className="rounded-md">Communities</TabsTrigger>
-                  <TabsTrigger value="paid-courses" className="rounded-md bg-gradient-to-r from-amber-400 to-yellow-500 text-white font-medium shadow-md hover:shadow-amber-200/50">
+                  <TabsTrigger value="paid-courses" 
+                    className="rounded-md bg-gradient-to-r from-amber-400 to-amber-600 text-white font-medium shadow-md hover:shadow-amber-200/50">
                     ✨ PAID COURSES
                   </TabsTrigger>
                   <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>

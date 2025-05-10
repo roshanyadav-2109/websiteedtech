@@ -106,9 +106,9 @@ const NEETSubjectBlock = ({ subject, downloads, onDownload }: SubjectBlockProps)
   if (subject === "biology") {
     contentToDisplay = (
       <div>
-        <div className="mb-6">
+        <div className="mb-6 overflow-x-auto pb-2">
           <Tabs defaultValue={subType || "botany"} onValueChange={setSubType}>
-            <TabsList className="w-full max-w-md">
+            <TabsList className="w-full max-w-md min-w-max">
               <TabsTrigger value="botany">Botany</TabsTrigger>
               <TabsTrigger value="zoology">Zoology</TabsTrigger>
             </TabsList>
@@ -125,9 +125,9 @@ const NEETSubjectBlock = ({ subject, downloads, onDownload }: SubjectBlockProps)
   } else if (subject === "chemistry") {
     contentToDisplay = (
       <div>
-        <div className="mb-6">
+        <div className="mb-6 overflow-x-auto pb-2">
           <Tabs defaultValue={subType || "organic"} onValueChange={setSubType}>
-            <TabsList className="w-full max-w-md">
+            <TabsList className="w-full max-w-md min-w-max">
               <TabsTrigger value="organic">Organic</TabsTrigger>
               <TabsTrigger value="inorganic">Inorganic</TabsTrigger>
               <TabsTrigger value="physical">Physical</TabsTrigger>

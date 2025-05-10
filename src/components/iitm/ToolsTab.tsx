@@ -22,6 +22,7 @@ const ToolsTab = () => {
   const [activeLevel, setActiveLevel] = useState("all");
   
   const tools: Tool[] = [
+    // Foundation level tools
     {
       id: "grade-calculator-foundation",
       title: "Grade Calculator",
@@ -30,24 +31,6 @@ const ToolsTab = () => {
       level: "foundation",
       users: 1256,
       link: "#grade-calculator"
-    },
-    {
-      id: "grade-calculator-diploma",
-      title: "Grade Calculator",
-      description: "Calculate your expected grade based on marks in different components for Diploma level",
-      type: "calculator",
-      level: "diploma",
-      users: 982,
-      link: "#grade-calculator-diploma"
-    },
-    {
-      id: "grade-calculator-degree",
-      title: "Grade Calculator",
-      description: "Calculate your expected grade based on marks in different components for Degree level",
-      type: "calculator",
-      level: "degree",
-      users: 754,
-      link: "#grade-calculator-degree"
     },
     {
       id: "cgpa-calculator-foundation",
@@ -59,6 +42,26 @@ const ToolsTab = () => {
       link: "#cgpa-calculator"
     },
     {
+      id: "marks-predictor-foundation",
+      title: "Marks Predictor",
+      description: "Predict your final marks based on your Foundation level performance",
+      type: "calculator",
+      level: "foundation",
+      users: 967,
+      link: "#marks-predictor"
+    },
+    
+    // Diploma level tools
+    {
+      id: "grade-calculator-diploma",
+      title: "Grade Calculator",
+      description: "Calculate your expected grade based on marks in different components for Diploma level",
+      type: "calculator",
+      level: "diploma",
+      users: 982,
+      link: "#grade-calculator-diploma"
+    },
+    {
       id: "cgpa-calculator-diploma",
       title: "CGPA Calculator",
       description: "Calculate your cumulative GPA for Diploma level courses",
@@ -66,6 +69,26 @@ const ToolsTab = () => {
       level: "diploma",
       users: 1243,
       link: "#cgpa-calculator-diploma"
+    },
+    {
+      id: "marks-predictor-diploma",
+      title: "Marks Predictor",
+      description: "Predict your final marks based on your Diploma level performance",
+      type: "calculator",
+      level: "diploma",
+      users: 732,
+      link: "#marks-predictor-diploma"
+    },
+    
+    // Degree level tools
+    {
+      id: "grade-calculator-degree",
+      title: "Grade Calculator",
+      description: "Calculate your expected grade based on marks in different components for Degree level",
+      type: "calculator",
+      level: "degree",
+      users: 754,
+      link: "#grade-calculator-degree"
     },
     {
       id: "cgpa-calculator-degree",
@@ -77,24 +100,6 @@ const ToolsTab = () => {
       link: "#cgpa-calculator-degree"
     },
     {
-      id: "marks-predictor-foundation",
-      title: "Marks Predictor",
-      description: "Predict your final marks based on your Foundation level performance",
-      type: "calculator",
-      level: "foundation",
-      users: 967,
-      link: "#marks-predictor"
-    },
-    {
-      id: "marks-predictor-diploma",
-      title: "Marks Predictor",
-      description: "Predict your final marks based on your Diploma level performance",
-      type: "calculator",
-      level: "diploma",
-      users: 732,
-      link: "#marks-predictor-diploma"
-    },
-    {
       id: "marks-predictor-degree",
       title: "Marks Predictor",
       description: "Predict your final marks based on your Degree level performance",
@@ -102,33 +107,6 @@ const ToolsTab = () => {
       level: "degree",
       users: 586,
       link: "#marks-predictor-degree"
-    },
-    {
-      id: "marks-predictor-qualifier",
-      title: "Marks Predictor",
-      description: "Predict your final marks based on your Qualifier level performance",
-      type: "calculator",
-      level: "qualifier",
-      users: 1340,
-      link: "#marks-predictor-qualifier"
-    },
-    {
-      id: "grade-calculator-qualifier",
-      title: "Grade Calculator",
-      description: "Calculate your expected grade based on marks for Qualifier level",
-      type: "calculator",
-      level: "qualifier",
-      users: 1520,
-      link: "#grade-calculator-qualifier"
-    },
-    {
-      id: "cgpa-calculator-qualifier",
-      title: "CGPA Calculator",
-      description: "Calculate your cumulative GPA for Qualifier level courses",
-      type: "calculator",
-      level: "qualifier",
-      users: 1756,
-      link: "#cgpa-calculator-qualifier"
     }
   ];
   
@@ -158,9 +136,8 @@ const ToolsTab = () => {
         
         <div className="flex-shrink-0">
           <Tabs value={activeLevel} onValueChange={setActiveLevel} className="w-full">
-            <TabsList className="w-full grid grid-cols-2 md:grid-cols-5">
+            <TabsList className="w-full grid grid-cols-2 md:grid-cols-4">
               <TabsTrigger value="all">All Levels</TabsTrigger>
-              <TabsTrigger value="qualifier">Qualifier</TabsTrigger>
               <TabsTrigger value="foundation">Foundation</TabsTrigger>
               <TabsTrigger value="diploma">Diploma</TabsTrigger>
               <TabsTrigger value="degree">Degree</TabsTrigger>

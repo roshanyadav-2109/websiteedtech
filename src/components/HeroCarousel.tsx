@@ -46,7 +46,7 @@ const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative w-full h-[450px] mt-16">
+    <div className="relative w-full h-[350px] mt-16">
       {/* Navigation buttons */}
       <button
         className="absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
