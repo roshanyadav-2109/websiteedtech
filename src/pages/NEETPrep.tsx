@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   FileText, 
   BookOpen, 
@@ -107,9 +106,11 @@ const NEETPrep = () => {
     },
   ];
 
-  // Updated community links for NEET - only one WhatsApp and one Telegram
   const communityLinks = [
-    { title: "NEET Study Community", type: "WhatsApp", link: "https://chat.whatsapp.com/example1" },
+    { title: "NEET General Discussion", type: "WhatsApp", link: "https://chat.whatsapp.com/example1" },
+    { title: "NEET Biology Group", type: "WhatsApp", link: "https://chat.whatsapp.com/example2" },
+    { title: "NEET Chemistry Group", type: "WhatsApp", link: "https://chat.whatsapp.com/example3" },
+    { title: "NEET Physics Group", type: "WhatsApp", link: "https://chat.whatsapp.com/example4" },
     { title: "Unknown IITians NEET Community", type: "Telegram", link: "https://t.me/example1" },
   ];
 
@@ -171,8 +172,8 @@ const NEETPrep = () => {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="subjects" className="w-full">
-              <ScrollArea className="w-full whitespace-nowrap pb-4">
-                <TabsList className="inline-flex min-w-max w-full mb-8 bg-gray-100 p-1 rounded-lg">
+              <div className="overflow-x-auto">
+                <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 w-full mb-8 bg-gray-100 p-1 rounded-lg inline-flex">
                   <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
                   <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
@@ -181,7 +182,7 @@ const NEETPrep = () => {
                   <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
                   <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
                 </TabsList>
-              </ScrollArea>
+              </div>
 
               <TabsContent value="subjects">
                 {activeSubject ? (
@@ -264,6 +265,33 @@ const NEETPrep = () => {
                   </div>
 
                   <div className="lg:col-span-4">
+                    <h3 className="text-2xl font-bold mb-6">NEET Telegram Community</h3>
+                    <Card className="border-none shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-50 to-indigo-50">
+                      <CardHeader>
+                        <div className="flex items-center">
+                          <div className="rounded-full bg-blue-500 p-3 mr-4">
+                            <LinkIcon className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <CardTitle>Official Telegram Group</CardTitle>
+                            <CardDescription>Join our main community channel</CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-600">
+                          Connect with fellow NEET aspirants, share resources, and get your doubts resolved in our official Telegram community
+                        </p>
+                      </CardContent>
+                      <CardFooter>
+                        <Button asChild className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                          <a href="https://t.me/example-neet" target="_blank" rel="noopener noreferrer">
+                            Join Telegram Group
+                          </a>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+
                     <div className="mt-6">
                       <h3 className="text-2xl font-bold mb-6">Study Guides</h3>
                       <div className="grid grid-cols-1 gap-4">
