@@ -3,6 +3,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -111,11 +112,9 @@ const JEEPrep = () => {
     },
   ];
 
+  // Updated community links - only 1 Whatsapp and 1 Telegram
   const communityLinks = [
     { title: "JEE General Discussion", type: "WhatsApp", link: "https://chat.whatsapp.com/example-jee1" },
-    { title: "JEE Mathematics Group", type: "WhatsApp", link: "https://chat.whatsapp.com/example-jee2" },
-    { title: "JEE Chemistry Group", type: "WhatsApp", link: "https://chat.whatsapp.com/example-jee3" },
-    { title: "JEE Physics Group", type: "WhatsApp", link: "https://chat.whatsapp.com/example-jee4" },
     { title: "Unknown IITians JEE Community", type: "Telegram", link: "https://t.me/example-jee1" },
   ];
 
@@ -180,17 +179,19 @@ const JEEPrep = () => {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="subjects" className="w-full">
-              <div className="overflow-x-auto">
-                <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 w-full mb-8 bg-gray-100 p-1 rounded-lg inline-flex">
-                  <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
-                  <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
-                  <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
-                  <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
-                  <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
-                  <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
-                  <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
-                </TabsList>
-              </div>
+              <ScrollArea className="w-full whitespace-nowrap rounded-md border">
+                <div className="flex w-max p-1">
+                  <TabsList className="grid grid-cols-7 w-full mb-1">
+                    <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
+                    <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
+                    <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
+                    <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
+                    <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
+                    <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
+                    <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
+                  </TabsList>
+                </div>
+              </ScrollArea>
 
               <TabsContent value="subjects">
                 {activeSubject ? (
