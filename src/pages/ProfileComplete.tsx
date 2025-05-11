@@ -27,15 +27,19 @@ const ProfileComplete = () => {
       setUserId(data.session.user.id);
       
       // Try to get existing profile data
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('full_name, phone')
-        .eq('id', data.session.user.id)
-        .single();
-        
-      if (profileData) {
-        setFullName(profileData.full_name || "");
-        setPhone(profileData.phone || "");
+      try {
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('full_name, phone')
+          .eq('id', data.session.user.id)
+          .single();
+          
+        if (profileData) {
+          setFullName(profileData.full_name || "");
+          setPhone(profileData.phone || "");
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
       }
     };
     

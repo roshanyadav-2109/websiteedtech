@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { LogOut, BookOpen, FileText, Calendar, Newspaper, Briefcase, Graduate } from "lucide-react";
+import { LogOut, BookOpen, FileText, Calendar, Newspaper, Briefcase, GraduationCap } from "lucide-react";
 
 interface AdminSidebarProps {
   activeTab: string;
@@ -19,7 +19,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) 
   };
 
   const menuItems = [
-    { id: "courses", icon: <Graduate className="mr-2 h-5 w-5" />, label: "Courses" },
+    { id: "courses", icon: <GraduationCap className="mr-2 h-5 w-5" />, label: "Courses" },
     { id: "notes", icon: <BookOpen className="mr-2 h-5 w-5" />, label: "Notes" },
     { id: "pyqs", icon: <FileText className="mr-2 h-5 w-5" />, label: "PYQs" },
     { id: "news", icon: <Newspaper className="mr-2 h-5 w-5" />, label: "News" },

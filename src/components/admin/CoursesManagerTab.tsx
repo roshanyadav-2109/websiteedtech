@@ -110,7 +110,18 @@ const CoursesManagerTab = () => {
 
   const handleAddCourse = async () => {
     try {
-      const { error } = await supabase.from("courses").insert([formData]);
+      // Ensure all required fields are present
+      if (!formData.title || !formData.description || !formData.category || !formData.price || !formData.duration) {
+        toast({
+          title: "Missing required fields",
+          description: "Please fill in all required fields",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Fix: Pass formData as a single object, not as an array
+      const { error } = await supabase.from("courses").insert(formData);
       
       if (error) throw error;
       

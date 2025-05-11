@@ -54,16 +54,21 @@ const StudentLogin = () => {
         });
         
         // Check if profile is complete
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name, phone')
-          .eq('id', data.user.id)
-          .single();
-        
-        if (!profile || !profile.full_name || !profile.phone) {
+        try {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('full_name, phone')
+            .eq('id', data.user.id)
+            .single();
+          
+          if (!profile || !profile.full_name || !profile.phone) {
+            navigate("/profile/complete");
+          } else {
+            navigate("/");
+          }
+        } catch (error) {
+          console.error("Error checking profile:", error);
           navigate("/profile/complete");
-        } else {
-          navigate("/");
         }
       }
     } catch (error: any) {

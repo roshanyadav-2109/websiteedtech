@@ -16,21 +16,26 @@ const StudentGoogleCallback = () => {
         
         if (data?.session?.user) {
           // Check if profile is complete
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name, phone')
-            .eq('id', data.session.user.id)
-            .single();
-          
-          toast({
-            title: "Login successful!",
-            description: "Welcome!",
-          });
-          
-          if (!profile || !profile.full_name || !profile.phone) {
+          try {
+            const { data: profile, error } = await supabase
+              .from('profiles')
+              .select('full_name, phone')
+              .eq('id', data.session.user.id)
+              .single();
+            
+            toast({
+              title: "Login successful!",
+              description: "Welcome!",
+            });
+            
+            if (!profile || !profile.full_name || !profile.phone) {
+              navigate("/profile/complete");
+            } else {
+              navigate("/");
+            }
+          } catch (error) {
+            console.error("Error checking profile:", error);
             navigate("/profile/complete");
-          } else {
-            navigate("/");
           }
         } else {
           throw new Error("No session found");
