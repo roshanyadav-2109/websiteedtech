@@ -16,12 +16,14 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Note {
   id: string;
   title: string;
   description: string;
   week: number;
+  level?: "foundation" | "diploma" | "degree" | "qualifier";
 }
 
 interface SubjectNotesProps {
@@ -29,9 +31,25 @@ interface SubjectNotesProps {
   notes: Note[];
   downloads: Record<string, number>;
   onDownload: (id: string) => void;
+  level?: "foundation" | "diploma" | "degree" | "qualifier";
 }
 
-const IITMBSNotesSection = ({ subject, notes, downloads, onDownload }: SubjectNotesProps) => {
+const getButtonClassByLevel = (level?: "foundation" | "diploma" | "degree" | "qualifier") => {
+  switch (level) {
+    case "foundation":
+      return "bg-blue-500 hover:bg-blue-600 text-white";
+    case "diploma":
+      return "bg-green-500 hover:bg-green-600 text-white";
+    case "degree":
+      return "bg-purple-600 hover:bg-purple-700 text-white";
+    case "qualifier":
+      return "bg-gray-800 hover:bg-gray-900 text-white";
+    default:
+      return "bg-royal hover:bg-royal-dark text-white";
+  }
+};
+
+const IITMBSNotesSection = ({ subject, notes, downloads, onDownload, level }: SubjectNotesProps) => {
   const [selectedWeek, setSelectedWeek] = useState<string>("all");
 
   // Create an array of week numbers (1-12)
@@ -41,6 +59,8 @@ const IITMBSNotesSection = ({ subject, notes, downloads, onDownload }: SubjectNo
   const filteredNotes = selectedWeek === "all" 
     ? notes 
     : notes.filter(note => note.week === parseInt(selectedWeek));
+
+  const buttonClass = getButtonClassByLevel(level);
 
   return (
     <div className="my-8">
@@ -76,7 +96,7 @@ const IITMBSNotesSection = ({ subject, notes, downloads, onDownload }: SubjectNo
             <CardFooter className="flex justify-between">
               <Button
                 onClick={() => onDownload(note.id)}
-                className="bg-royal hover:bg-royal-dark text-white"
+                className={buttonClass}
               >
                 <Download className="h-4 w-4 mr-2" /> Download
               </Button>
@@ -84,7 +104,7 @@ const IITMBSNotesSection = ({ subject, notes, downloads, onDownload }: SubjectNo
                 <span className="text-sm text-gray-500">{downloads[note.id] || 0}</span>
                 <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
                   <div 
-                    className="bg-royal h-full rounded-full" 
+                    className={`h-full rounded-full ${level === "foundation" ? "bg-blue-500" : level === "diploma" ? "bg-green-500" : level === "degree" ? "bg-purple-600" : level === "qualifier" ? "bg-gray-800" : "bg-royal"}`}
                     style={{ width: `${Math.min(100, ((downloads[note.id] || 0) / 100) * 100)}%` }}
                   ></div>
                 </div>
