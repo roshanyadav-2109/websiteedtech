@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -171,9 +172,9 @@ const NEETPrep = () => {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="subjects" className="w-full">
-              <ScrollArea className="w-full whitespace-nowrap rounded-md border">
+              <ScrollArea className="w-full pb-2">
                 <div className="flex w-max p-1">
-                  <TabsList className="grid grid-cols-7 w-full mb-1">
+                  <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
                     <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
                     <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
                     <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>

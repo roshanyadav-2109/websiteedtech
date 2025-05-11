@@ -4,6 +4,7 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/comp
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import AuthWrapper from "@/components/AuthWrapper";
 
 interface JEEPYQTabProps {
   downloads: Record<string, number>;
@@ -77,75 +78,77 @@ const JEEPYQTab = ({ downloads, onDownload }: JEEPYQTabProps) => {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-          <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Year" />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((y) => (
-                <SelectItem key={y} value={y}>
-                  {y}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
-          <Select value={session} onValueChange={setSession} disabled={availableSessions.length === 0}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Session" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableSessions.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        {filteredPapers.map((pyq) => (
-          <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
-            <CardHeader>
-              <CardTitle className="text-lg">{pyq.title}</CardTitle>
-              <CardDescription>{pyq.description}</CardDescription>
-            </CardHeader>
-            <CardFooter className="flex justify-between">
-              <Button
-                onClick={() => onDownload(pyq.id)}
-                className="bg-royal hover:bg-royal-dark text-white"
-              >
-                <Download className="h-4 w-4 mr-2" /> Download
-              </Button>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500">{downloads[pyq.id] || 0}</span>
-                <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
-                  <div 
-                    className="bg-royal h-full rounded-full" 
-                    style={{ width: `${Math.min(100, ((downloads[pyq.id] || 0) / 100) * 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-            </CardFooter>
-          </Card>
-        ))}
-        
-        {filteredPapers.length === 0 && (
-          <div className="col-span-3 text-center py-8 text-gray-500">
-            No previous year papers available for this selection. Please try a different year or session.
+    <AuthWrapper>
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+            <Select value={year} onValueChange={setYear}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((y) => (
+                  <SelectItem key={y} value={y}>
+                    {y}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        )}
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
+            <Select value={session} onValueChange={setSession} disabled={availableSessions.length === 0}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Session" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableSessions.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+          {filteredPapers.map((pyq) => (
+            <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
+              <CardHeader>
+                <CardTitle className="text-lg">{pyq.title}</CardTitle>
+                <CardDescription>{pyq.description}</CardDescription>
+              </CardHeader>
+              <CardFooter className="flex justify-between">
+                <Button
+                  onClick={() => onDownload(pyq.id)}
+                  className="bg-royal hover:bg-royal-dark text-white"
+                >
+                  <Download className="h-4 w-4 mr-2" /> Download
+                </Button>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-500">{downloads[pyq.id] || 0}</span>
+                  <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-royal h-full rounded-full" 
+                      style={{ width: `${Math.min(100, ((downloads[pyq.id] || 0) / 100) * 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </CardFooter>
+            </Card>
+          ))}
+          
+          {filteredPapers.length === 0 && (
+            <div className="col-span-3 text-center py-8 text-gray-500">
+              No previous year papers available for this selection. Please try a different year or session.
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </AuthWrapper>
   );
 };
 

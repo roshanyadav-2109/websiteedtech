@@ -1,138 +1,277 @@
 
 import React, { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const NavBar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [submenuOpen, setSubmenuOpen] = useState("");
+  const [userSession, setUserSession] = useState<any>(null);
+  const [userName, setUserName] = useState<string>("");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUserSession(data.session);
+
+      if (data.session?.user) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', data.session.user.id)
+          .single();
+
+        if (profileData?.full_name) {
+          setUserName(profileData.full_name);
+        }
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    getSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        setUserSession(session);
+        
+        if (session?.user) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profileData?.full_name) {
+            setUserName(profileData.full_name);
+          }
+        }
+      }
+    );
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      subscription.unsubscribe();
     };
   }, []);
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out successfully",
+    });
+    navigate("/");
+  };
+
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleSubmenu = (menu: string) => {
+    setSubmenuOpen(submenuOpen === menu ? "" : menu);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+    setSubmenuOpen("");
+  };
+
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    return name.split(" ").map((n) => n[0]).join("").toUpperCase();
   };
 
   return (
-    <nav
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-md shadow-md py-2"
-          : "bg-transparent py-4"
-      }`}
-    >
+    <nav className="fixed top-0 w-full bg-white shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-royal">Unknown</span>
-              <span className="text-2xl font-bold text-golden">IITians</span>
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex-shrink-0 flex items-center">
+              <h1 className="text-xl font-bold text-royal">Unknown IITians</h1>
             </Link>
           </div>
-          
+
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-6">
-              <Link to="/" className="text-gray-700 hover:text-royal font-medium">
-                Home
-              </Link>
-              <Link to="/courses" className="text-golden-dark font-medium border-b-2 border-golden">
-                Courses
-              </Link>
-              <Link to="/exam-preparation" className="text-gray-700 hover:text-royal font-medium">
-                Exam Preparation
-              </Link>
-              <Link to="/career" className="text-gray-700 hover:text-royal font-medium">
-                Career
-              </Link>
-              <Link to="/about" className="text-gray-700 hover:text-royal font-medium">
-                About Us
-              </Link>
-              <div className="flex space-x-2">
-                <Button variant="outline" className="rounded-md">
-                  Login
-                </Button>
-                <Button className="bg-royal hover:bg-royal-dark rounded-md">
-                  Sign Up
-                </Button>
+          <div className="hidden md:flex md:items-center md:space-x-4">
+            <Link to="/" className="text-gray-700 hover:text-royal px-3 py-2 rounded-md">
+              Home
+            </Link>
+            <div className="relative group">
+              <button className="flex items-center text-gray-700 hover:text-royal px-3 py-2 rounded-md">
+                <span>Exam Preparation</span>
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </button>
+              <div className="absolute left-0 z-10 mt-2 w-48 origin-top-left bg-white border border-gray-200 rounded-md shadow-lg hidden group-hover:block">
+                <div className="py-1">
+                  <Link to="/exam-preparation/jee" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal">JEE</Link>
+                  <Link to="/exam-preparation/neet" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal">NEET</Link>
+                  <Link to="/exam-preparation/iitm-bs" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal">IITM BS</Link>
+                </div>
               </div>
             </div>
+            <Link to="/courses" className="text-gray-700 hover:text-royal px-3 py-2 rounded-md">
+              Courses
+            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-royal px-3 py-2 rounded-md">
+              About
+            </Link>
+            <Link to="/career" className="text-gray-700 hover:text-royal px-3 py-2 rounded-md">
+              Career
+            </Link>
           </div>
-          
+
+          {/* Auth buttons */}
+          <div className="hidden md:flex md:items-center md:space-x-2">
+            {userSession ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center">
+                  <Avatar className="h-8 w-8 bg-royal text-white">
+                    <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="font-medium">
+                    {userName || "User"}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link 
+                to="/auth" 
+                className="inline-flex items-center justify-center rounded-md bg-royal px-4 py-2 text-sm font-medium text-white hover:bg-royal-dark"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
+
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="flex items-center md:hidden">
             <button
               onClick={toggleMenu}
+              type="button"
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+              aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMenuOpen ? (
+                <X className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="block h-6 w-6" aria-hidden="true" />
+              )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden bg-white shadow-lg rounded-b-lg mt-1">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white border-t">
+          <div className="px-2 pt-2 pb-3 space-y-1">
             <Link
               to="/"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-royal hover:bg-gray-50 rounded-md"
-              onClick={toggleMenu}
+              className="block px-3 py-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+              onClick={closeMenu}
             >
               Home
             </Link>
+
+            <div>
+              <button
+                className="flex items-center justify-between w-full px-3 py-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+                onClick={() => toggleSubmenu("examPrep")}
+              >
+                <span>Exam Preparation</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {submenuOpen === "examPrep" && (
+                <div className="pl-4 space-y-1 mt-1">
+                  <Link
+                    to="/exam-preparation/jee"
+                    className="block px-3 py-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+                    onClick={closeMenu}
+                  >
+                    JEE
+                  </Link>
+                  <Link
+                    to="/exam-preparation/neet"
+                    className="block px-3 py-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+                    onClick={closeMenu}
+                  >
+                    NEET
+                  </Link>
+                  <Link
+                    to="/exam-preparation/iitm-bs"
+                    className="block px-3 py-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+                    onClick={closeMenu}
+                  >
+                    IITM BS
+                  </Link>
+                </div>
+              )}
+            </div>
+
             <Link
               to="/courses"
-              className="block px-3 py-2 text-base font-medium text-golden-dark hover:text-golden bg-gray-50 rounded-md"
-              onClick={toggleMenu}
+              className="block px-3 py-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+              onClick={closeMenu}
             >
               Courses
             </Link>
+
             <Link
-              to="/exam-preparation"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-royal hover:bg-gray-50 rounded-md"
-              onClick={toggleMenu}
+              to="/about"
+              className="block px-3 py-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+              onClick={closeMenu}
             >
-              Exam Preparation
+              About
             </Link>
+            
             <Link
               to="/career"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-royal hover:bg-gray-50 rounded-md"
-              onClick={toggleMenu}
+              className="block px-3 py-2 rounded-md text-gray-700 hover:text-royal hover:bg-gray-100"
+              onClick={closeMenu}
             >
               Career
             </Link>
-            <Link
-              to="/about"
-              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-royal hover:bg-gray-50 rounded-md"
-              onClick={toggleMenu}
-            >
-              About Us
-            </Link>
-            <div className="flex flex-col space-y-2 mt-4 px-3">
-              <Button variant="outline" className="w-full justify-center rounded-md">
-                Login
-              </Button>
-              <Button className="w-full justify-center bg-royal hover:bg-royal-dark rounded-md">
-                Sign Up
-              </Button>
-            </div>
+
+            {userSession ? (
+              <div className="pt-2 border-t">
+                <div className="px-3 py-2 text-sm font-medium">
+                  {userName || "User"}
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="flex w-full items-center px-3 py-2 rounded-md text-red-500 hover:bg-gray-100"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="block mt-2 px-3 py-2 bg-royal text-white rounded-md"
+                onClick={closeMenu}
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       )}
