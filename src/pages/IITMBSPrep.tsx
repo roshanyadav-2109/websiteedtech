@@ -25,6 +25,7 @@ const IITMBSPrep = () => {
   const [activeTab, setActiveTab] = useState("branch-notes");
   const isMobile = useIsMobile();
 
+  // Foundation level courses for Data Science
   const dataScienceFoundationCourses = [
     "Mathematics for Data Science I",
     "Statistics for Data Science I",
@@ -36,6 +37,7 @@ const IITMBSPrep = () => {
     "English II"
   ];
 
+  // Diploma level courses for Data Science
   const dataScienceDiplomaCourses = [
     "Machine Learning Foundations",
     "Business Data Management",
@@ -47,6 +49,7 @@ const IITMBSPrep = () => {
     "Tools in Data Science"
   ];
 
+  // Degree level core courses for Data Science
   const dataScienceDegreeCourses = [
     "Software Engineering",
     "Software Testing",
@@ -55,6 +58,7 @@ const IITMBSPrep = () => {
     "Strategies for Professional Growth"
   ];
 
+  // Degree level elective courses for Data Science
   const dataScienceDegreeElectives = [
     "Algorithmic Thinking in Bioinformatics",
     "Big Data and Biological Networks",
@@ -87,6 +91,7 @@ const IITMBSPrep = () => {
     "Machine Learning Operations (MLOps)"
   ];
 
+  // Qualifier courses for Data Science
   const dataScienceQualifierCourses = [
     "Mathematics for Data Science I",
     "Statistics for Data Science I",
@@ -94,6 +99,7 @@ const IITMBSPrep = () => {
     "English I"
   ];
 
+  // Foundation level courses for Electronic Systems
   const electronicSystemsFoundationCourses = [
     "English I",
     "Math for Electronics I",
@@ -111,6 +117,7 @@ const IITMBSPrep = () => {
     "Embedded C Programming Laboratory"
   ];
 
+  // Diploma level courses for Electronic Systems
   const electronicSystemsDiplomaCourses = [
     "Math for Electronics II",
     "Signals and Systems",
@@ -125,6 +132,7 @@ const IITMBSPrep = () => {
     "Control Engineering"
   ];
 
+  // Degree level core courses for Electronic Systems
   const electronicSystemsDegreeCourses = [
     "Embedded Linux and FPGAs",
     "Embedded Linux and FPGAs Lab",
@@ -133,6 +141,7 @@ const IITMBSPrep = () => {
     "Strategies for Professional Growth"
   ];
 
+  // Degree level elective courses for Electronic Systems
   const electronicSystemsDegreeElectives = [
     "Probability and Statistics",
     "Communication Systems",
@@ -166,6 +175,7 @@ const IITMBSPrep = () => {
     "Apprenticeship in Electronics Systems 2"
   ];
 
+  // Qualifier courses for Electronic Systems
   const electronicSystemsQualifierCourses = [
     "English I",
     "Math for Electronics I",
@@ -228,16 +238,16 @@ const IITMBSPrep = () => {
 
               <TabsContent value="branch-notes">
                 <BranchNotesTab 
-                  dataScienceFoundationCourses={dataScienceFoundationCourses}
-                  dataScienceDiplomaCourses={dataScienceDiplomaCourses}
-                  dataScienceDegreeCourses={dataScienceDegreeCourses}
+                  dataScienceFoundation={dataScienceFoundationCourses}
+                  dataScienceDiploma={dataScienceDiplomaCourses}
+                  dataScienceDegree={dataScienceDegreeCourses}
                   dataScienceDegreeElectives={dataScienceDegreeElectives}
-                  dataScienceQualifierCourses={dataScienceQualifierCourses}
-                  electronicSystemsFoundationCourses={electronicSystemsFoundationCourses}
-                  electronicSystemsDiplomaCourses={electronicSystemsDiplomaCourses}
-                  electronicSystemsDegreeCourses={electronicSystemsDegreeCourses}
+                  dataScienceQualifier={dataScienceQualifierCourses}
+                  electronicSystemsFoundation={electronicSystemsFoundationCourses}
+                  electronicSystemsDiploma={electronicSystemsDiplomaCourses}
+                  electronicSystemsDegree={electronicSystemsDegreeCourses}
                   electronicSystemsDegreeElectives={electronicSystemsDegreeElectives}
-                  electronicSystemsQualifierCourses={electronicSystemsQualifierCourses}
+                  electronicSystemsQualifier={electronicSystemsQualifierCourses}
                 />
               </TabsContent>
 

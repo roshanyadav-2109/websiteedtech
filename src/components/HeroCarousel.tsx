@@ -1,6 +1,12 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 const carouselImages = [
   {
@@ -46,17 +52,19 @@ const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative w-full h-[300px] mt-16"> {/* Reduced height from 350px to 300px */}
+    <div className="relative w-full h-[250px] mt-16"> {/* Further reduced height from 300px to 250px */}
       {/* Navigation buttons */}
       <button
         className="absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
         onClick={prevSlide}
+        aria-label="Previous slide"
       >
         <ChevronLeft size={24} />
       </button>
       <button
         className="absolute right-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
         onClick={nextSlide}
+        aria-label="Next slide"
       >
         <ChevronRight size={24} />
       </button>
@@ -88,6 +96,7 @@ const HeroCarousel = () => {
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               index === current ? "bg-white scale-125" : "bg-white/50"
             }`}
+            aria-label={`Go to slide ${index + 1}`}
           ></button>
         ))}
       </div>
