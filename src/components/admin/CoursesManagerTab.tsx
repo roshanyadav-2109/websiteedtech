@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -41,13 +40,28 @@ interface Course {
   features: string[];
 }
 
+// Define CourseFormData for the required fields from Supabase schema
+interface CourseFormData {
+  title: string;
+  description: string;
+  category: string;
+  price: number;
+  discounted_price?: number | null;
+  duration: string;
+  image_url?: string | null;
+  bestseller?: boolean;
+  students?: number;
+  rating?: number;
+  features?: string[];
+}
+
 const CoursesManagerTab = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
-  const [formData, setFormData] = useState<Partial<Course>>({
+  const [formData, setFormData] = useState<CourseFormData>({
     title: "",
     description: "",
     category: "",
@@ -120,7 +134,7 @@ const CoursesManagerTab = () => {
         return;
       }
       
-      // Fix: Pass formData as a single object, not as an array
+      // Fix: Insert formData directly as it now matches the required schema
       const { error } = await supabase.from("courses").insert(formData);
       
       if (error) throw error;
@@ -151,6 +165,16 @@ const CoursesManagerTab = () => {
     if (!currentCourse) return;
     
     try {
+      // Ensure required fields are present for update
+      if (!formData.title || !formData.description || !formData.category || !formData.price || !formData.duration) {
+        toast({
+          title: "Missing required fields",
+          description: "Please fill in all required fields",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       const { error } = await supabase
         .from("courses")
         .update(formData)
