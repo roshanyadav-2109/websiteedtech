@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -179,19 +178,17 @@ const JEEPrep = () => {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="subjects" className="w-full">
-              <ScrollArea className="w-full pb-2">
-                <div className="flex w-max p-1">
-                  <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
-                    <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
-                    <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
-                    <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
-                    <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
-                    <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
-                    <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
-                    <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
-                  </TabsList>
-                </div>
-              </ScrollArea>
+              <div className="overflow-x-auto pb-2 tabs-mobile">
+                <TabsList className="tabs-list w-full">
+                  <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
+                  <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
+                  <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
+                  <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
+                  <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
+                  <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
+                  <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="subjects">
                 {activeSubject ? (

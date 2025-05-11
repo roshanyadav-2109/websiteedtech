@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,14 +90,12 @@ const JEESubjectBlock = ({ subject, downloads, onDownload }: SubjectBlockProps) 
   } else if (subject === "chemistry") {
     contentToDisplay = (
       <div>
-        <div className="mb-6 overflow-x-auto pb-2">
-          <Tabs defaultValue={subType || "organic"} onValueChange={setSubType}>
-            <TabsList className="w-full max-w-md min-w-max">
-              <TabsTrigger value="organic">Organic</TabsTrigger>
-              <TabsTrigger value="inorganic">Inorganic</TabsTrigger>
-              <TabsTrigger value="physical">Physical</TabsTrigger>
-            </TabsList>
-          </Tabs>
+        <div className="mb-6 overflow-x-auto pb-2 tabs-mobile">
+          <TabsList className="tabs-list">
+            <TabsTrigger value="organic" onClick={() => setSubType("organic")}>Organic</TabsTrigger>
+            <TabsTrigger value="inorganic" onClick={() => setSubType("inorganic")}>Inorganic</TabsTrigger>
+            <TabsTrigger value="physical" onClick={() => setSubType("physical")}>Physical</TabsTrigger>
+          </TabsList>
         </div>
         
         {subType && <SubjectChapters 

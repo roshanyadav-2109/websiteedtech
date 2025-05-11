@@ -1,28 +1,11 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { 
-  FileText, 
-  BookOpen, 
-  Users, 
-  Calendar, 
-  Bell, 
-  Download, 
-  Search, 
-  Filter, 
-  Star,
-  Link as LinkIcon,
-  FileCheck 
-} from "lucide-react";
+import { Search } from "lucide-react";
 import NEETSubjectBlock from "@/components/NEETSubjectBlock";
 import NEETPYQTab from "@/components/NEETPYQTab";
 
@@ -172,19 +155,17 @@ const NEETPrep = () => {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="subjects" className="w-full">
-              <ScrollArea className="w-full pb-2">
-                <div className="flex w-max p-1">
-                  <TabsList className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
-                    <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
-                    <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
-                    <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
-                    <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
-                    <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
-                    <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
-                    <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
-                  </TabsList>
-                </div>
-              </ScrollArea>
+              <div className="overflow-x-auto pb-2 tabs-mobile">
+                <TabsList className="tabs-list w-full">
+                  <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
+                  <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
+                  <TabsTrigger value="community" className="rounded-md">Community</TabsTrigger>
+                  <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
+                  <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
+                  <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
+                  <TabsTrigger value="mock" className="rounded-md">Mock Tests</TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="subjects">
                 {activeSubject ? (
