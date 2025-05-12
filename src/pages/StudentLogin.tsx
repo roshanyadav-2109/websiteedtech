@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,26 @@ const StudentLogin = () => {
 
     try {
       if (isSignUp) {
+        // Check if user already exists with this email
+        const { data: existingUsers, error: checkError } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('email', email.toLowerCase())
+          .limit(1);
+          
+        if (checkError) throw checkError;
+        
+        // If email already exists, prevent signup
+        if (existingUsers && existingUsers.length > 0) {
+          toast({
+            title: "Email already registered",
+            description: "Please use a different email or login with your existing account",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,

@@ -1,104 +1,148 @@
 
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 
 const ProfileComplete = () => {
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [studentClass, setStudentClass] = useState("");
-  const [exam, setExam] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [studentClass, setStudentClass] = useState('');
+  const [exam, setExam] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  const classOptions = ["11th", "12th", "Dropper", "College student"];
+  const examOptions = ["JEE", "NEET", "IITM BS Data Science", "IITM BS Electronic Systems"];
 
+  // Validate phone number (10 digits)
+  const isValidPhone = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+  
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        navigate("/auth");
-        return;
-      }
-      
-      setUserId(data.session.user.id);
-      
-      // Try to get existing profile data
+    const getUserData = async () => {
       try {
-        const { data: profileData, error } = await supabase
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+          navigate('/auth');
+          return;
+        }
+        
+        setUser(data.session.user);
+        
+        // Check if profile already exists
+        const { data: profileData } = await supabase
           .from('profiles')
-          .select('full_name, phone, class, exam')
+          .select('*')
           .eq('id', data.session.user.id)
           .single();
           
         if (profileData) {
-          setFullName(profileData.full_name || "");
-          setPhone(profileData.phone || "");
-          setStudentClass(profileData.class || "");
-          setExam(profileData.exam || "");
+          setFullName(profileData.full_name || '');
+          setPhone(profileData.phone || '');
+          setStudentClass(profileData.class || '');
+          setExam(profileData.exam || '');
         }
+        
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error('Error fetching user data:', error);
+        navigate('/auth');
       }
     };
     
-    checkAuth();
+    getUserData();
   }, [navigate]);
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userId) return;
+    
+    // Validate required fields
+    if (!fullName.trim()) {
+      toast({
+        title: "Name required",
+        description: "Please enter your full name",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!isValidPhone(phone)) {
+      toast({
+        title: "Invalid phone number",
+        description: "Phone number must be exactly 10 digits",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!studentClass) {
+      toast({
+        title: "Class required",
+        description: "Please select your class",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!exam) {
+      toast({
+        title: "Exam required",
+        description: "Please select your exam",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsLoading(true);
     
     try {
       const { error } = await supabase
         .from('profiles')
-        .upsert({ 
-          id: userId,
+        .upsert({
+          id: user.id,
           full_name: fullName,
-          phone: phone,
+          email: user.email,
+          phone,
           class: studentClass,
-          exam: exam
+          exam
         });
-      
+        
       if (error) throw error;
       
-      // Grant access to content based on selected exam
-      if (exam) {
-        const accessTypes = ["notes", "pyqs", "community"];
-        
-        for (const contentType of accessTypes) {
-          const { error: accessError } = await supabase
-            .from('user_access')
-            .upsert({
-              user_id: userId,
-              content_type: contentType,
-              exam_type: exam
-            });
-          
-          if (accessError) console.error(`Error granting ${contentType} access:`, accessError);
-        }
+      // Grant access to content based on exam type
+      const contentTypes = ["notes", "pyqs", "community"];
+      for (const contentType of contentTypes) {
+        await supabase.from('user_access').upsert({
+          user_id: user.id,
+          content_type: contentType,
+          exam_type: exam
+        });
       }
       
       toast({
-        title: "Profile updated successfully",
-        description: "Your profile information has been saved.",
+        title: "Profile updated!",
+        description: "Your profile has been successfully updated."
       });
       
-      // Redirect to home page
-      navigate("/");
+      navigate('/');
+      
     } catch (error: any) {
+      console.error('Error saving profile:', error);
       toast({
-        title: "Error updating profile",
+        title: "Error saving profile",
         description: error.message || "An error occurred while saving your profile",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
@@ -106,91 +150,93 @@ const ProfileComplete = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center font-bold">Complete Your Profile</CardTitle>
-          <CardDescription className="text-center">
-            Please provide your details to continue
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input 
-                id="fullName" 
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)} 
-                placeholder="John Doe"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input 
-                id="phone" 
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)} 
-                placeholder="9876543210"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="class">Class</Label>
-              <Select
-                value={studentClass}
-                onValueChange={setStudentClass}
-                required
+    <>
+      <NavBar />
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 pt-24 pb-24">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Complete Your Profile</CardTitle>
+            <CardDescription>Please provide your details to continue</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input 
+                  id="name" 
+                  placeholder="Your full name" 
+                  value={fullName} 
+                  onChange={(e) => setFullName(e.target.value)}
+                  required 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input 
+                  id="phone" 
+                  placeholder="Your 10-digit phone number" 
+                  value={phone} 
+                  onChange={(e) => {
+                    // Only allow digits
+                    const value = e.target.value.replace(/\D/g, '');
+                    // Limit to 10 digits
+                    setPhone(value.substring(0, 10));
+                  }}
+                  required
+                  minLength={10}
+                  maxLength={10}
+                />
+                {phone && !isValidPhone(phone) && (
+                  <p className="text-sm text-red-500">Phone number must be exactly 10 digits</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="class">Class</Label>
+                <Select value={studentClass} onValueChange={setStudentClass} required>
+                  <SelectTrigger id="class">
+                    <SelectValue placeholder="Select your class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {classOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="exam">Exam</Label>
+                <Select value={exam} onValueChange={setExam} required>
+                  <SelectTrigger id="exam">
+                    <SelectValue placeholder="Select your exam" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {examOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-royal hover:bg-royal-dark" 
+                disabled={isLoading}
               >
-                <SelectTrigger id="class">
-                  <SelectValue placeholder="Select your class" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="11th">11th</SelectItem>
-                  <SelectItem value="12th">12th</SelectItem>
-                  <SelectItem value="Dropper">Dropper</SelectItem>
-                  <SelectItem value="College student">College student</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="exam">Exam</Label>
-              <Select
-                value={exam}
-                onValueChange={setExam}
-                required
-              >
-                <SelectTrigger id="exam">
-                  <SelectValue placeholder="Select your exam" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="JEE">JEE</SelectItem>
-                  <SelectItem value="NEET">NEET</SelectItem>
-                  <SelectItem value="IITM BS Data Science">IITM BS Data Science</SelectItem>
-                  <SelectItem value="IITM BS Electronic Systems">IITM BS Electronic Systems</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit" className="w-full bg-royal hover:bg-royal-dark" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save Profile"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="justify-center">
-          <Button 
-            variant="link"
-            className="text-gray-500"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              navigate("/auth");
-            }}
-          >
-            Cancel
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+                {isLoading ? "Saving..." : "Save Profile"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+      <Footer />
+    </>
   );
 };
 
