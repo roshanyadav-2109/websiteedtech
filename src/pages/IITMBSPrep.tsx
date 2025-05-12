@@ -18,11 +18,22 @@ import NewsTab from "@/components/iitm/NewsTab";
 import ImportantDatesTab from "@/components/iitm/ImportantDatesTab";
 import PaidCoursesTab from "@/components/iitm/PaidCoursesTab";
 import { useIsMobile } from "@/hooks/use-mobile";
+import AuthWrapper from "@/components/AuthWrapper";
 
 const IITMBSPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("branch-notes");
   const isMobile = useIsMobile();
+
+  const renderTabContent = (tab: string, content: React.ReactNode) => {
+    const protectedTabs = ["branch-notes", "pyqs", "communities"];
+    
+    if (protectedTabs.includes(tab)) {
+      return <AuthWrapper>{content}</AuthWrapper>;
+    }
+    
+    return content;
+  };
 
   return (
     <>
@@ -77,11 +88,11 @@ const IITMBSPrep = () => {
               </div>
 
               <TabsContent value="branch-notes">
-                <BranchNotesTab />
+                {renderTabContent("branch-notes", <BranchNotesTab />)}
               </TabsContent>
 
               <TabsContent value="pyqs">
-                <PYQsTab />
+                {renderTabContent("pyqs", <PYQsTab />)}
               </TabsContent>
 
               <TabsContent value="tools">
@@ -89,7 +100,7 @@ const IITMBSPrep = () => {
               </TabsContent>
 
               <TabsContent value="communities">
-                <CommunitiesTab />
+                {renderTabContent("communities", <CommunitiesTab />)}
               </TabsContent>
               
               <TabsContent value="paid-courses">

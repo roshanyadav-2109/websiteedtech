@@ -103,28 +103,58 @@ export type Database = {
       }
       profiles: {
         Row: {
+          class: string | null
           created_at: string | null
           email: string | null
+          exam: string | null
           full_name: string | null
           id: string
           phone: string | null
           updated_at: string | null
         }
         Insert: {
+          class?: string | null
           created_at?: string | null
           email?: string | null
+          exam?: string | null
           full_name?: string | null
           id: string
           phone?: string | null
           updated_at?: string | null
         }
         Update: {
+          class?: string | null
           created_at?: string | null
           email?: string | null
+          exam?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_access: {
+        Row: {
+          content_type: string
+          created_at: string | null
+          exam_type: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string | null
+          exam_type: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string | null
+          exam_type?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, Calendar, Download, FileCheck, Link as LinkIcon, Search, Star, Users } from "lucide-react";
 import NEETSubjectBlock from "@/components/NEETSubjectBlock";
 import NEETPYQTab from "@/components/NEETPYQTab";
+import AuthWrapper from "@/components/AuthWrapper";
 
 const NEETPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -93,9 +95,9 @@ const NEETPrep = () => {
     },
   ];
 
-  // Updated community links - only 1 Whatsapp and 1 Telegram
+  // Community links - renamed to Padhai Mitra
   const communityLinks = [
-    { title: "NEET General Discussion", type: "WhatsApp", link: "https://chat.whatsapp.com/example1" },
+    { title: "NEET Padhai Mitra", type: "WhatsApp", link: "https://chat.whatsapp.com/example1" },
     { title: "Unknown IITians NEET Community", type: "Telegram", link: "https://t.me/example1" },
   ];
 
@@ -161,7 +163,7 @@ const NEETPrep = () => {
                 <TabsList className="tabs-list w-full">
                   <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
-                  <TabsTrigger value="community" className="rounded-md">Community</TabsTrigger>
+                  <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
                   <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
                   <TabsTrigger value="news" className="rounded-md">News Updates</TabsTrigger>
                   <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
@@ -180,11 +182,13 @@ const NEETPrep = () => {
                       &larr; Back to Subjects
                     </Button>
                     
-                    <NEETSubjectBlock 
-                      subject={activeSubject}
-                      downloads={downloads}
-                      onDownload={handleDownload}
-                    />
+                    <AuthWrapper>
+                      <NEETSubjectBlock 
+                        subject={activeSubject}
+                        downloads={downloads}
+                        onDownload={handleDownload}
+                      />
+                    </AuthWrapper>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -213,97 +217,101 @@ const NEETPrep = () => {
               </TabsContent>
               
               <TabsContent value="pyqs">
-                <NEETPYQTab 
-                  downloads={downloads}
-                  onDownload={handleDownload}
-                />
+                <AuthWrapper>
+                  <NEETPYQTab 
+                    downloads={downloads}
+                    onDownload={handleDownload}
+                  />
+                </AuthWrapper>
               </TabsContent>
 
               <TabsContent value="community">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                  <div className="lg:col-span-8">
-                    <h3 className="text-2xl font-bold mb-6">Community Links</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {communityLinks.map((link, index) => (
-                        <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
-                          <CardHeader className="pb-2">
-                            <div className="flex items-center">
-                              <div className="rounded-full bg-royal/10 p-2 mr-3">
-                                <Users className="h-5 w-5 text-royal" />
-                              </div>
-                              <div>
-                                <CardTitle className="text-lg">{link.title}</CardTitle>
-                                <CardDescription>{link.type} Group</CardDescription>
-                              </div>
-                            </div>
-                          </CardHeader>
-                          <CardFooter>
-                            <Button asChild className="w-full bg-royal hover:bg-royal-dark text-white">
-                              <a href={link.link} target="_blank" rel="noopener noreferrer">
-                                Join Group
-                              </a>
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="lg:col-span-4">
-                    <h3 className="text-2xl font-bold mb-6">NEET Telegram Community</h3>
-                    <Card className="border-none shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-50 to-indigo-50">
-                      <CardHeader>
-                        <div className="flex items-center">
-                          <div className="rounded-full bg-blue-500 p-3 mr-4">
-                            <LinkIcon className="h-5 w-5 text-white" />
-                          </div>
-                          <div>
-                            <CardTitle>Official Telegram Group</CardTitle>
-                            <CardDescription>Join our main community channel</CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600">
-                          Connect with fellow NEET aspirants, share resources, and get your doubts resolved in our official Telegram community
-                        </p>
-                      </CardContent>
-                      <CardFooter>
-                        <Button asChild className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                          <a href="https://t.me/example-neet" target="_blank" rel="noopener noreferrer">
-                            Join Telegram Group
-                          </a>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-
-                    <div className="mt-6">
-                      <h3 className="text-2xl font-bold mb-6">Study Guides</h3>
-                      <div className="grid grid-cols-1 gap-4">
-                        {studyGuides.map((guide, index) => (
+                <AuthWrapper>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-8">
+                      <h3 className="text-2xl font-bold mb-6">Padhai Mitra Community Links</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {communityLinks.map((link, index) => (
                           <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
                             <CardHeader className="pb-2">
                               <div className="flex items-center">
                                 <div className="rounded-full bg-royal/10 p-2 mr-3">
-                                  <BookOpen className="h-5 w-5 text-royal" />
+                                  <Users className="h-5 w-5 text-royal" />
                                 </div>
                                 <div>
-                                  <CardTitle className="text-lg">{guide.title}</CardTitle>
-                                  <CardDescription>{guide.description}</CardDescription>
+                                  <CardTitle className="text-lg">{link.title}</CardTitle>
+                                  <CardDescription>{link.type} Group</CardDescription>
                                 </div>
                               </div>
                             </CardHeader>
                             <CardFooter>
-                              <Button className="w-full bg-royal hover:bg-royal-dark text-white">
-                                <Download className="h-4 w-4 mr-2" /> Download Guide
+                              <Button asChild className="w-full bg-royal hover:bg-royal-dark text-white">
+                                <a href={link.link} target="_blank" rel="noopener noreferrer">
+                                  Join Group
+                                </a>
                               </Button>
                             </CardFooter>
                           </Card>
                         ))}
                       </div>
                     </div>
+
+                    <div className="lg:col-span-4">
+                      <h3 className="text-2xl font-bold mb-6">NEET Telegram Community</h3>
+                      <Card className="border-none shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <CardHeader>
+                          <div className="flex items-center">
+                            <div className="rounded-full bg-blue-500 p-3 mr-4">
+                              <LinkIcon className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <CardTitle>Official Telegram Group</CardTitle>
+                              <CardDescription>Join our main community channel</CardDescription>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-gray-600">
+                            Connect with fellow NEET aspirants, share resources, and get your doubts resolved in our official Telegram community
+                          </p>
+                        </CardContent>
+                        <CardFooter>
+                          <Button asChild className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                            <a href="https://t.me/example-neet" target="_blank" rel="noopener noreferrer">
+                              Join Telegram Group
+                            </a>
+                          </Button>
+                        </CardFooter>
+                      </Card>
+
+                      <div className="mt-6">
+                        <h3 className="text-2xl font-bold mb-6">Study Guides</h3>
+                        <div className="grid grid-cols-1 gap-4">
+                          {studyGuides.map((guide, index) => (
+                            <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
+                              <CardHeader className="pb-2">
+                                <div className="flex items-center">
+                                  <div className="rounded-full bg-royal/10 p-2 mr-3">
+                                    <BookOpen className="h-5 w-5 text-royal" />
+                                  </div>
+                                  <div>
+                                    <CardTitle className="text-lg">{guide.title}</CardTitle>
+                                    <CardDescription>{guide.description}</CardDescription>
+                                  </div>
+                                </div>
+                              </CardHeader>
+                              <CardFooter>
+                                <Button className="w-full bg-royal hover:bg-royal-dark text-white">
+                                  <Download className="h-4 w-4 mr-2" /> Download Guide
+                                </Button>
+                              </CardFooter>
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </AuthWrapper>
               </TabsContent>
 
               <TabsContent value="syllabus">

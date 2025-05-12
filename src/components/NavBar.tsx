@@ -18,6 +18,7 @@ const NavBar = () => {
   const [submenuOpen, setSubmenuOpen] = useState("");
   const [userSession, setUserSession] = useState<any>(null);
   const [userName, setUserName] = useState<string>("");
+  const [dropdownVisible, setDropdownVisible] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -106,16 +107,40 @@ const NavBar = () => {
             <Link to="/" className="text-gray-700 hover:text-royal px-3 py-2 rounded-md">
               Home
             </Link>
-            <div className="relative group">
+            <div 
+              className="relative group" 
+              onMouseEnter={() => setDropdownVisible(true)}
+              onMouseLeave={() => setDropdownVisible(false)}
+            >
               <button className="flex items-center text-gray-700 hover:text-royal px-3 py-2 rounded-md">
                 <span>Exam Preparation</span>
                 <ChevronDown className="ml-1 h-4 w-4" />
               </button>
-              <div className="absolute left-0 z-10 mt-2 w-48 origin-top-left bg-white border border-gray-200 rounded-md shadow-lg hidden group-hover:block">
+              <div 
+                className={`absolute left-0 z-10 mt-2 w-48 origin-top-left bg-white border border-gray-200 rounded-md shadow-lg ${dropdownVisible ? 'block' : 'hidden'}`}
+              >
                 <div className="py-1">
-                  <Link to="/exam-preparation/jee" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal">JEE</Link>
-                  <Link to="/exam-preparation/neet" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal">NEET</Link>
-                  <Link to="/exam-preparation/iitm-bs" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal">IITM BS</Link>
+                  <Link 
+                    to="/exam-preparation/jee" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal"
+                    onClick={() => setDropdownVisible(false)}
+                  >
+                    JEE
+                  </Link>
+                  <Link 
+                    to="/exam-preparation/neet" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal"
+                    onClick={() => setDropdownVisible(false)}
+                  >
+                    NEET
+                  </Link>
+                  <Link 
+                    to="/exam-preparation/iitm-bs" 
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-royal"
+                    onClick={() => setDropdownVisible(false)}
+                  >
+                    IITM BS
+                  </Link>
                 </div>
               </div>
             </div>
