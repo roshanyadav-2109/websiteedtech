@@ -32,33 +32,83 @@ const BranchNotesTab = () => {
     { value: "degree", label: "Degree" }
   ];
   
-  // Data Science subjects by level
+  // Data Science subjects by level - UPDATED WITH COMPREHENSIVE LIST
   const dsQualifierSubjects = [
-    { id: "math-basics", title: "Mathematical Basics" },
-    { id: "computing-basics", title: "Basics of Computing" },
-    { id: "stats-basics", title: "Statistics Basics" },
+    { id: "english-1", title: "English I" },
+    { id: "math-ds-1", title: "Mathematics for Data Science I" },
+    { id: "stats-ds-1", title: "Statistics for Data Science I" },
+    { id: "computational-thinking", title: "Computational Thinking" },
   ];
   
   const dsFoundationSubjects = [
-    { id: "python", title: "Programming and Data Structures with Python" },
-    { id: "stats", title: "Statistics for Data Science" },
+    { id: "math-ds-1", title: "Mathematics for Data Science I" },
+    { id: "stats-ds-1", title: "Statistics for Data Science I" },
     { id: "computational-thinking", title: "Computational Thinking" },
-    { id: "discrete-math", title: "Discrete Mathematics" },
-    { id: "dbms", title: "Database Management Systems" }
+    { id: "english-1", title: "English I" },
+    { id: "math-ds-2", title: "Mathematics for Data Science II" },
+    { id: "stats-ds-2", title: "Statistics for Data Science II" },
+    { id: "programming-python", title: "Programming in Python" },
+    { id: "english-2", title: "English II" }
   ];
   
   const dsDiplomaSubjects = [
-    { id: "machine-learning", title: "Machine Learning Foundations" },
-    { id: "data-viz", title: "Data Visualization" },
-    { id: "business-analytics", title: "Business Data Management" },
-    { id: "algorithms", title: "Algorithms for Data Science" }
+    // Programming Track
+    { id: "dbms", title: "Database Management Systems" },
+    { id: "python-dsa", title: "Programming, Data Structures and Algorithms using Python" },
+    { id: "mad-1", title: "Modern Application Development I" },
+    { id: "mad-1-project", title: "Modern Application Development I - Project" },
+    { id: "java-programming", title: "Programming Concepts using Java" },
+    { id: "mad-2", title: "Modern Application Development II" },
+    { id: "mad-2-project", title: "Modern Application Development II - Project" },
+    { id: "system-commands", title: "System Commands" },
+    // Data Science Track
+    { id: "ml-foundations", title: "Machine Learning Foundations" },
+    { id: "business-data-mgmt", title: "Business Data Management" },
+    { id: "business-data-project", title: "Business Data Management - Project" },
+    { id: "ml-techniques", title: "Machine Learning Techniques" },
+    { id: "ml-practice", title: "Machine Learning Practice" },
+    { id: "ml-practice-project", title: "Machine Learning Practice - Project" },
+    { id: "business-analytics", title: "Business Analytics" },
+    { id: "tools-data-science", title: "Tools in Data Science" }
   ];
   
   const dsDegreeSubjects = [
+    // Core Courses
+    { id: "software-engineering", title: "Software Engineering" },
+    { id: "software-testing", title: "Software Testing" },
+    { id: "ai-search-methods", title: "AI: Search Methods for Problem Solving" },
     { id: "deep-learning", title: "Deep Learning" },
-    { id: "nlp", title: "Natural Language Processing" },
-    { id: "big-data", title: "Big Data Analytics" },
-    { id: "reinforcement", title: "Reinforcement Learning" }
+    // Elective Courses
+    { id: "professional-growth", title: "Strategies for Professional Growth" },
+    { id: "algorithmic-bioinformatics", title: "Algorithmic Thinking in Bioinformatics" },
+    { id: "big-data-bio", title: "Big Data and Biological Networks" },
+    { id: "data-viz-design", title: "Data Visualization Design" },
+    { id: "reinforcement-learning", title: "Special topics in Machine Learning (Reinforcement Learning)" },
+    { id: "speech-technology", title: "Speech Technology" },
+    { id: "design-thinking", title: "Design Thinking for Data-Driven App Development" },
+    { id: "industry-4", title: "Industry 4.0" },
+    { id: "sequential-decision", title: "Sequential Decision Making" },
+    { id: "market-research", title: "Market Research" },
+    { id: "privacy-security", title: "Privacy & Security in Online Social Media" },
+    { id: "intro-big-data", title: "Introduction to Big Data" },
+    { id: "financial-forensics", title: "Financial Forensics" },
+    { id: "linear-statistical", title: "Linear Statistical Models" },
+    { id: "advanced-algorithms", title: "Advanced Algorithms" },
+    { id: "statistical-computing", title: "Statistical Computing" },
+    { id: "computer-systems", title: "Computer Systems Design" },
+    { id: "programming-c", title: "Programming in C" },
+    { id: "mathematical-thinking", title: "Mathematical Thinking" },
+    { id: "large-language-models", title: "Large Language Models" },
+    { id: "intro-nlp", title: "Introduction to Natural Language Processing (i-NLP)" },
+    { id: "dl-computer-vision", title: "Deep Learning for Computer Vision" },
+    { id: "managerial-economics", title: "Managerial Economics" },
+    { id: "game-theory", title: "Game Theory and Strategy" },
+    { id: "corporate-finance", title: "Corporate Finance" },
+    { id: "dl-practice", title: "Deep Learning Practice" },
+    { id: "operating-systems", title: "Operating Systems" },
+    { id: "math-generative-ai", title: "Mathematical Foundations of Generative AI" },
+    { id: "algorithms-data-science", title: "Algorithms for Data Science (ADS)" },
+    { id: "mlops", title: "Machine Learning Operations (MLOps)" }
   ];
   
   // Electronic Systems subjects by level
