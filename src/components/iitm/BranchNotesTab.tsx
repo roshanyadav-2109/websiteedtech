@@ -111,38 +111,95 @@ const BranchNotesTab = () => {
     { id: "mlops", title: "Machine Learning Operations (MLOps)" }
   ];
   
-  // Electronic Systems subjects by level
+  // Electronic Systems subjects by level - UPDATED WITH COMPREHENSIVE LIST
   const esQualifierSubjects = [
-    { id: "es-math-basics", title: "Mathematical Foundations" },
-    { id: "es-computing-basics", title: "Computing Basics" },
-    { id: "es-circuits-basics", title: "Basic Circuits" },
+    { id: "english-1-es", title: "English I" },
+    { id: "math-electronics-1", title: "Math for Electronics I" },
+    { id: "es-thinking-circuits", title: "Electronic Systems Thinking and Circuits" },
+    { id: "intro-c-programming", title: "Introduction to C Programming" },
   ];
   
   const esFoundationSubjects = [
-    { id: "digital-systems", title: "Digital Systems" },
-    { id: "signals", title: "Signals and Systems" },
-    { id: "circuit-theory", title: "Circuit Theory" },
-    { id: "programming", title: "Programming Fundamentals" }
+    { id: "english-1-es", title: "English I" },
+    { id: "math-electronics-1", title: "Math for Electronics I" },
+    { id: "english-2-es", title: "English II" },
+    { id: "es-thinking-circuits", title: "Electronic Systems Thinking and Circuits" },
+    { id: "es-thinking-circuits-lab", title: "Electronic Systems Thinking and Circuits Lab" },
+    { id: "intro-c-programming", title: "Introduction to C Programming" },
+    { id: "c-programming-lab", title: "C Programming Laboratory" },
+    { id: "intro-linux-programming", title: "Introduction to Linux and Programming" },
+    { id: "linux-systems-lab", title: "Linux Systems Laboratory" },
+    { id: "digital-systems-es", title: "Digital Systems" },
+    { id: "electrical-electronic-circuits", title: "Electrical and Electronic Circuits" },
+    { id: "electronics-lab", title: "Electronics Laboratory" },
+    { id: "embedded-c-programming", title: "Embedded C Programming" },
+    { id: "embedded-c-lab", title: "Embedded C Programming Laboratory" }
   ];
   
   const esDiplomaSubjects = [
-    { id: "microprocessors", title: "Microprocessors and Interfacing" },
-    { id: "control-systems", title: "Control Systems" },
-    { id: "communication", title: "Communication Systems" },
-    { id: "electronics-design", title: "Electronic System Design" }
+    { id: "math-electronics-2", title: "Math for Electronics II" },
+    { id: "signals-systems-es", title: "Signals and Systems" },
+    { id: "analog-electronic-systems", title: "Analog Electronic Systems" },
+    { id: "analog-electronics-lab", title: "Analog Electronics Laboratory" },
+    { id: "python-programming-es", title: "Python Programming" },
+    { id: "digital-system-design", title: "Digital System Design" },
+    { id: "digital-system-design-lab", title: "Digital System Design Laboratory" },
+    { id: "digital-signal-processing", title: "Digital Signal Processing" },
+    { id: "sensors-applications", title: "Sensors and Applications" },
+    { id: "sensors-lab", title: "Sensors Laboratory" },
+    { id: "control-engineering", title: "Control Engineering" },
+    { id: "electronics-system-project", title: "Electronics System Project" }
   ];
   
   const esDegreeSubjects = [
-    { id: "vlsi", title: "VLSI Design" },
-    { id: "embedded", title: "Embedded Systems" },
-    { id: "iot", title: "Internet of Things" },
-    { id: "advanced-electronics", title: "Advanced Electronics" }
+    // Core Courses
+    { id: "embedded-linux-fpgas", title: "Embedded Linux and FPGAs" },
+    { id: "embedded-linux-fpgas-lab", title: "Embedded Linux and FPGAs Lab" },
+    { id: "electromagnetic-fields", title: "Electromagnetic Fields and Transmission Lines" },
+    { id: "electronic-product-design", title: "Electronic Product Design" },
+    { id: "computer-organisation", title: "Computer Organisation" },
+    { id: "professional-growth-es", title: "Strategies for Professional Growth" },
+    // Department Electives
+    { id: "probability-statistics-es", title: "Probability and Statistics" },
+    { id: "communication-systems-es", title: "Communication Systems" },
+    { id: "iot-es", title: "Internet of Things (IoT)" },
+    { id: "semiconductor-devices-vlsi", title: "Semiconductor Devices and VLSI Technology" },
+    { id: "analog-circuits", title: "Analog Circuits" },
+    { id: "digital-ic-design", title: "Digital IC Design" },
+    { id: "power-management", title: "Power Management for Electronic Systems" },
+    { id: "biomedical-electronic", title: "Biomedical Electronic Systems" },
+    // Open Electives
+    { id: "operating-systems-es", title: "Operating Systems" },
+    { id: "dbms-es", title: "Database Management Systems" },
+    { id: "python-dsa-es", title: "Programming Data Structures and Algorithms using Python" },
+    { id: "mad-1-es", title: "Modern Application Development I" },
+    { id: "ml-foundation-es", title: "Machine Learning Foundation" },
+    { id: "java-programming-es", title: "Programming Concepts using Java" },
+    { id: "mad-2-es", title: "Modern Application Development II" },
+    { id: "ml-techniques-es", title: "Machine Learning Techniques" },
+    { id: "ml-practice-es", title: "Machine Learning Practice" },
+    { id: "deep-learning-es", title: "Deep Learning" },
+    { id: "dl-computer-vision-es", title: "Deep Learning for Computer Vision" },
+    { id: "speech-technology-es", title: "Speech Technology" },
+    { id: "dl-practice-es", title: "Deep Learning Practice" },
+    { id: "industry-4-es", title: "Industry 4.0" },
+    { id: "design-thinking-es", title: "Design Thinking for Data-Driven App Development" },
+    { id: "financial-forensics-es", title: "Financial Forensics" },
+    { id: "market-research-es", title: "Market Research" },
+    { id: "game-theory-es", title: "Game Theory and Strategy" },
+    { id: "managerial-economics-es", title: "Managerial Economics" },
+    { id: "corporate-finance-es", title: "Corporate Finance" },
+    { id: "apprenticeship-es-1", title: "Apprenticeship in Electronics Systems 1" },
+    { id: "apprenticeship-es-2", title: "Apprenticeship in Electronics Systems 2" }
   ];
   
-  // Generate sample notes for a subject (12 weeks)
+  // Generate sample notes for a subject (variable weeks based on level)
   const generateSubjectNotes = (subjectId: string, subjectTitle: string) => {
     const notes: Note[] = [];
-    for (let week = 1; week <= 12; week++) {
+    // Qualifier level only has weeks 1-4, others have full 12 weeks
+    const maxWeeks = level === "qualifier" ? 4 : 12;
+    
+    for (let week = 1; week <= maxWeeks; week++) {
       notes.push({
         id: `${subjectId}-w${week}`,
         title: `Week ${week} - ${subjectTitle}`,
@@ -215,6 +272,9 @@ const BranchNotesTab = () => {
       <div className="mt-6">
         <h2 className="text-2xl font-bold mb-4 capitalize">
           {branch.replace('-', ' ')} - {level.charAt(0).toUpperCase() + level.slice(1)} Level Notes
+          {level === "qualifier" && (
+            <span className="text-sm font-normal text-gray-600 ml-2">(Weeks 1-4 only)</span>
+          )}
         </h2>
         
         <div className="space-y-6">
