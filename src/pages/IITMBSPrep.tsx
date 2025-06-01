@@ -10,7 +10,7 @@ import { Search } from "lucide-react";
 
 // Import IITM BS components
 import BranchNotesTab from "@/components/iitm/BranchNotesTab";
-import ToolsTab from "@/components/iitm/ToolsTab";
+import IITMToolsTab from "@/components/iitm/IITMToolsTab";
 import PYQsTab from "@/components/iitm/PYQsTab";
 import CommunitiesTab from "@/components/iitm/CommunitiesTab";
 import SyllabusTab from "@/components/iitm/SyllabusTab";
@@ -18,7 +18,7 @@ import NewsTab from "@/components/iitm/NewsTab";
 import ImportantDatesTab from "@/components/iitm/ImportantDatesTab";
 import PaidCoursesTab from "@/components/iitm/PaidCoursesTab";
 import { useIsMobile } from "@/hooks/use-mobile";
-import AuthWrapper from "@/components/AuthWrapper";
+import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
 
 const IITMBSPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,7 +29,11 @@ const IITMBSPrep = () => {
     const protectedTabs = ["branch-notes", "pyqs", "communities"];
     
     if (protectedTabs.includes(tab)) {
-      return <AuthWrapper>{content}</AuthWrapper>;
+      return (
+        <OptimizedAuthWrapper contentType={tab} examType="IITM BS">
+          {content}
+        </OptimizedAuthWrapper>
+      );
     }
     
     return content;
@@ -71,8 +75,8 @@ const IITMBSPrep = () => {
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="branch-notes" value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="overflow-x-auto pb-2 tabs-mobile">
-                <TabsList className="tabs-list w-full">
+              <div className="w-full overflow-hidden">
+                <TabsList className="w-full justify-start">
                   <TabsTrigger value="branch-notes" className="rounded-md">Branch Notes</TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
                   <TabsTrigger value="tools" className="rounded-md">Tools</TabsTrigger>
@@ -96,7 +100,7 @@ const IITMBSPrep = () => {
               </TabsContent>
 
               <TabsContent value="tools">
-                <ToolsTab />
+                <IITMToolsTab />
               </TabsContent>
 
               <TabsContent value="communities">
