@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
+import EnrollButton from "@/components/EnrollButton";
 
 interface Course {
   id: string;
@@ -17,6 +16,7 @@ interface Course {
   duration: string;
   isPremium: boolean;
   features: string[];
+  enrollmentLink?: string;
 }
 
 const PaidCoursesTab = () => {
@@ -34,7 +34,8 @@ const PaidCoursesTab = () => {
       enrollments: 1256,
       duration: "6 weeks",
       isPremium: true,
-      features: ["24/7 Mentor Support", "Capstone Project", "Industry Certification"]
+      features: ["24/7 Mentor Support", "Capstone Project", "Industry Certification"],
+      enrollmentLink: "https://example.com/enroll/python-mastery"
     },
     {
       id: "ds-ml-specialization",
@@ -46,7 +47,8 @@ const PaidCoursesTab = () => {
       enrollments: 857,
       duration: "10 weeks",
       isPremium: true,
-      features: ["1-on-1 Mentoring", "Real-world Projects", "Job Placement Assistance"]
+      features: ["1-on-1 Mentoring", "Real-world Projects", "Job Placement Assistance"],
+      enrollmentLink: "https://example.com/enroll/ml-specialization"
     },
     {
       id: "ds-stats-bootcamp",
@@ -58,7 +60,8 @@ const PaidCoursesTab = () => {
       enrollments: 952,
       duration: "4 weeks",
       isPremium: false,
-      features: ["Practice Problems", "Weekly Assignments"]
+      features: ["Practice Problems", "Weekly Assignments"],
+      enrollmentLink: "https://example.com/enroll/stats-bootcamp"
     },
     {
       id: "es-circuit-design",
@@ -70,7 +73,8 @@ const PaidCoursesTab = () => {
       enrollments: 512,
       duration: "8 weeks",
       isPremium: true,
-      features: ["Circuit Simulation Tools", "Hardware Kit", "Live Sessions"]
+      features: ["Circuit Simulation Tools", "Hardware Kit", "Live Sessions"],
+      enrollmentLink: "https://example.com/enroll/circuit-design"
     },
     {
       id: "es-digital-electronics",
@@ -82,7 +86,8 @@ const PaidCoursesTab = () => {
       enrollments: 689,
       duration: "6 weeks",
       isPremium: false,
-      features: ["Weekly Assignments", "Discussion Forum"]
+      features: ["Weekly Assignments", "Discussion Forum"],
+      enrollmentLink: "https://example.com/enroll/digital-electronics"
     },
     {
       id: "ds-deep-learning",
@@ -94,7 +99,8 @@ const PaidCoursesTab = () => {
       enrollments: 423,
       duration: "12 weeks",
       isPremium: true,
-      features: ["GPU Access", "Industry Projects", "Expert Reviews"]
+      features: ["GPU Access", "Industry Projects", "Expert Reviews"],
+      enrollmentLink: "https://example.com/enroll/deep-learning"
     },
     {
       id: "ds-math-for-ml",
@@ -106,7 +112,8 @@ const PaidCoursesTab = () => {
       enrollments: 1089,
       duration: "5 weeks",
       isPremium: false,
-      features: ["Interactive Exercises", "Quizzes"]
+      features: ["Interactive Exercises", "Quizzes"],
+      enrollmentLink: "https://example.com/enroll/math-for-ml"
     },
     {
       id: "es-embedded-systems",
@@ -118,7 +125,8 @@ const PaidCoursesTab = () => {
       enrollments: 378,
       duration: "10 weeks",
       isPremium: true,
-      features: ["Hardware Kit", "Project-based", "Industry Certification"]
+      features: ["Hardware Kit", "Project-based", "Industry Certification"],
+      enrollmentLink: "https://example.com/enroll/embedded-systems"
     }
   ];
   
@@ -209,13 +217,13 @@ const PaidCoursesTab = () => {
               <div className="flex items-center">
                 <span className={`text-xl font-bold ${course.isPremium ? 'text-amber-600' : ''}`}>₹{course.price}</span>
               </div>
-              <Button 
+              <EnrollButton 
+                courseId={course.id}
+                enrollmentLink={course.enrollmentLink}
                 className={course.isPremium ? 
                   "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white" : 
                   "bg-royal hover:bg-royal-dark text-white"}
-              >
-                Enroll Now
-              </Button>
+              />
             </CardFooter>
           </Card>
         ))}

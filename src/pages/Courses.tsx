@@ -1,10 +1,8 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -13,10 +11,11 @@ import {
   Star, 
   Users, 
   Calendar, 
-  CheckCircle,
-  Filter
+  CheckCircle
 } from "lucide-react";
 import { motion } from "framer-motion";
+import EnrollButton from "@/components/EnrollButton";
+import AdminAddButton from "@/components/admin/AdminAddButton";
 
 const Courses = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -39,9 +38,9 @@ const Courses = () => {
       discountedPrice: "₹2,999",
       duration: "2 months",
       students: 240,
-      rating: 4.8,
       features: ["Live Classes", "Study Material", "Doubt Sessions", "Mock Tests"],
-      bestseller: true
+      bestseller: true,
+      enrollmentLink: "https://example.com/enroll/iitm-bs-qualifier"
     },
     {
       id: 2,
@@ -52,9 +51,9 @@ const Courses = () => {
       discountedPrice: "₹3,999",
       duration: "4 months",
       students: 320,
-      rating: 4.9,
       features: ["Recorded Lectures", "Study Material", "Weekly Tests", "PYQ Analysis"],
-      bestseller: true
+      bestseller: true,
+      enrollmentLink: "https://example.com/enroll/neet-biology"
     },
     {
       id: 3,
@@ -65,9 +64,9 @@ const Courses = () => {
       discountedPrice: "₹4,999",
       duration: "5 months",
       students: 185,
-      rating: 4.7,
       features: ["Live Classes", "Formula Booklet", "Daily Practice", "Mock Tests"],
-      bestseller: false
+      bestseller: false,
+      enrollmentLink: "https://example.com/enroll/jee-math"
     },
     {
       id: 4,
@@ -78,9 +77,9 @@ const Courses = () => {
       discountedPrice: "₹5,999",
       duration: "6 months",
       students: 120,
-      rating: 4.8,
       features: ["Live Classes", "Coding Assignments", "Project Work", "Industry Connect"],
-      bestseller: false
+      bestseller: false,
+      enrollmentLink: "https://example.com/enroll/iitm-ds-foundation"
     },
     {
       id: 5,
@@ -91,9 +90,9 @@ const Courses = () => {
       discountedPrice: "₹2,999",
       duration: "3 months",
       students: 210,
-      rating: 4.6,
       features: ["Recorded Lectures", "Formula Handbook", "Weekly Tests", "Doubt Clearing"],
-      bestseller: false
+      bestseller: false,
+      enrollmentLink: "https://example.com/enroll/neet-physics"
     },
     {
       id: 6,
@@ -104,9 +103,9 @@ const Courses = () => {
       discountedPrice: "₹3,499",
       duration: "4 months",
       students: 245,
-      rating: 4.7,
       features: ["Live Classes", "Study Material", "Weekly Tests", "PYQ Discussion"],
-      bestseller: true
+      bestseller: true,
+      enrollmentLink: "https://example.com/enroll/jee-chemistry"
     },
     {
       id: 7,
@@ -117,9 +116,9 @@ const Courses = () => {
       discountedPrice: "₹5,999",
       duration: "3 months",
       students: 310,
-      rating: 4.9,
       features: ["Live Classes", "100+ Practice Problems", "Mock Interviews", "Resume Building"],
-      bestseller: true
+      bestseller: true,
+      enrollmentLink: "https://example.com/enroll/placement-coding"
     },
     {
       id: 8,
@@ -130,9 +129,9 @@ const Courses = () => {
       discountedPrice: "₹4,999",
       duration: "5 months",
       students: 95,
-      rating: 4.8,
       features: ["Live Classes", "Lab Sessions", "Projects", "Mock Tests"],
-      bestseller: false
+      bestseller: false,
+      enrollmentLink: "https://example.com/enroll/iitm-es-pathway"
     }
   ];
 
@@ -143,6 +142,11 @@ const Courses = () => {
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
+  };
+
+  const handleAddCourse = () => {
+    console.log('Adding new course');
+    // This will be implemented with admin forms
   };
 
   return (
@@ -173,7 +177,7 @@ const Courses = () => {
 
         <section className="py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-center mb-8">
+            <div className="flex justify-between items-center mb-8">
               <div className="bg-white rounded-lg shadow-md p-1 inline-flex">
                 {categories.map((category) => (
                   <button
@@ -189,6 +193,11 @@ const Courses = () => {
                   </button>
                 ))}
               </div>
+              
+              <AdminAddButton 
+                contentType="Course"
+                onAdd={handleAddCourse}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -202,7 +211,7 @@ const Courses = () => {
                 >
                   <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-300">
                     {course.bestseller && (
-                      <div className="absolute top-0 right-0">
+                      <div className="absolute top-0 right-0 z-10">
                         <Badge className="m-2 bg-amber-500 hover:bg-amber-600">
                           <Star className="h-3 w-3 mr-1 fill-current" /> Bestseller
                         </Badge>
@@ -216,17 +225,6 @@ const Courses = () => {
                         {course.duration}
                         <Users className="h-4 w-4 ml-4 mr-1" /> 
                         {course.students} students
-                      </div>
-                      <div className="flex items-center mt-1">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`h-4 w-4 ${i < Math.floor(course.rating) ? 'text-amber-500 fill-amber-500' : 'text-gray-300'}`} 
-                            />
-                          ))}
-                        </div>
-                        <span className="ml-2 text-sm font-medium">{course.rating}</span>
                       </div>
                     </CardHeader>
                     <CardContent>
@@ -245,9 +243,11 @@ const Courses = () => {
                         <span className="text-xl font-bold text-royal">{course.discountedPrice}</span>
                         <span className="ml-2 text-gray-500 line-through">{course.price}</span>
                       </div>
-                      <Button className={`${course.bestseller ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' : 'bg-royal hover:bg-royal-dark'} text-white px-5 py-2`}>
-                        Enroll Now
-                      </Button>
+                      <EnrollButton 
+                        courseId={course.id.toString()}
+                        enrollmentLink={course.enrollmentLink}
+                        className={`${course.bestseller ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' : 'bg-royal hover:bg-royal-dark'} text-white px-5 py-2`}
+                      />
                     </CardFooter>
                   </Card>
                 </motion.div>

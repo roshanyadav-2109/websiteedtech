@@ -10,29 +10,33 @@ import { Search } from "lucide-react";
 
 // Import IITM BS components
 import BranchNotesTab from "@/components/iitm/BranchNotesTab";
-import ToolsTab from "@/components/iitm/ToolsTab";
+import IITMToolsTab from "@/components/iitm/IITMToolsTab";
 import PYQsTab from "@/components/iitm/PYQsTab";
 import CommunitiesTab from "@/components/iitm/CommunitiesTab";
 import SyllabusTab from "@/components/iitm/SyllabusTab";
 import NewsTab from "@/components/iitm/NewsTab";
 import ImportantDatesTab from "@/components/iitm/ImportantDatesTab";
 import PaidCoursesTab from "@/components/iitm/PaidCoursesTab";
-import { useIsMobile } from "@/hooks/use-mobile";
-import AuthWrapper from "@/components/AuthWrapper";
+import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
+import AdminAddButton from "@/components/admin/AdminAddButton";
 
 const IITMBSPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("branch-notes");
-  const isMobile = useIsMobile();
 
   const renderTabContent = (tab: string, content: React.ReactNode) => {
-    const protectedTabs = ["branch-notes", "pyqs", "communities"];
+    const protectedTabs = ["communities"];
     
     if (protectedTabs.includes(tab)) {
-      return <AuthWrapper>{content}</AuthWrapper>;
+      return <OptimizedAuthWrapper>{content}</OptimizedAuthWrapper>;
     }
     
     return content;
+  };
+
+  const handleAddContent = (contentType: string) => {
+    console.log(`Adding ${contentType} for IITM BS`);
+    // This will be implemented with admin forms
   };
 
   return (
@@ -71,51 +75,123 @@ const IITMBSPrep = () => {
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="branch-notes" value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="overflow-x-auto pb-2 tabs-mobile">
-                <TabsList className="tabs-list w-full">
-                  <TabsTrigger value="branch-notes" className="rounded-md">Branch Notes</TabsTrigger>
-                  <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
-                  <TabsTrigger value="tools" className="rounded-md">Tools</TabsTrigger>
-                  <TabsTrigger value="communities" className="rounded-md">Communities</TabsTrigger>
-                  <TabsTrigger value="paid-courses" 
-                    className="rounded-md bg-gradient-to-r from-amber-400 to-amber-600 text-white font-medium shadow-md hover:shadow-amber-200/50">
+              <div className="overflow-x-auto pb-2">
+                <TabsList className="w-full min-w-fit">
+                  <TabsTrigger value="branch-notes" className="rounded-md flex-shrink-0">
+                    Branch Notes
+                  </TabsTrigger>
+                  <TabsTrigger value="pyqs" className="rounded-md flex-shrink-0">
+                    PYQs
+                  </TabsTrigger>
+                  <TabsTrigger value="tools" className="rounded-md flex-shrink-0">
+                    Tools
+                  </TabsTrigger>
+                  <TabsTrigger value="communities" className="rounded-md flex-shrink-0">
+                    Communities
+                  </TabsTrigger>
+                  <TabsTrigger value="paid-courses" className="rounded-md bg-gradient-to-r from-amber-400 to-amber-600 text-white font-medium shadow-md hover:shadow-amber-200/50 flex-shrink-0">
                     ✨ PAID COURSES
                   </TabsTrigger>
-                  <TabsTrigger value="syllabus" className="rounded-md">Syllabus</TabsTrigger>
-                  <TabsTrigger value="news" className="rounded-md">News</TabsTrigger>
-                  <TabsTrigger value="dates" className="rounded-md">Important Dates</TabsTrigger>
+                  <TabsTrigger value="syllabus" className="rounded-md flex-shrink-0">
+                    Syllabus
+                  </TabsTrigger>
+                  <TabsTrigger value="news" className="rounded-md flex-shrink-0">
+                    News
+                  </TabsTrigger>
+                  <TabsTrigger value="dates" className="rounded-md flex-shrink-0">
+                    Important Dates
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
               <TabsContent value="branch-notes">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Branch Notes</h2>
+                  <AdminAddButton 
+                    contentType="Notes" 
+                    examType="IITM-BS"
+                    onAdd={() => handleAddContent("notes")} 
+                  />
+                </div>
                 {renderTabContent("branch-notes", <BranchNotesTab />)}
               </TabsContent>
 
               <TabsContent value="pyqs">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Previous Year Questions</h2>
+                  <AdminAddButton 
+                    contentType="PYQs" 
+                    examType="IITM-BS"
+                    onAdd={() => handleAddContent("pyqs")} 
+                  />
+                </div>
                 {renderTabContent("pyqs", <PYQsTab />)}
               </TabsContent>
 
               <TabsContent value="tools">
-                <ToolsTab />
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Academic Tools</h2>
+                </div>
+                <IITMToolsTab />
               </TabsContent>
 
               <TabsContent value="communities">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Communities</h2>
+                  <AdminAddButton 
+                    contentType="Community" 
+                    examType="IITM-BS"
+                    onAdd={() => handleAddContent("communities")} 
+                  />
+                </div>
                 {renderTabContent("communities", <CommunitiesTab />)}
               </TabsContent>
               
               <TabsContent value="paid-courses">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Premium Courses</h2>
+                  <AdminAddButton 
+                    contentType="Course" 
+                    examType="IITM-BS"
+                    onAdd={() => handleAddContent("courses")} 
+                  />
+                </div>
                 <PaidCoursesTab />
               </TabsContent>
 
               <TabsContent value="syllabus">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Syllabus</h2>
+                  <AdminAddButton 
+                    contentType="Syllabus" 
+                    examType="IITM-BS"
+                    onAdd={() => handleAddContent("syllabus")} 
+                  />
+                </div>
                 <SyllabusTab />
               </TabsContent>
 
               <TabsContent value="news">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">News & Updates</h2>
+                  <AdminAddButton 
+                    contentType="News" 
+                    examType="IITM-BS"
+                    onAdd={() => handleAddContent("news")} 
+                  />
+                </div>
                 <NewsTab />
               </TabsContent>
 
               <TabsContent value="dates">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Important Dates</h2>
+                  <AdminAddButton 
+                    contentType="Important Date" 
+                    examType="IITM-BS"
+                    onAdd={() => handleAddContent("dates")} 
+                  />
+                </div>
                 <ImportantDatesTab />
               </TabsContent>
             </Tabs>
