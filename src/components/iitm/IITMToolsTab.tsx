@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calculator, TrendingUp, Award } from 'lucide-react';
 
 const IITMToolsTab = () => {
-  const [activetool, setActiveTool] = useState<string | null>(null);
+  const [activeTool, setActiveTool] = useState<string | null>(null);
 
   const tools = [
     {
@@ -34,7 +33,7 @@ const IITMToolsTab = () => {
     }
   ];
 
-  if (activeTools) {
+  if (activeTool) {
     return (
       <div>
         <Button 
@@ -44,9 +43,9 @@ const IITMToolsTab = () => {
         >
           &larr; Back to Tools
         </Button>
-        {activeTools === 'grade-calculator' && <GradeCalculator />}
-        {activeTools === 'cgpa-calculator' && <CGPACalculator />}
-        {activeTools === 'marks-predictor' && <MarksPredictor />}
+        {activeTool === 'grade-calculator' && <GradeCalculator />}
+        {activeTool === 'cgpa-calculator' && <CGPACalculator />}
+        {activeTool === 'marks-predictor' && <MarksPredictor />}
       </div>
     );
   }
