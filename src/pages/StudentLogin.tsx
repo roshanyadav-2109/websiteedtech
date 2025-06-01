@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { FcGoogle } from "react-icons/fc";
@@ -17,6 +18,9 @@ const StudentLogin = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [examType, setExamType] = useState("");
+  const [branch, setBranch] = useState("");
+  const [level, setLevel] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -46,9 +50,23 @@ const StudentLogin = () => {
           return;
         }
 
+        // Prepare user metadata for signup
+        const userMetadata: any = {
+          exam: examType
+        };
+
+        // Add IITM BS specific data if selected
+        if (examType === 'IITM-BS') {
+          userMetadata.branch = branch;
+          userMetadata.level = level;
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: userMetadata
+          }
         });
         
         if (error) throw error;
@@ -183,6 +201,57 @@ const StudentLogin = () => {
                   required
                 />
               </div>
+
+              {isSignUp && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="exam">Which exam are you preparing for?</Label>
+                    <Select value={examType} onValueChange={setExamType} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select exam type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="JEE">JEE (Engineering)</SelectItem>
+                        <SelectItem value="NEET">NEET (Medical)</SelectItem>
+                        <SelectItem value="IITM-BS">IIT Madras BS Degree</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {examType === 'IITM-BS' && (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="branch">Branch</Label>
+                        <Select value={branch} onValueChange={setBranch} required>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select branch" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="data-science">BS Data Science</SelectItem>
+                            <SelectItem value="electronic-systems">BS Electronic Systems</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="level">Level</Label>
+                        <Select value={level} onValueChange={setLevel} required>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="qualifier">Qualifier</SelectItem>
+                            <SelectItem value="foundation">Foundation</SelectItem>
+                            <SelectItem value="diploma">Diploma</SelectItem>
+                            <SelectItem value="degree">Degree</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
               <Button type="submit" className="w-full bg-royal hover:bg-royal-dark" disabled={isLoading}>
                 {isLoading ? "Processing..." : (isSignUp ? "Sign Up" : "Login")}
               </Button>

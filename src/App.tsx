@@ -88,6 +88,8 @@ const App = () => {
             <Route path="/exam-preparation/iitm-bs" element={<IITMBSPrep />} />
             <Route path="/career" element={<Career />} />
             <Route path="/intern-verification" element={<InternVerification />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
             
             {/* Student Authentication Routes */}
             <Route path="/auth" element={<StudentLogin />} />
