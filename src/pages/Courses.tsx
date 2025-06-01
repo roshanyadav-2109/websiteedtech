@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { 
   BookOpen, 
@@ -12,51 +14,12 @@ import {
   Users, 
   Calendar, 
   CheckCircle,
-  Lock
+  Filter
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
 
 const Courses = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      setIsAuthenticated(!!data.session);
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleEnroll = (courseId: number) => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Login Required",
-        description: "Please login to enroll in courses",
-        variant: "default",
-      });
-      localStorage.setItem('authRedirectUrl', '/courses');
-      window.location.href = '/auth';
-      return;
-    }
-    
-    // Proceed with enrollment for authenticated users
-    toast({
-      title: "Enrollment Started",
-      description: "Redirecting to payment...",
-    });
-    // Add payment integration here
-  };
 
   const categories = [
     { id: "all", name: "All Courses" },
@@ -282,13 +245,7 @@ const Courses = () => {
                         <span className="text-xl font-bold text-royal">{course.discountedPrice}</span>
                         <span className="ml-2 text-gray-500 line-through">{course.price}</span>
                       </div>
-                      <Button 
-                        onClick={() => handleEnroll(course.id)}
-                        className={`${course.bestseller ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' : 'bg-royal hover:bg-royal-dark'} text-white px-5 py-2 relative`}
-                      >
-                        {!isAuthenticated && (
-                          <Lock className="h-4 w-4 mr-2" />
-                        )}
+                      <Button className={`${course.bestseller ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' : 'bg-royal hover:bg-royal-dark'} text-white px-5 py-2`}>
                         Enroll Now
                       </Button>
                     </CardFooter>

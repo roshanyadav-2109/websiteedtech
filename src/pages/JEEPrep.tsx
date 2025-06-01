@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import JEESubjectBlock from "@/components/JEESubjectBlock";
 import JEEPYQTab from "@/components/JEEPYQTab";
-import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
+import AuthWrapper from "@/components/AuthWrapper";
 
 const JEEPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -165,8 +165,8 @@ const JEEPrep = () => {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Tabs defaultValue="subjects" className="w-full">
-              <div className="w-full overflow-hidden">
-                <TabsList className="w-full justify-start">
+              <div className="overflow-x-auto pb-2 tabs-mobile">
+                <TabsList className="tabs-list w-full">
                   <TabsTrigger value="subjects" className="rounded-md">Subjects</TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-md">PYQs</TabsTrigger>
                   <TabsTrigger value="community" className="rounded-md">Padhai Mitra</TabsTrigger>
@@ -188,13 +188,13 @@ const JEEPrep = () => {
                       &larr; Back to Subjects
                     </Button>
                     
-                    <OptimizedAuthWrapper contentType="notes" examType="JEE">
+                    <AuthWrapper>
                       <JEESubjectBlock 
                         subject={activeSubject}
                         downloads={downloads}
                         onDownload={handleDownload}
                       />
-                    </OptimizedAuthWrapper>
+                    </AuthWrapper>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -223,16 +223,16 @@ const JEEPrep = () => {
               </TabsContent>
               
               <TabsContent value="pyqs">
-                <OptimizedAuthWrapper contentType="pyqs" examType="JEE">
+                <AuthWrapper>
                   <JEEPYQTab 
                     downloads={downloads}
                     onDownload={handleDownload}
                   />
-                </OptimizedAuthWrapper>
+                </AuthWrapper>
               </TabsContent>
 
               <TabsContent value="community">
-                <OptimizedAuthWrapper contentType="community" examType="JEE">
+                <AuthWrapper>
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <div className="lg:col-span-8">
                       <h3 className="text-2xl font-bold mb-6">Padhai Mitra Community Links</h3>
@@ -317,7 +317,7 @@ const JEEPrep = () => {
                       </div>
                     </div>
                   </div>
-                </OptimizedAuthWrapper>
+                </AuthWrapper>
               </TabsContent>
 
               <TabsContent value="syllabus">
