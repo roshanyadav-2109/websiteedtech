@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import StudentLogin from "./pages/StudentLogin";
 import StudentGoogleCallback from "./pages/StudentGoogleCallback";
 import ProfileComplete from "./pages/ProfileComplete";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import { useEffect, useState } from "react";
 import { supabase } from "./integrations/supabase/client";
 

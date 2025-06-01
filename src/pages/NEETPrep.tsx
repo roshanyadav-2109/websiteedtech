@@ -17,6 +17,16 @@ import AdminAddButton from "@/components/admin/AdminAddButton";
 const NEETPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("notes");
+  const [downloads, setDownloads] = useState<Record<string, number>>({});
+
+  const handleDownload = (id: string) => {
+    setDownloads(prev => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1
+    }));
+    console.log(`Downloading: ${id}`);
+    // Here you would implement the actual download logic
+  };
 
   const renderTabContent = (tab: string, content: React.ReactNode) => {
     const protectedTabs = ["mock-tests", "doubt-resolution", "study-groups", "mentorship"];
@@ -103,9 +113,9 @@ const NEETPrep = () => {
                 </div>
                 {renderTabContent("notes", 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <NEETSubjectBlock subject="Biology" />
-                    <NEETSubjectBlock subject="Physics" />
-                    <NEETSubjectBlock subject="Chemistry" />
+                    <NEETSubjectBlock subject="Biology" downloads={downloads} onDownload={handleDownload} />
+                    <NEETSubjectBlock subject="Physics" downloads={downloads} onDownload={handleDownload} />
+                    <NEETSubjectBlock subject="Chemistry" downloads={downloads} onDownload={handleDownload} />
                   </div>
                 )}
               </TabsContent>
@@ -119,7 +129,7 @@ const NEETPrep = () => {
                     onAdd={() => handleAddContent("pyqs")} 
                   />
                 </div>
-                {renderTabContent("pyqs", <NEETPYQTab />)}
+                {renderTabContent("pyqs", <NEETPYQTab downloads={downloads} onDownload={handleDownload} />)}
               </TabsContent>
 
               <TabsContent value="mock-tests">

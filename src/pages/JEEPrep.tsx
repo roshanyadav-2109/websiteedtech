@@ -17,6 +17,16 @@ import AdminAddButton from "@/components/admin/AdminAddButton";
 const JEEPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("notes");
+  const [downloads, setDownloads] = useState<Record<string, number>>({});
+
+  const handleDownload = (id: string) => {
+    setDownloads(prev => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1
+    }));
+    console.log(`Downloading: ${id}`);
+    // Here you would implement the actual download logic
+  };
 
   const renderTabContent = (tab: string, content: React.ReactNode) => {
     const protectedTabs = ["mock-tests", "doubt-resolution", "study-groups", "mentorship"];
@@ -103,9 +113,9 @@ const JEEPrep = () => {
                 </div>
                 {renderTabContent("notes", 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <JEESubjectBlock subject="Physics" />
-                    <JEESubjectBlock subject="Chemistry" />
-                    <JEESubjectBlock subject="Mathematics" />
+                    <JEESubjectBlock subject="Physics" downloads={downloads} onDownload={handleDownload} />
+                    <JEESubjectBlock subject="Chemistry" downloads={downloads} onDownload={handleDownload} />
+                    <JEESubjectBlock subject="Mathematics" downloads={downloads} onDownload={handleDownload} />
                   </div>
                 )}
               </TabsContent>
@@ -119,7 +129,7 @@ const JEEPrep = () => {
                     onAdd={() => handleAddContent("pyqs")} 
                   />
                 </div>
-                {renderTabContent("pyqs", <JEEPYQTab />)}
+                {renderTabContent("pyqs", <JEEPYQTab downloads={downloads} onDownload={handleDownload} />)}
               </TabsContent>
 
               <TabsContent value="mock-tests">
