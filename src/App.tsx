@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,7 @@ import GoogleCallback from "./pages/GoogleCallback";
 import AdminDashboard from "./pages/AdminDashboard";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +47,9 @@ const App = () => {
               {/* Authentication Routes */}
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth/google-callback" element={<GoogleCallback />} />
+              
+              {/* Dashboard Route */}
+              <Route path="/dashboard" element={<Dashboard />} />
               
               {/* Admin Routes */}
               <Route path="/admin/dashboard" element={<AdminDashboard />} />

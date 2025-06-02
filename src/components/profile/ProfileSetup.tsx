@@ -16,8 +16,7 @@ interface ProfileSetupProps {
 
 const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   const [programType, setProgramType] = useState<'IITM_BS' | 'COMPETITIVE_EXAM' | ''>('');
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [studentName, setStudentName] = useState('');
   
   // IITM BS fields
   const [branch, setBranch] = useState('');
@@ -32,7 +31,14 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   const { toast } = useToast();
   const { user } = useAuth();
 
-  const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology'];
+  const getSubjectsForExam = (exam: string) => {
+    if (exam === 'JEE') {
+      return ['Mathematics', 'Physics', 'Chemistry'];
+    } else if (exam === 'NEET') {
+      return ['Mathematics', 'Physics', 'Chemistry', 'Biology'];
+    }
+    return [];
+  };
 
   const handleSubjectChange = (subject: string, checked: boolean) => {
     if (checked) {
@@ -42,18 +48,69 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
     }
   };
 
+  const handleExamTypeChange = (exam: string) => {
+    setExamType(exam);
+    setSelectedSubjects([]); // Reset subjects when exam changes
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    // Validation
+    if (!studentName.trim()) {
+      toast({
+        title: "Student name required",
+        description: "Please enter your full name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!programType) {
+      toast({
+        title: "Program type required",
+        description: "Please select your program type",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (programType === 'IITM_BS') {
+      if (!branch || !level) {
+        toast({
+          title: "Branch and level required",
+          description: "Please select your branch and level",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else if (programType === 'COMPETITIVE_EXAM') {
+      if (!examType || !studentStatus) {
+        toast({
+          title: "Exam type and status required",
+          description: "Please select your exam type and student status",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (selectedSubjects.length === 0) {
+        toast({
+          title: "Subjects required",
+          description: "Please select at least one subject",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
 
     setIsLoading(true);
 
     try {
       const profileData: any = {
         id: user.id,
-        full_name: fullName,
+        full_name: studentName,
         email: user.email,
-        phone,
         program_type: programType,
         profile_completed: true
       };
@@ -100,29 +157,16 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Basic Information</h3>
-            
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name *</Label>
-              <Input
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number *</Label>
-              <Input
-                id="phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </div>
+          {/* Student Name - Always Required */}
+          <div className="space-y-2">
+            <Label htmlFor="studentName">Student Name *</Label>
+            <Input
+              id="studentName"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+              placeholder="Enter your full name"
+              required
+            />
           </div>
 
           {/* Program Type Selection */}
@@ -180,7 +224,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Exam Type *</Label>
-                  <Select value={examType} onValueChange={setExamType} required>
+                  <Select value={examType} onValueChange={handleExamTypeChange} required>
                     <SelectTrigger>
                       <SelectValue placeholder="Select exam" />
                     </SelectTrigger>
@@ -205,21 +249,23 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Subjects of Interest *</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {subjects.map((subject) => (
-                      <div key={subject} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={subject}
-                          checked={selectedSubjects.includes(subject)}
-                          onCheckedChange={(checked) => handleSubjectChange(subject, checked as boolean)}
-                        />
-                        <Label htmlFor={subject}>{subject}</Label>
-                      </div>
-                    ))}
+                {examType && (
+                  <div className="space-y-2">
+                    <Label>Subjects of Interest *</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {getSubjectsForExam(examType).map((subject) => (
+                        <div key={subject} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={subject}
+                            checked={selectedSubjects.includes(subject)}
+                            onCheckedChange={(checked) => handleSubjectChange(subject, checked as boolean)}
+                          />
+                          <Label htmlFor={subject}>{subject}</Label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
           </div>
