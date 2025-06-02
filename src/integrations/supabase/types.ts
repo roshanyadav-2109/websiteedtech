@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string
+          id: string
+          is_super_admin: boolean
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email: string
+          id?: string
+          is_super_admin?: boolean
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          id?: string
+          is_super_admin?: boolean
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           bestseller: boolean | null
@@ -101,36 +125,276 @@ export type Database = {
           },
         ]
       }
+      important_dates: {
+        Row: {
+          branch: string | null
+          created_at: string
+          created_by: string | null
+          date_value: string
+          description: string | null
+          exam_type: string | null
+          id: string
+          level: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          branch?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_value: string
+          description?: string | null
+          exam_type?: string | null
+          id?: string
+          level?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          branch?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_value?: string
+          description?: string | null
+          exam_type?: string | null
+          id?: string
+          level?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      news_updates: {
+        Row: {
+          branch: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          exam_type: string | null
+          id: string
+          is_featured: boolean | null
+          level: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          branch?: string | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          exam_type?: string | null
+          id?: string
+          is_featured?: boolean | null
+          level?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          branch?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          exam_type?: string | null
+          id?: string
+          is_featured?: boolean | null
+          level?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          branch: string | null
+          class_level: string | null
+          content_url: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          exam_type: string | null
+          id: string
+          level: string | null
+          subject: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          branch?: string | null
+          class_level?: string | null
+          content_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          exam_type?: string | null
+          id?: string
+          level?: string | null
+          subject?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          branch?: string | null
+          class_level?: string | null
+          content_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          exam_type?: string | null
+          id?: string
+          level?: string | null
+          subject?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          branch: string | null
           class: string | null
           created_at: string | null
           email: string | null
           exam: string | null
+          exam_type: string | null
           full_name: string | null
           id: string
+          level: string | null
           phone: string | null
+          profile_completed: boolean | null
+          program_type: string | null
+          selected_subjects: string[] | null
+          student_status: string | null
           updated_at: string | null
         }
         Insert: {
+          branch?: string | null
           class?: string | null
           created_at?: string | null
           email?: string | null
           exam?: string | null
+          exam_type?: string | null
           full_name?: string | null
           id: string
+          level?: string | null
           phone?: string | null
+          profile_completed?: boolean | null
+          program_type?: string | null
+          selected_subjects?: string[] | null
+          student_status?: string | null
           updated_at?: string | null
         }
         Update: {
+          branch?: string | null
           class?: string | null
           created_at?: string | null
           email?: string | null
           exam?: string | null
+          exam_type?: string | null
           full_name?: string | null
           id?: string
+          level?: string | null
           phone?: string | null
+          profile_completed?: boolean | null
+          program_type?: string | null
+          selected_subjects?: string[] | null
+          student_status?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      pyqs: {
+        Row: {
+          branch: string | null
+          class_level: string | null
+          content_url: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          exam_type: string | null
+          id: string
+          level: string | null
+          subject: string | null
+          title: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          branch?: string | null
+          class_level?: string | null
+          content_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          exam_type?: string | null
+          id?: string
+          level?: string | null
+          subject?: string | null
+          title: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          branch?: string | null
+          class_level?: string | null
+          content_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          exam_type?: string | null
+          id?: string
+          level?: string | null
+          subject?: string | null
+          title?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      study_groups: {
+        Row: {
+          branch: string | null
+          class_level: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          exam_type: string | null
+          group_type: string | null
+          id: string
+          invite_link: string | null
+          level: string | null
+          name: string
+          subjects: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          branch?: string | null
+          class_level?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          exam_type?: string | null
+          group_type?: string | null
+          id?: string
+          invite_link?: string | null
+          level?: string | null
+          name: string
+          subjects?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          branch?: string | null
+          class_level?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          exam_type?: string | null
+          group_type?: string | null
+          id?: string
+          invite_link?: string | null
+          level?: string | null
+          name?: string
+          subjects?: string[] | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -163,7 +427,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: { user_email: string }
+        Returns: boolean
+      }
+      is_super_admin: {
+        Args: { user_email: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

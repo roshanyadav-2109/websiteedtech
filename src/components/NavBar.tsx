@@ -1,52 +1,14 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Menu, X, ChevronDown, Shield } from "lucide-react";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        setIsAuthenticated(!!data.session);
-      } catch (error) {
-        setIsAuthenticated(false);
-      }
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      toast({
-        title: "Logged out successfully",
-        description: "You have been logged out.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error logging out",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
+  const { user, isLoading, signOut, isAdmin } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -143,23 +105,39 @@ const NavBar = () => {
               >
                 Career
               </Link>
+
+              {/* Admin Dashboard Link */}
+              {isAdmin && (
+                <Link
+                  to="/admin/dashboard"
+                  className={`px-3 py-2 rounded-md text-sm font-medium hover:text-royal transition-colors flex items-center ${
+                    location.pathname === "/admin/dashboard" ? "text-royal" : "text-gray-900"
+                  }`}
+                >
+                  <Shield className="h-4 w-4 mr-1" />
+                  Admin
+                </Link>
+              )}
             </div>
           </div>
 
           {/* Auth Buttons */}
           <div className="hidden md:block">
-            {isAuthenticated === null ? (
+            {isLoading ? (
               <div className="animate-pulse">
                 <div className="h-8 w-20 bg-gray-200 rounded"></div>
               </div>
-            ) : isAuthenticated ? (
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                className="text-royal border-royal hover:bg-royal hover:text-white"
-              >
-                Logout
-              </Button>
+            ) : user ? (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-700">Hi, {user.email?.split('@')[0]}</span>
+                <Button
+                  onClick={signOut}
+                  variant="outline"
+                  className="text-royal border-royal hover:bg-royal hover:text-white"
+                >
+                  Logout
+                </Button>
+              </div>
             ) : (
               <Link to="/auth">
                 <Button className="bg-royal hover:bg-royal-dark text-white">
@@ -242,21 +220,32 @@ const NavBar = () => {
               
               {/* Mobile Auth Buttons */}
               <div className="px-3 py-2">
-                {isAuthenticated === null ? (
+                {isLoading ? (
                   <div className="animate-pulse">
                     <div className="h-8 w-20 bg-gray-200 rounded"></div>
                   </div>
-                ) : isAuthenticated ? (
-                  <Button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    variant="outline"
-                    className="w-full text-royal border-royal hover:bg-royal hover:text-white"
-                  >
-                    Logout
-                  </Button>
+                ) : user ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-700">Hi, {user.email?.split('@')[0]}</p>
+                    {isAdmin && (
+                      <Link to="/admin/dashboard" onClick={() => setIsMenuOpen(false)}>
+                        <Button variant="outline" className="w-full mb-2">
+                          <Shield className="h-4 w-4 mr-2" />
+                          Admin Dashboard
+                        </Button>
+                      </Link>
+                    )}
+                    <Button
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                      variant="outline"
+                      className="w-full text-royal border-royal hover:bg-royal hover:text-white"
+                    >
+                      Logout
+                    </Button>
+                  </div>
                 ) : (
                   <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                     <Button className="w-full bg-royal hover:bg-royal-dark text-white">

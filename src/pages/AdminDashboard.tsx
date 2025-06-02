@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import AdminCheck from "@/components/admin/AdminCheck";
+import SuperAdminPanel from "@/components/admin/SuperAdminPanel";
 
-// Admin component imports
+// Import existing admin components
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
 import CoursesManagerTab from "@/components/admin/CoursesManagerTab";
@@ -17,29 +17,7 @@ import JobsManagerTab from "@/components/admin/JobsManagerTab";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("courses");
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkAdminAuth = async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        
-        if (data?.session?.user && data.session.user.email === "help.unknowniitians@gmail.com") {
-          setIsAdmin(true);
-        } else {
-          navigate("/admin");
-        }
-      } catch (error) {
-        navigate("/admin");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAdminAuth();
-  }, [navigate]);
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -49,48 +27,52 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!isAdmin) {
-    return null; // Will redirect in useEffect
-  }
-
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      {/* Main content */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <AdminHeader />
+    <AdminCheck>
+      <div className="flex h-screen bg-gray-100">
+        {/* Sidebar */}
+        <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsContent value="courses" className="mt-0">
-              <CoursesManagerTab />
-            </TabsContent>
-            
-            <TabsContent value="notes" className="mt-0">
-              <NotesManagerTab />
-            </TabsContent>
-            
-            <TabsContent value="pyqs" className="mt-0">
-              <PYQsManagerTab />
-            </TabsContent>
-            
-            <TabsContent value="news" className="mt-0">
-              <NewsManagerTab />
-            </TabsContent>
-            
-            <TabsContent value="dates" className="mt-0">
-              <DatesManagerTab />
-            </TabsContent>
-            
-            <TabsContent value="jobs" className="mt-0">
-              <JobsManagerTab />
-            </TabsContent>
-          </Tabs>
-        </main>
+        {/* Main content */}
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <AdminHeader />
+          
+          <main className="flex-1 overflow-y-auto p-4 md:p-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsContent value="courses" className="mt-0">
+                <CoursesManagerTab />
+              </TabsContent>
+              
+              <TabsContent value="notes" className="mt-0">
+                <NotesManagerTab />
+              </TabsContent>
+              
+              <TabsContent value="pyqs" className="mt-0">
+                <PYQsManagerTab />
+              </TabsContent>
+              
+              <TabsContent value="news" className="mt-0">
+                <NewsManagerTab />
+              </TabsContent>
+              
+              <TabsContent value="dates" className="mt-0">
+                <DatesManagerTab />
+              </TabsContent>
+              
+              <TabsContent value="jobs" className="mt-0">
+                <JobsManagerTab />
+              </TabsContent>
+              
+              <TabsContent value="admins" className="mt-0">
+                <AdminCheck requireSuperAdmin>
+                  <SuperAdminPanel />
+                </AdminCheck>
+              </TabsContent>
+            </Tabs>
+          </main>
+        </div>
       </div>
-    </div>
+    </AdminCheck>
   );
 };
 
