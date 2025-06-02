@@ -29,7 +29,7 @@ const JEEPrep = () => {
   };
 
   const renderTabContent = (tab: string, content: React.ReactNode) => {
-    const protectedTabs = ["mock-tests", "doubt-resolution", "study-groups", "mentorship"];
+    const protectedTabs = ["study-groups", "news-updates", "important-dates"];
     
     if (protectedTabs.includes(tab)) {
       return <OptimizedAuthWrapper>{content}</OptimizedAuthWrapper>;
@@ -85,19 +85,16 @@ const JEEPrep = () => {
                     Notes
                   </TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-md flex-shrink-0">
-                    Previous Papers
-                  </TabsTrigger>
-                  <TabsTrigger value="mock-tests" className="rounded-md flex-shrink-0">
-                    Mock Tests
-                  </TabsTrigger>
-                  <TabsTrigger value="doubt-resolution" className="rounded-md flex-shrink-0">
-                    Doubt Resolution
+                    Previous Year Papers
                   </TabsTrigger>
                   <TabsTrigger value="study-groups" className="rounded-md flex-shrink-0">
                     Study Groups
                   </TabsTrigger>
-                  <TabsTrigger value="mentorship" className="rounded-md flex-shrink-0">
-                    Mentorship
+                  <TabsTrigger value="news-updates" className="rounded-md flex-shrink-0">
+                    News Updates
+                  </TabsTrigger>
+                  <TabsTrigger value="important-dates" className="rounded-md flex-shrink-0">
+                    Important Dates
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -132,38 +129,6 @@ const JEEPrep = () => {
                 {renderTabContent("pyqs", <JEEPYQTab downloads={downloads} onDownload={handleDownload} />)}
               </TabsContent>
 
-              <TabsContent value="mock-tests">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Mock Tests</h2>
-                  <AdminAddButton 
-                    contentType="Mock Test" 
-                    examType="JEE"
-                    onAdd={() => handleAddContent("mock-tests")} 
-                  />
-                </div>
-                {renderTabContent("mock-tests", 
-                  <div className="text-center py-8">
-                    <p className="text-gray-600">Mock tests feature coming soon...</p>
-                  </div>
-                )}
-              </TabsContent>
-
-              <TabsContent value="doubt-resolution">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Doubt Resolution</h2>
-                  <AdminAddButton 
-                    contentType="Doubt Session" 
-                    examType="JEE"
-                    onAdd={() => handleAddContent("doubt-resolution")} 
-                  />
-                </div>
-                {renderTabContent("doubt-resolution", 
-                  <div className="text-center py-8">
-                    <p className="text-gray-600">Doubt resolution feature coming soon...</p>
-                  </div>
-                )}
-              </TabsContent>
-
               <TabsContent value="study-groups">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Study Groups</h2>
@@ -180,18 +145,34 @@ const JEEPrep = () => {
                 )}
               </TabsContent>
 
-              <TabsContent value="mentorship">
+              <TabsContent value="news-updates">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Mentorship Program</h2>
+                  <h2 className="text-2xl font-bold">News Updates</h2>
                   <AdminAddButton 
-                    contentType="Mentor" 
+                    contentType="News" 
                     examType="JEE"
-                    onAdd={() => handleAddContent("mentorship")} 
+                    onAdd={() => handleAddContent("news-updates")} 
                   />
                 </div>
-                {renderTabContent("mentorship", 
+                {renderTabContent("news-updates", 
                   <div className="text-center py-8">
-                    <p className="text-gray-600">Mentorship program coming soon...</p>
+                    <p className="text-gray-600">News updates feature coming soon...</p>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="important-dates">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Important Dates</h2>
+                  <AdminAddButton 
+                    contentType="Important Date" 
+                    examType="JEE"
+                    onAdd={() => handleAddContent("important-dates")} 
+                  />
+                </div>
+                {renderTabContent("important-dates", 
+                  <div className="text-center py-8">
+                    <p className="text-gray-600">Important dates feature coming soon...</p>
                   </div>
                 )}
               </TabsContent>
