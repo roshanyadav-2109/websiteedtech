@@ -17,6 +17,8 @@ import AdminAddButton from "@/components/admin/AdminAddButton";
 const NEETPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("notes");
+  const [activeSubject, setActiveSubject] = useState("Physics");
+  const [activeClass, setActiveClass] = useState("class11");
   const [downloads, setDownloads] = useState<Record<string, number>>({});
 
   const handleDownload = (id: string) => {
@@ -29,7 +31,7 @@ const NEETPrep = () => {
   };
 
   const renderTabContent = (tab: string, content: React.ReactNode) => {
-    const protectedTabs = ["study-groups", "news-updates", "important-dates"];
+    const protectedTabs = ["study-groups", "pyqs"];
     
     if (protectedTabs.includes(tab)) {
       return <OptimizedAuthWrapper>{content}</OptimizedAuthWrapper>;
@@ -42,6 +44,12 @@ const NEETPrep = () => {
     console.log(`Adding ${contentType} for NEET`);
     // This will be implemented with admin forms
   };
+
+  const subjects = ["Physics", "Botany", "Zoology", "Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry"];
+  const classes = [
+    { value: "class11", label: "Class 11" },
+    { value: "class12", label: "Class 12" }
+  ];
 
   return (
     <>
@@ -108,12 +116,44 @@ const NEETPrep = () => {
                     onAdd={() => handleAddContent("notes")} 
                   />
                 </div>
+
+                {/* Subject Filter Tabs */}
+                <div className="mb-6">
+                  <Tabs value={activeSubject} onValueChange={setActiveSubject}>
+                    <div className="overflow-x-auto pb-2">
+                      <TabsList className="w-full min-w-fit">
+                        {subjects.map((subject) => (
+                          <TabsTrigger key={subject} value={subject} className="rounded-md flex-shrink-0">
+                            {subject}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                    </div>
+                  </Tabs>
+                </div>
+
+                {/* Class Filter */}
+                <div className="mb-6">
+                  <Tabs value={activeClass} onValueChange={setActiveClass}>
+                    <div className="overflow-x-auto pb-2">
+                      <TabsList className="w-full min-w-fit">
+                        {classes.map((classItem) => (
+                          <TabsTrigger key={classItem.value} value={classItem.value} className="rounded-md flex-shrink-0">
+                            {classItem.label}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                    </div>
+                  </Tabs>
+                </div>
+
                 {renderTabContent("notes", 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <NEETSubjectBlock subject="Biology" downloads={downloads} onDownload={handleDownload} />
-                    <NEETSubjectBlock subject="Physics" downloads={downloads} onDownload={handleDownload} />
-                    <NEETSubjectBlock subject="Chemistry" downloads={downloads} onDownload={handleDownload} />
-                  </div>
+                  <NEETSubjectBlock 
+                    subject={activeSubject} 
+                    downloads={downloads} 
+                    onDownload={handleDownload}
+                    selectedClass={activeClass}
+                  />
                 )}
               </TabsContent>
 
