@@ -14,6 +14,7 @@ import PYQsManagerTab from "@/components/admin/PYQsManagerTab";
 import NewsManagerTab from "@/components/admin/NewsManagerTab";
 import DatesManagerTab from "@/components/admin/DatesManagerTab";
 import JobsManagerTab from "@/components/admin/JobsManagerTab";
+import CommunitiesManagerTab from "@/components/admin/CommunitiesManagerTab";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("courses");
@@ -61,6 +62,10 @@ const AdminDashboard = () => {
               
               <TabsContent value="jobs" className="mt-0">
                 <JobsManagerTab />
+              </TabsContent>
+              
+              <TabsContent value="communities" className="mt-0">
+                <CommunitiesManagerTab />
               </TabsContent>
               
               <TabsContent value="admins" className="mt-0">

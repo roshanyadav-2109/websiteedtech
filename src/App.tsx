@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +21,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Dashboard from "./pages/Dashboard";
+import ProfileComplete from "./pages/ProfileComplete";
+import Communities from "./pages/Communities";
 
 const queryClient = new QueryClient();
 
@@ -48,8 +51,14 @@ const App = () => {
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth/google-callback" element={<GoogleCallback />} />
               
+              {/* Profile Routes */}
+              <Route path="/profile/complete" element={<ProfileComplete />} />
+              
               {/* Dashboard Route */}
               <Route path="/dashboard" element={<Dashboard />} />
+              
+              {/* Communities Route */}
+              <Route path="/communities" element={<Communities />} />
               
               {/* Admin Routes */}
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
