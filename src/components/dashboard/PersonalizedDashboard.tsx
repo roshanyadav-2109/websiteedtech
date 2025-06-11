@@ -23,6 +23,15 @@ interface ContentItem {
   created_at: string;
 }
 
+interface StudyGroup {
+  id: string;
+  name: string;
+  description?: string;
+  group_type?: string;
+  invite_link?: string;
+  created_at: string;
+}
+
 const PersonalizedDashboard: React.FC = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -30,7 +39,7 @@ const PersonalizedDashboard: React.FC = () => {
   const [pyqs, setPyqs] = useState<ContentItem[]>([]);
   const [news, setNews] = useState<ContentItem[]>([]);
   const [dates, setDates] = useState<ContentItem[]>([]);
-  const [studyGroups, setStudyGroups] = useState<ContentItem[]>([]);
+  const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -260,7 +269,7 @@ const PersonalizedDashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {studyGroups.slice(0, 4).map((group) => (
                   <div key={group.id} className="p-3 border rounded-lg">
-                    <p className="font-medium text-sm">{group.title}</p>
+                    <p className="font-medium text-sm">{group.name}</p>
                     <p className="text-xs text-gray-500 mt-1">{group.description}</p>
                   </div>
                 ))}
