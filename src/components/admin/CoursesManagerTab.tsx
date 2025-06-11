@@ -1,29 +1,16 @@
+
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Plus, Pencil, Trash } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/use-toast";
+import { Plus, Edit, Trash2, BookOpen } from "lucide-react";
 
 interface Course {
   id: string;
@@ -31,532 +18,349 @@ interface Course {
   description: string;
   category: string;
   price: number;
-  discounted_price: number | null;
+  discounted_price?: number;
   duration: string;
-  image_url: string | null;
+  features: string[];
+  image_url?: string;
   bestseller: boolean;
   students: number;
   rating: number;
-  features: string[];
-}
-
-// Define CourseFormData for the required fields from Supabase schema
-interface CourseFormData {
-  title: string;
-  description: string;
-  category: string;
-  price: number;
-  discounted_price?: number | null;
-  duration: string;
-  image_url?: string | null;
-  bestseller?: boolean;
-  students?: number;
-  rating?: number;
-  features?: string[];
+  created_at: string;
 }
 
 const CoursesManagerTab = () => {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
-  const [formData, setFormData] = useState<CourseFormData>({
-    title: "",
-    description: "",
-    category: "",
-    price: 0,
-    discounted_price: null,
-    duration: "",
-    image_url: "",
-    bestseller: false,
-    features: [],
-    students: 0,
-    rating: 4.0,
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const { toast } = useToast();
+
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    price: '',
+    discounted_price: '',
+    duration: '',
+    features: '',
+    image_url: '',
+    bestseller: false,
+  });
+
+  const categories = ['IITM BS', 'JEE', 'NEET', 'General'];
+
+  const fetchCourses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCourses(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch courses",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     fetchCourses();
   }, []);
 
-  const fetchCourses = async () => {
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      category: '',
+      price: '',
+      discounted_price: '',
+      duration: '',
+      features: '',
+      image_url: '',
+      bestseller: false,
+    });
+    setEditingCourse(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
     try {
-      setLoading(true);
-      const { data, error } = await supabase.from("courses").select("*");
-      
-      if (error) throw error;
-      
-      setCourses(data || []);
+      const courseData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        price: parseFloat(formData.price),
+        discounted_price: formData.discounted_price ? parseFloat(formData.discounted_price) : null,
+        duration: formData.duration,
+        features: formData.features.split('\n').filter(f => f.trim()),
+        image_url: formData.image_url || null,
+        bestseller: formData.bestseller,
+      };
+
+      if (editingCourse) {
+        const { error } = await supabase
+          .from('courses')
+          .update(courseData)
+          .eq('id', editingCourse.id);
+
+        if (error) throw error;
+        toast({ title: "Success", description: "Course updated successfully" });
+      } else {
+        const { error } = await supabase
+          .from('courses')
+          .insert([courseData]);
+
+        if (error) throw error;
+        toast({ title: "Success", description: "Course created successfully" });
+      }
+
+      resetForm();
+      setIsDialogOpen(false);
+      fetchCourses();
     } catch (error: any) {
       toast({
-        title: "Error fetching courses",
-        description: error.message,
+        title: "Error",
+        description: error.message || "Failed to save course",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    
-    if (name === "price" || name === "discounted_price") {
-      setFormData({ ...formData, [name]: parseFloat(value) || 0 });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
-
-  const handleSwitchChange = (checked: boolean) => {
-    setFormData({ ...formData, bestseller: checked });
-  };
-
-  const handleFeaturesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const featuresArray = e.target.value
-      .split("\n")
-      .filter((feature) => feature.trim() !== "");
-    setFormData({ ...formData, features: featuresArray });
-  };
-
-  const handleAddCourse = async () => {
-    try {
-      // Ensure all required fields are present
-      if (!formData.title || !formData.description || !formData.category || !formData.price || !formData.duration) {
-        toast({
-          title: "Missing required fields",
-          description: "Please fill in all required fields",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // Fix: Insert formData directly as it now matches the required schema
-      const { error } = await supabase.from("courses").insert(formData);
-      
-      if (error) throw error;
-      
-      setIsAddDialogOpen(false);
-      resetForm();
-      fetchCourses();
-      toast({
-        title: "Course added successfully",
-        description: `${formData.title} has been added to courses`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error adding course",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleEditClick = (course: Course) => {
-    setCurrentCourse(course);
-    setFormData(course);
-    setIsEditDialogOpen(true);
-  };
-
-  const handleUpdateCourse = async () => {
-    if (!currentCourse) return;
-    
-    try {
-      // Ensure required fields are present for update
-      if (!formData.title || !formData.description || !formData.category || !formData.price || !formData.duration) {
-        toast({
-          title: "Missing required fields",
-          description: "Please fill in all required fields",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      const { error } = await supabase
-        .from("courses")
-        .update(formData)
-        .eq("id", currentCourse.id);
-      
-      if (error) throw error;
-      
-      setIsEditDialogOpen(false);
-      resetForm();
-      fetchCourses();
-      toast({
-        title: "Course updated successfully",
-        description: `${formData.title} has been updated`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error updating course",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeleteCourse = async (courseId: string, courseTitle: string) => {
-    if (!window.confirm(`Are you sure you want to delete "${courseTitle}"?`)) {
-      return;
-    }
-    
-    try {
-      const { error } = await supabase.from("courses").delete().eq("id", courseId);
-      
-      if (error) throw error;
-      
-      fetchCourses();
-      toast({
-        title: "Course deleted successfully",
-        description: `${courseTitle} has been removed`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error deleting course",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const resetForm = () => {
+  const handleEdit = (course: Course) => {
+    setEditingCourse(course);
     setFormData({
-      title: "",
-      description: "",
-      category: "",
-      price: 0,
-      discounted_price: null,
-      duration: "",
-      image_url: "",
-      bestseller: false,
-      features: [],
-      students: 0,
-      rating: 4.0,
+      title: course.title,
+      description: course.description,
+      category: course.category,
+      price: course.price.toString(),
+      discounted_price: course.discounted_price?.toString() || '',
+      duration: course.duration,
+      features: course.features.join('\n'),
+      image_url: course.image_url || '',
+      bestseller: course.bestseller,
     });
-    setCurrentCourse(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = async (courseId: string) => {
+    if (!confirm('Are you sure you want to delete this course?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('courses')
+        .delete()
+        .eq('id', courseId);
+
+      if (error) throw error;
+      toast({ title: "Success", description: "Course deleted successfully" });
+      fetchCourses();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to delete course",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold">Courses Management</h2>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-royal hover:bg-royal-dark">
+            <Button className="bg-royal hover:bg-royal-dark" onClick={resetForm}>
               <Plus className="mr-2 h-4 w-4" /> Add New Course
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Add New Course</DialogTitle>
+              <DialogTitle>{editingCourse ? 'Edit Course' : 'Add New Course'}</DialogTitle>
               <DialogDescription>
-                Create a new course that will be displayed on the courses page.
+                {editingCourse ? 'Update course details' : 'Fill in the course information'}
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
                   <Label htmlFor="title">Course Title</Label>
                   <Input
                     id="title"
-                    name="title"
                     value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="Enter course title"
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    required
                   />
                 </div>
-                <div className="space-y-2">
+                <div>
                   <Label htmlFor="category">Category</Label>
-                  <Input
-                    id="category"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Programming, Science, etc."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="price">Price (₹)</Label>
-                  <Input
-                    id="price"
-                    name="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="discounted_price">Discounted Price (₹) (Optional)</Label>
-                  <Input
-                    id="discounted_price"
-                    name="discounted_price"
-                    type="number"
-                    value={formData.discounted_price || ""}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="duration">Duration</Label>
-                  <Input
-                    id="duration"
-                    name="duration"
-                    value={formData.duration}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 8 weeks, 3 months"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="image_url">Image URL</Label>
-                  <Input
-                    id="image_url"
-                    name="image_url"
-                    value={formData.image_url || ""}
-                    onChange={handleInputChange}
-                    placeholder="Enter image URL"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="bestseller" className="block mb-2">Bestseller</Label>
-                  <Switch
-                    id="bestseller"
-                    checked={formData.bestseller || false}
-                    onCheckedChange={handleSwitchChange}
-                  />
+                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-              <div className="space-y-2">
+              
+              <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  name="description"
                   value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Enter course description"
-                  rows={4}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="features">
-                  Features (One feature per line)
-                </Label>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="price">Price (₹)</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="discounted_price">Discounted Price (₹)</Label>
+                  <Input
+                    id="discounted_price"
+                    type="number"
+                    value={formData.discounted_price}
+                    onChange={(e) => setFormData({ ...formData, discounted_price: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="duration">Duration</Label>
+                  <Input
+                    id="duration"
+                    value={formData.duration}
+                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                    placeholder="e.g., 6 months"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="features">Features (one per line)</Label>
                 <Textarea
                   id="features"
-                  value={formData.features?.join("\n") || ""}
-                  onChange={handleFeaturesChange}
-                  placeholder="Enter features (one per line)"
-                  rows={4}
+                  value={formData.features}
+                  onChange={(e) => setFormData({ ...formData, features: e.target.value })}
+                  placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
                 />
               </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button className="bg-royal hover:bg-royal-dark" onClick={handleAddCourse}>
-                Add Course
-              </Button>
-            </DialogFooter>
+
+              <div>
+                <Label htmlFor="image_url">Image URL</Label>
+                <Input
+                  id="image_url"
+                  type="url"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="bestseller"
+                  checked={formData.bestseller}
+                  onChange={(e) => setFormData({ ...formData, bestseller: e.target.checked })}
+                />
+                <Label htmlFor="bestseller">Mark as Bestseller</Label>
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? 'Saving...' : editingCourse ? 'Update' : 'Create'}
+                </Button>
+              </div>
+            </form>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Course</DialogTitle>
-            <DialogDescription>
-              Update the details for this course.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="edit-title">Course Title</Label>
-                <Input
-                  id="edit-title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-category">Category</Label>
-                <Input
-                  id="edit-category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-price">Price (₹)</Label>
-                <Input
-                  id="edit-price"
-                  name="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-discounted_price">Discounted Price (₹)</Label>
-                <Input
-                  id="edit-discounted_price"
-                  name="discounted_price"
-                  type="number"
-                  value={formData.discounted_price || ""}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-duration">Duration</Label>
-                <Input
-                  id="edit-duration"
-                  name="duration"
-                  value={formData.duration}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-image_url">Image URL</Label>
-                <Input
-                  id="edit-image_url"
-                  name="image_url"
-                  value={formData.image_url || ""}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-bestseller" className="block mb-2">Bestseller</Label>
-                <Switch
-                  id="edit-bestseller"
-                  checked={formData.bestseller || false}
-                  onCheckedChange={handleSwitchChange}
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-description">Description</Label>
-              <Textarea
-                id="edit-description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={4}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-features">
-                Features (One feature per line)
-              </Label>
-              <Textarea
-                id="edit-features"
-                value={formData.features?.join("\n") || ""}
-                onChange={handleFeaturesChange}
-                rows={4}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button className="bg-royal hover:bg-royal-dark" onClick={handleUpdateCourse}>
-              Update Course
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Courses List */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {loading ? (
-          <div className="flex items-center justify-center col-span-2 h-32">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        ) : courses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center col-span-2 h-32 border rounded-md p-6 bg-gray-50">
-            <p className="text-gray-500 mb-4">No courses found</p>
-            <Button 
-              className="bg-royal hover:bg-royal-dark"
-              onClick={() => setIsAddDialogOpen(true)}
-            >
-              <Plus className="mr-2 h-4 w-4" /> Add Your First Course
-            </Button>
-          </div>
+      <div className="grid gap-4">
+        {courses.length === 0 ? (
+          <Card className="p-8">
+            <CardContent className="flex flex-col items-center justify-center text-center">
+              <BookOpen className="h-16 w-16 text-gray-300 mb-4" />
+              <p className="text-lg font-medium text-gray-500">No courses found</p>
+              <p className="text-sm text-gray-400 mt-1">Create your first course to get started</p>
+            </CardContent>
+          </Card>
         ) : (
           courses.map((course) => (
-            <Card key={course.id} className="overflow-hidden">
-              <div className="relative h-40 bg-gray-100">
-                {course.image_url ? (
-                  <img
-                    src={course.image_url}
-                    alt={course.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <p className="text-gray-400">No image</p>
-                  </div>
-                )}
-                {course.bestseller && (
-                  <div className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded">
-                    Bestseller
-                  </div>
-                )}
-              </div>
+            <Card key={course.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle>{course.title}</CardTitle>
-                    <CardDescription className="mt-1">{course.category}</CardDescription>
+                    <CardTitle className="flex items-center gap-2">
+                      {course.title}
+                      {course.bestseller && <Badge variant="secondary">Bestseller</Badge>}
+                    </CardTitle>
+                    <CardDescription>{course.description}</CardDescription>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold">
-                      {course.discounted_price ? (
-                        <>
-                          <span className="text-green-600">₹{course.discounted_price}</span>
-                          <span className="ml-2 text-gray-400 line-through text-sm">
-                            ₹{course.price}
-                          </span>
-                        </>
-                      ) : (
-                        <span>₹{course.price}</span>
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-500">{course.duration}</p>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(course)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDelete(course.id)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm line-clamp-2">{course.description}</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium">Category:</span> {course.category}
+                  </div>
+                  <div>
+                    <span className="font-medium">Price:</span> ₹{course.price}
+                    {course.discounted_price && (
+                      <span className="ml-2 text-green-600">₹{course.discounted_price}</span>
+                    )}
+                  </div>
+                  <div>
+                    <span className="font-medium">Duration:</span> {course.duration}
+                  </div>
+                  <div>
+                    <span className="font-medium">Students:</span> {course.students}
+                  </div>
+                </div>
+                {course.features.length > 0 && (
+                  <div className="mt-4">
+                    <span className="font-medium">Features:</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {course.features.map((feature, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {feature}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
-              <CardFooter className="flex justify-between border-t pt-4">
-                <div className="text-sm text-gray-500">
-                  {course.students} students • {course.rating}/5 rating
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleEditClick(course)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => handleDeleteCourse(course.id, course.title)}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardFooter>
             </Card>
           ))
         )}

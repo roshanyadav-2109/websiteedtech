@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userRole, setUserRole] = useState<string | null>(null);
 
   const checkAdminStatus = async () => {
-    if (!user?.id) {
+    if (!user?.email) {
       setIsAdmin(false);
       setIsSuperAdmin(false);
       setUserRole(null);
@@ -33,16 +33,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
+      // Check admin_users table
+      const { data: adminUser } = await supabase
+        .from('admin_users')
+        .select('is_super_admin')
+        .eq('email', user.email)
         .single();
       
-      const role = profile?.role || 'student';
-      setUserRole(role);
-      setIsAdmin(role === 'admin' || role === 'super_admin');
-      setIsSuperAdmin(role === 'super_admin');
+      if (adminUser) {
+        setIsAdmin(true);
+        setIsSuperAdmin(adminUser.is_super_admin);
+        setUserRole(adminUser.is_super_admin ? 'super_admin' : 'admin');
+      } else {
+        // Check profiles table for role
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('email', user.email)
+          .single();
+        
+        const role = profile?.role || 'student';
+        setUserRole(role);
+        setIsAdmin(role === 'admin' || role === 'super_admin');
+        setIsSuperAdmin(role === 'super_admin');
+      }
     } catch (error) {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Trash2, UserPlus } from "lucide-react";
+import { Trash2, UserPlus, Shield } from "lucide-react";
 
 interface AdminUser {
   id: string;
@@ -104,10 +104,37 @@ const SuperAdminPanel: React.FC = () => {
     }
   };
 
+  const toggleSuperAdmin = async (adminId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('admin_users')
+        .update({ is_super_admin: !currentStatus })
+        .eq('id', adminId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Super admin status ${!currentStatus ? 'granted' : 'revoked'}`,
+      });
+
+      fetchAdminUsers();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to update admin status",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Admin Management</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <Shield className="h-5 w-5" />
+          Admin Management
+        </CardTitle>
         <CardDescription>
           Manage admin users who can create and modify content
         </CardDescription>
@@ -129,25 +156,40 @@ const SuperAdminPanel: React.FC = () => {
 
         {/* Admin users list */}
         <div className="space-y-2">
-          {adminUsers.map((admin) => (
-            <div key={admin.id} className="flex items-center justify-between p-3 border rounded">
-              <div>
-                <p className="font-medium">{admin.email}</p>
-                <p className="text-sm text-gray-500">
-                  {admin.is_super_admin ? 'Super Admin' : 'Admin'} • Added {new Date(admin.created_at).toLocaleDateString()}
-                </p>
+          {adminUsers.length === 0 ? (
+            <p className="text-gray-500 text-center py-4">No admin users found</p>
+          ) : (
+            adminUsers.map((admin) => (
+              <div key={admin.id} className="flex items-center justify-between p-3 border rounded">
+                <div>
+                  <p className="font-medium">{admin.email}</p>
+                  <p className="text-sm text-gray-500">
+                    {admin.is_super_admin ? 'Super Admin' : 'Admin'} • Added {new Date(admin.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  {admin.email !== 'uiwebsite638@gmail.com' && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => toggleSuperAdmin(admin.id, admin.is_super_admin)}
+                      >
+                        {admin.is_super_admin ? 'Remove Super' : 'Make Super'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeAdmin(admin.id, admin.email)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
-              {admin.email !== 'uiwebsite638@gmail.com' && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => removeAdmin(admin.id, admin.email)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </CardContent>
     </Card>
