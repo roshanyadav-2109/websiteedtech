@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   BookOpen, 
   FileText, 
@@ -28,37 +29,40 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) 
     { id: "news", label: "News", icon: Newspaper },
     { id: "dates", label: "Important Dates", icon: Calendar },
     { id: "jobs", label: "Jobs", icon: Briefcase },
-    { id: "communities", label: "Communities", icon: Users },
   ];
 
   if (isSuperAdmin) {
-    menuItems.push({ id: "admins", label: "Manage Admins", icon: Shield });
+    menuItems.push({ id: "admins", label: "Admin Management", icon: Shield });
   }
 
   return (
-    <div className="w-64 bg-white shadow-lg h-full overflow-y-auto">
-      <div className="p-6">
-        <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
+    <div className="w-64 bg-white shadow-lg flex flex-col">
+      <div className="p-4 border-b">
+        <h2 className="text-xl font-bold text-royal">Admin Dashboard</h2>
       </div>
       
-      <nav className="mt-6">
-        {menuItems.map((item) => {
-          const IconComponent = item.icon;
-          return (
-            <Button
-              key={item.id}
-              variant={activeTab === item.id ? "secondary" : "ghost"}
-              className={`w-full justify-start px-6 py-3 text-left ${
-                activeTab === item.id ? "bg-royal/10 text-royal border-r-2 border-royal" : "text-gray-600 hover:text-royal hover:bg-royal/5"
-              }`}
-              onClick={() => setActiveTab(item.id)}
-            >
-              <IconComponent className="mr-3 h-5 w-5" />
-              {item.label}
-            </Button>
-          );
-        })}
-      </nav>
+      <ScrollArea className="flex-1">
+        <nav className="p-4 space-y-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Button
+                key={item.id}
+                variant={activeTab === item.id ? "default" : "ghost"}
+                className={`w-full justify-start ${
+                  activeTab === item.id 
+                    ? "bg-royal text-white" 
+                    : "hover:bg-gray-100"
+                }`}
+                onClick={() => setActiveTab(item.id)}
+              >
+                <Icon className="mr-2 h-4 w-4" />
+                {item.label}
+              </Button>
+            );
+          })}
+        </nav>
+      </ScrollArea>
     </div>
   );
 };
