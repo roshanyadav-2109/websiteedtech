@@ -109,10 +109,12 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
     try {
       const profileData: any = {
         id: user.id,
+        student_name: studentName,
         full_name: studentName,
         email: user.email,
         program_type: programType,
-        profile_completed: true
+        profile_completed: true,
+        role: 'student'
       };
 
       if (programType === 'IITM_BS') {
@@ -121,7 +123,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       } else if (programType === 'COMPETITIVE_EXAM') {
         profileData.exam_type = examType;
         profileData.student_status = studentStatus;
-        profileData.selected_subjects = selectedSubjects;
+        profileData.subjects = selectedSubjects;
       }
 
       const { error } = await supabase

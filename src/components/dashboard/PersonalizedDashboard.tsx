@@ -13,7 +13,8 @@ interface UserProfile {
   level?: string;
   exam_type?: string;
   student_status?: string;
-  selected_subjects?: string[];
+  subjects?: string[];
+  student_name?: string;
 }
 
 interface ContentItem {
@@ -23,13 +24,18 @@ interface ContentItem {
   created_at: string;
 }
 
-interface StudyGroup {
+interface Community {
   id: string;
   name: string;
   description?: string;
   group_type?: string;
   invite_link?: string;
   created_at: string;
+  exam_type?: string;
+  level?: string;
+  branch?: string;
+  subject?: string;
+  class_level?: string;
 }
 
 const PersonalizedDashboard: React.FC = () => {
@@ -39,7 +45,7 @@ const PersonalizedDashboard: React.FC = () => {
   const [pyqs, setPyqs] = useState<ContentItem[]>([]);
   const [news, setNews] = useState<ContentItem[]>([]);
   const [dates, setDates] = useState<ContentItem[]>([]);
-  const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -58,7 +64,7 @@ const PersonalizedDashboard: React.FC = () => {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('program_type, branch, level, exam_type, student_status, selected_subjects')
+        .select('program_type, branch, level, exam_type, student_status, subjects, student_name')
         .eq('id', user?.id)
         .single();
 
@@ -92,24 +98,47 @@ const PersonalizedDashboard: React.FC = () => {
       }
 
       // Fetch filtered content
-      const [notesData, pyqsData, newsData, datesData, groupsData] = await Promise.all([
+      const [notesData, pyqsData, newsData, datesData, communitiesData] = await Promise.all([
         supabase.from('notes').select('*').match(filterConditions).limit(5),
         supabase.from('pyqs').select('*').match(filterConditions).limit(5),
         supabase.from('news_updates').select('*').match(filterConditions).limit(5),
         supabase.from('important_dates').select('*').match(filterConditions).limit(5),
-        supabase.from('study_groups').select('*').match(filterConditions).limit(10)
+        fetchFilteredCommunities()
       ]);
 
       setNotes(notesData.data || []);
       setPyqs(pyqsData.data || []);
       setNews(newsData.data || []);
       setDates(datesData.data || []);
-      setStudyGroups(groupsData.data || []);
+      setCommunities(communitiesData || []);
 
     } catch (error) {
       console.error('Error fetching personalized content:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchFilteredCommunities = async () => {
+    if (!profile) return [];
+
+    try {
+      let query = supabase.from('communities').select('*').eq('is_active', true);
+
+      if (profile.program_type === 'IITM_BS') {
+        // Show Telegram groups for all IITM_BS students + filtered WhatsApp groups
+        query = query.or(`group_type.eq.telegram,and(group_type.eq.whatsapp,branch.eq.${profile.branch},level.eq.${profile.level})`);
+      } else if (profile.program_type === 'COMPETITIVE_EXAM') {
+        // Show Telegram groups for exam type + filtered WhatsApp groups by subjects
+        const subjectFilters = profile.subjects?.map(subject => `subject.eq.${subject}`).join(',') || '';
+        query = query.or(`and(group_type.eq.telegram,exam_type.eq.${profile.exam_type}),and(group_type.eq.whatsapp,exam_type.eq.${profile.exam_type},class_level.eq.${profile.student_status},or(${subjectFilters}))`);
+      }
+
+      const { data } = await query.limit(10);
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching communities:', error);
+      return [];
     }
   };
 
@@ -122,12 +151,14 @@ const PersonalizedDashboard: React.FC = () => {
   }
 
   const getWelcomeMessage = () => {
+    const name = profile?.student_name ? `, ${profile.student_name}` : '';
+    
     if (profile?.program_type === 'IITM_BS') {
-      return `Welcome to your IITM BS ${profile.branch} dashboard (${profile.level} level)`;
+      return `Welcome to your IITM BS ${profile.branch} dashboard${name} (${profile.level} level)`;
     } else if (profile?.program_type === 'COMPETITIVE_EXAM') {
-      return `Welcome to your ${profile.exam_type} preparation dashboard (${profile.student_status})`;
+      return `Welcome to your ${profile.exam_type} preparation dashboard${name} (${profile.student_status})`;
     }
-    return "Welcome to your personalized dashboard";
+    return `Welcome to your personalized dashboard${name}`;
   };
 
   return (
@@ -256,26 +287,35 @@ const PersonalizedDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Study Groups Section */}
+        {/* Study Communities Section */}
         <Card className="md:col-span-2">
           <CardHeader className="pb-3">
             <div className="flex items-center">
               <Users className="h-5 w-5 text-royal mr-2" />
-              <CardTitle className="text-lg">Your Study Groups</CardTitle>
+              <CardTitle className="text-lg">Your Study Communities</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
-            {studyGroups.length > 0 ? (
+            {communities.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {studyGroups.slice(0, 4).map((group) => (
-                  <div key={group.id} className="p-3 border rounded-lg">
-                    <p className="font-medium text-sm">{group.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">{group.description}</p>
+                {communities.slice(0, 4).map((community) => (
+                  <div key={community.id} className="p-3 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="font-medium text-sm">{community.name}</p>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        community.group_type === 'telegram' 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'bg-green-100 text-green-700'
+                      }`}>
+                        {community.group_type === 'telegram' ? 'Telegram' : 'WhatsApp'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{community.description}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">No study groups available yet</p>
+              <p className="text-gray-500 text-sm">No study communities available yet</p>
             )}
           </CardContent>
         </Card>

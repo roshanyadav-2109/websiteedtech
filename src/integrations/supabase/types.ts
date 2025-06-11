@@ -33,6 +33,60 @@ export type Database = {
         }
         Relationships: []
       }
+      communities: {
+        Row: {
+          branch: string | null
+          class_level: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          exam_type: string | null
+          group_link: string
+          group_type: string
+          id: string
+          is_active: boolean | null
+          level: string | null
+          member_count: number | null
+          name: string
+          subject: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          branch?: string | null
+          class_level?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          exam_type?: string | null
+          group_link: string
+          group_type: string
+          id?: string
+          is_active?: boolean | null
+          level?: string | null
+          member_count?: number | null
+          name: string
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          branch?: string | null
+          class_level?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          exam_type?: string | null
+          group_link?: string
+          group_type?: string
+          id?: string
+          is_active?: boolean | null
+          level?: string | null
+          member_count?: number | null
+          name?: string
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           bestseller: boolean | null
@@ -262,8 +316,11 @@ export type Database = {
           phone: string | null
           profile_completed: boolean | null
           program_type: string | null
+          role: string | null
           selected_subjects: string[] | null
+          student_name: string | null
           student_status: string | null
+          subjects: string[] | null
           updated_at: string | null
         }
         Insert: {
@@ -279,8 +336,11 @@ export type Database = {
           phone?: string | null
           profile_completed?: boolean | null
           program_type?: string | null
+          role?: string | null
           selected_subjects?: string[] | null
+          student_name?: string | null
           student_status?: string | null
+          subjects?: string[] | null
           updated_at?: string | null
         }
         Update: {
@@ -296,8 +356,11 @@ export type Database = {
           phone?: string | null
           profile_completed?: boolean | null
           program_type?: string | null
+          role?: string | null
           selected_subjects?: string[] | null
+          student_name?: string | null
           student_status?: string | null
+          subjects?: string[] | null
           updated_at?: string | null
         }
         Relationships: []

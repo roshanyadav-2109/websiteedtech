@@ -9,6 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAdmin: boolean;
   isSuperAdmin: boolean;
+  userRole: string | null;
   signOut: () => Promise<void>;
   checkAdminStatus: () => Promise<void>;
 }
@@ -21,24 +22,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   const checkAdminStatus = async () => {
-    if (!user?.email) {
+    if (!user?.id) {
       setIsAdmin(false);
       setIsSuperAdmin(false);
+      setUserRole(null);
       return;
     }
 
     try {
-      const { data: adminData } = await supabase.rpc('is_admin', { user_email: user.email });
-      const { data: superAdminData } = await supabase.rpc('is_super_admin', { user_email: user.email });
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
       
-      setIsAdmin(adminData || false);
-      setIsSuperAdmin(superAdminData || false);
+      const role = profile?.role || 'student';
+      setUserRole(role);
+      setIsAdmin(role === 'admin' || role === 'super_admin');
+      setIsSuperAdmin(role === 'super_admin');
     } catch (error) {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);
       setIsSuperAdmin(false);
+      setUserRole('student');
     }
   };
 
@@ -60,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setIsAdmin(false);
           setIsSuperAdmin(false);
+          setUserRole(null);
         }
       }
     );
@@ -86,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isLoading,
       isAdmin,
       isSuperAdmin,
+      userRole,
       signOut,
       checkAdminStatus
     }}>
