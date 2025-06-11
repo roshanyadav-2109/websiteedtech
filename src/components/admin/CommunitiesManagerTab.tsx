@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,7 +71,14 @@ const CommunitiesManagerTab = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCommunities(data || []);
+      
+      // Type assertion to ensure proper typing
+      const typedCommunities = (data || []).map(community => ({
+        ...community,
+        group_type: community.group_type as 'telegram' | 'whatsapp'
+      }));
+      
+      setCommunities(typedCommunities);
     } catch (error: any) {
       toast({
         title: "Error",

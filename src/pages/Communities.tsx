@@ -72,23 +72,37 @@ const Communities = () => {
 
     setIsLoading(true);
     try {
-      let query = supabase.from('communities').select('*').eq('is_active', true);
+      let query = supabase
+        .from('communities')
+        .select('*')
+        .eq('is_active', true);
 
       if (profile.program_type === 'IITM_BS') {
-        // Show Telegram groups for all IITM_BS students + filtered WhatsApp groups
-        query = query.or(`group_type.eq.telegram,and(group_type.eq.whatsapp,branch.eq.${profile.branch},level.eq.${profile.level})`);
-      } else if (profile.program_type === 'COMPETITIVE_EXAM') {
+        // Show all Telegram groups for IITM_BS + filtered WhatsApp groups
+        if (profile.branch && profile.level) {
+          query = query.or(`group_type.eq.telegram,and(group_type.eq.whatsapp,branch.eq.${profile.branch},level.eq.${profile.level})`);
+        } else {
+          query = query.eq('group_type', 'telegram');
+        }
+      } else if (profile.program_type === 'COMPETITIVE_EXAM' && profile.exam_type) {
         // Show Telegram groups for exam type + filtered WhatsApp groups by subjects
-        const subjectFilters = profile.subjects?.map(subject => `subject.eq.${subject}`).join(',') || '';
-        if (subjectFilters) {
+        if (profile.subjects && profile.subjects.length > 0 && profile.student_status) {
+          const subjectFilters = profile.subjects.map(subject => `subject.eq.${subject}`).join(',');
           query = query.or(`and(group_type.eq.telegram,exam_type.eq.${profile.exam_type}),and(group_type.eq.whatsapp,exam_type.eq.${profile.exam_type},class_level.eq.${profile.student_status},or(${subjectFilters}))`);
         } else {
-          query = query.and('group_type', 'eq', 'telegram').and('exam_type', 'eq', profile.exam_type);
+          query = query.eq('group_type', 'telegram').eq('exam_type', profile.exam_type);
         }
       }
 
       const { data } = await query;
-      setCommunities(data || []);
+      
+      // Type assertion to ensure proper typing
+      const typedCommunities = (data || []).map(community => ({
+        ...community,
+        group_type: community.group_type as 'telegram' | 'whatsapp'
+      }));
+      
+      setCommunities(typedCommunities);
     } catch (error) {
       console.error('Error fetching communities:', error);
     } finally {
