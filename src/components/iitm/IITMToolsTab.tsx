@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, Award, RefreshCw } from "lucide-react";
+import FoundationMarksPredictor from "./FoundationMarksPredictor";
 
 const FOUNDATION_SUBJECTS = [
   {
@@ -557,124 +558,10 @@ const IITMToolsTab = () => {
           </CardHeader>
           <CardContent className="p-6">
             {/* Data Science + Foundation only: show subject selector and dynamic inputs */}
-            {branch === "data-science" && level === "foundation" && (
-              <div className="space-y-6">
-                <div className="mb-2">
-                  <Label htmlFor="subject" className="block mb-1">Foundation Subject</Label>
-                  <Select
-                    value={foundationSubject}
-                    onValueChange={(val) => {
-                      setFoundationSubject(val);
-                      // Reset inputs to defaults for that subject
-                      const subjDef = getFoundationSubject(val);
-                      const preset: Record<string, number> = {};
-                      subjDef?.inputFields.forEach(f => {
-                        preset[f.id] = f.id === "Bonus" ? 0 : 80;
-                      });
-                      setFoundationInputs({ ...foundationInputs, ...preset });
-                      setPredictedT(null);
-                      setPredictedF(null);
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FOUNDATION_SUBJECTS.map(subj =>
-                        <SelectItem key={subj.key} value={subj.key}>
-                          {subj.label}
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {/* Dynamic input fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {getFoundationSubject(foundationSubject)?.inputFields.map(field => (
-                    <div key={field.id} className="space-y-2">
-                      <Label htmlFor={field.id}>{field.name}</Label>
-                      <Input
-                        id={field.id}
-                        type={field.type}
-                        min={field.min}
-                        max={field.max}
-                        value={foundationInputs[field.id] ?? ""}
-                        onChange={e => {
-                          // Make sure v is always a number (default to 0 if empty or invalid)
-                          let v = e.target.value === "" ? 0 : Number(e.target.value);
-                          if (typeof v === "number" && !isNaN(v)) {
-                            setFoundationInputs(inputs => ({
-                              ...inputs,
-                              [field.id]: v
-                            }));
-                          }
-                        }}
-                      />
-                    </div>
-                  ))}
-                  <div className="space-y-2">
-                    <Label htmlFor="targetFinalScore">Target Final Course Score (T)</Label>
-                    <Input
-                      id="targetFinalScore"
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={targetFinalScore}
-                      onChange={e => setTargetFinalScore(Number(e.target.value))}
-                    />
-                  </div>
-                </div>
-                <Button
-                  className="w-full bg-purple-600 hover:bg-purple-700 mt-4"
-                  onClick={() => {
-                    // Predict F needed, clamp all inputs
-                    const subjDef = getFoundationSubject(foundationSubject);
-                    const formatted: Record<string, number> = {};
-                    subjDef?.inputFields.forEach(f => {
-                      // Always produce a number (fallback 0) and clamp to min/max
-                      let vRaw = foundationInputs[f.id];
-                      let v = (typeof vRaw === "number" && !isNaN(vRaw)) ? vRaw : 0;
-                      if (f.id === "Bonus") v = Math.max(0, Math.min(5, v));
-                      else v = Math.max(f.min, Math.min(f.max, v));
-                      formatted[f.id] = v;
-                    });
-                    setFoundationInputs((inputs) => ({
-                      ...inputs,
-                      ...formatted
-                    }));
-                    // Predict required F and current possible T at F=0
-                    const predF = predictRequiredF(foundationSubject, formatted, targetFinalScore);
-                    setPredictedF(predF);
-                    const T = calculateFoundationMarks(foundationSubject, formatted, null);
-                    setPredictedT(T);
-                  }}
-                >
-                  Predict Required Final Exam Score
-                </Button>
-                {predictedF !== null && (
-                  <div className="bg-purple-50 p-4 rounded-md text-center mt-4">
-                    <h3 className="text-lg font-bold mb-2">Results for {getFoundationSubject(foundationSubject)?.label}</h3>
-                    <div className="text-sm mb-2">
-                      <strong>Current Course Score (T): </strong>
-                      {typeof predictedT === "number" ? predictedT.toFixed(2) : "--"} / 100
-                    </div>
-                    <div className="text-xl font-bold text-purple-600 mb-1">
-                      Required Final Exam Score (F): {predictedF.toFixed(2)} / 100
-                    </div>
-                    <div className="text-xs text-gray-600 mt-2">
-                      Formula: {getFoundationSubject(foundationSubject)?.formula}
-                    </div>
-                  </div>
-                )}
-                <div className="mt-2 text-xs text-gray-500">
-                  Enter your assignment, quizzes, and any bonus marks as per latest info. <br/>
-                  <b>Passing threshold is usually T ≥ 40/100.</b> Predicted F is always between 0 and 100.
-                </div>
-              </div>
-            )}
-
-            {/* Non-data science or non-foundation: fallback to previous generic logic */}
-            {!(branch === "data-science" && level === "foundation") && (
+            {branch === "data-science" && level === "foundation" ? (
+              <FoundationMarksPredictor />
+            ) : (
+              // ... keep existing code (generic predictor fields and results) ...
               <div className="space-y-6">
                 {/* ... keep existing code (original predictor input fields) ... */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
