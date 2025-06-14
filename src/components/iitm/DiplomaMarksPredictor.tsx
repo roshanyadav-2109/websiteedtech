@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -123,13 +122,13 @@ const COURSES = [
   }
 ];
 
-const GRADES = [
+const GRADE_LEVELS = [
   { letter: "Pass", min: 40 },
   { letter: "D", min: 50 },
   { letter: "C", min: 60 },
   { letter: "B", min: 70 },
   { letter: "A", min: 80 },
-  { letter: "S", min: 90 }
+  { letter: "S", min: 90 },
 ];
 
 function parseNumOrZero(val: string | number) {
@@ -137,40 +136,39 @@ function parseNumOrZero(val: string | number) {
   return isNaN(n) ? 0 : n;
 }
 
-const calcScore = (courseKey: string, values: Record<string, number>) => {
-  // Each subject custom:
+// Given courseKey, form values (object without F) and F, calculate T as per rules
+const calcScore = (courseKey: string, values: Record<string, number>, F: number) => {
   switch (courseKey) {
     case "ml_foundations": {
-      const { GAA = 0, Qz1 = 0, Qz2 = 0, F = 0 } = values;
+      const { GAA = 0, Qz1 = 0, Qz2 = 0 } = values;
       const p1 = 0.1 * GAA + 0.6 * F + 0.2 * Math.max(Qz1, Qz2);
       const p2 = 0.1 * GAA + 0.4 * F + 0.2 * Qz1 + 0.3 * Qz2;
       return Math.max(p1, p2);
     }
     case "ml_techniques": {
-      const { GAA = 0, Qz1 = 0, Qz2 = 0, F = 0, progBonus = 0 } = values;
+      const { GAA = 0, Qz1 = 0, Qz2 = 0, progBonus = 0 } = values;
       const q_part = Math.max(0.25 * Qz1 + 0.25 * Qz2, 0.4 * Math.max(Qz1, Qz2));
-      // Only add bonus if GAA >= 40
       const bonus = GAA >= 40 ? progBonus : 0;
       return 0.1 * GAA + 0.4 * F + q_part + bonus;
     }
     case "ml_practice": {
-      const { GAA = 0, F = 0, OPPE1 = 0, OPPE2 = 0, KA = 0 } = values;
+      const { GAA = 0, OPPE1 = 0, OPPE2 = 0, KA = 0 } = values;
       return 0.1 * GAA + 0.3 * F + 0.2 * OPPE1 + 0.2 * OPPE2 + 0.2 * KA;
     }
     case "bdm": {
-      const { GA = 0, Q2 = 0, ROE = 0, F = 0 } = values;
+      const { GA = 0, Q2 = 0, ROE = 0 } = values;
       return 0.3 * GA + 0.2 * Q2 + 0.2 * ROE + 0.3 * F;
     }
     case "ba": {
-      // Quiz is out of 20, Assignments: Best 2/3 out of 20, F: out of 40
-      const { Asgn1 = 0, Asgn2 = 0, Asgn3 = 0, Qz1 = 0, Qz2 = 0, F = 0 } = values;
+      // Qz1, Qz2 out of 20; Assignments: Best 2 of 3 out of 20 each; F: out of 40
+      const { Asgn1 = 0, Asgn2 = 0, Asgn3 = 0, Qz1 = 0, Qz2 = 0 } = values;
       const quiz = 0.7 * Math.max(Qz1, Qz2) + 0.3 * Math.min(Qz1, Qz2);
-      const assignments = [Asgn1, Asgn2, Asgn3].sort((a, b) => b - a).slice(0, 2).reduce((a, b) => a + b, 0) / 5; // conversion to 40
-      // (Best 2/3 out of 20 = out of 40)
-      return assignments + quiz + F;
+      const assignments = [Asgn1, Asgn2, Asgn3].sort((a, b) => b - a).slice(0, 2).reduce((a, b) => a + b, 0);
+      // assignments sum is out of 40, quiz out of 20, F is out of 40
+      return (assignments) + quiz + F;
     }
     case "tools": {
-      const { GAA = 0, ROE1 = 0, P1 = 0, P2 = 0, F = 0 } = values;
+      const { GAA = 0, ROE1 = 0, P1 = 0, P2 = 0 } = values;
       return 0.15 * GAA + 0.2 * ROE1 + 0.2 * P1 + 0.2 * P2 + 0.25 * F;
     }
     default:
@@ -178,7 +176,18 @@ const calcScore = (courseKey: string, values: Record<string, number>) => {
   }
 };
 
-// Eligibility Check
+// For a given course, form values (excluding F), and target T, return minimal integer F [0-100] required to achieve T, OR null if not possible
+function requiredF(courseKey: string, values: Record<string, number>, targetT: number): number | null {
+  // Search F from 0 to 100, stop at first F where calcScore() >= targetT
+  const scoreMax = courseKey === "ba" ? 40 : 100;
+  for (let F = 0; F <= scoreMax; F++) {
+    const score = calcScore(courseKey, values, F);
+    if (score >= targetT) return F;
+  }
+  return null;
+}
+
+// Eligibility Check (all except F, which is what we predict)
 const getEligibility = (courseKey: string, values: Record<string, number>): [boolean, string] => {
   switch (courseKey) {
     case "ml_foundations": {
@@ -221,30 +230,32 @@ const getEligibility = (courseKey: string, values: Record<string, number>): [boo
 };
 
 export default function DiplomaMarksPredictor() {
-  const [course, setCourse] = useState(COURSES[0].key);
-  const [form, setForm] = useState<Record<string, string>>({});
+  const [course, setCourse] = React.useState(COURSES[0].key);
+  const [form, setForm] = React.useState<Record<string, string>>({});
+  const [desiredGrade, setDesiredGrade] = React.useState("Pass"); // Letter: Pass/D/C/B/A/S
 
-  // Parse all form inputs as numbers or zero if NaN
+  const subjectInfo = COURSES.find(c => c.key === course);
+
+  // Compose values for all form fields except F (which we are predicting)
   const values: Record<string, number> = {};
-  (COURSES.find(c => c.key === course)?.fields || []).forEach(f => {
-    values[f.id] = parseNumOrZero(form[f.id]);
+  (subjectInfo?.fields || []).forEach(f => {
+    if (f.id !== "F") values[f.id] = parseNumOrZero(form[f.id]);
   });
 
-  // Calc
-  const T = calcScore(course, values);
+  // Eligibility for final exam
   const [eligible, eligMsg] = getEligibility(course, values);
 
-  // Possible Grade
-  let gradeObtained = "Fail";
-  if (T >= 90) gradeObtained = "S";
-  else if (T >= 80) gradeObtained = "A";
-  else if (T >= 70) gradeObtained = "B";
-  else if (T >= 60) gradeObtained = "C";
-  else if (T >= 50) gradeObtained = "D";
-  else if (T >= 40) gradeObtained = "Pass";
+  // Calculate required F to PASS and for DESIRED GRADE
+  const minScore = GRADE_LEVELS.find(g => g.letter === "Pass")!.min;
+  const targetScore = GRADE_LEVELS.find(g => g.letter === desiredGrade)!.min;
 
-  // Extra checks for grading eligibility
-  const subjectInfo = COURSES.find(c => c.key === course);
+  // Business Analytics subject: F out of 40
+  const Fmax = course === "ba" ? 40 : 100;
+
+  const requiredFForPass = requiredF(course, values, minScore);
+  const requiredFForTarget = requiredF(course, values, targetScore);
+
+  // Extra course grade eligibility info (not Pass/Fail; for higher grade award)
   let courseGradeInfo = "";
   if (course === "ml_practice") {
     const { OPPE1 = 0, OPPE2 = 0 } = values;
@@ -255,8 +266,8 @@ export default function DiplomaMarksPredictor() {
     if (GA < 30) courseGradeInfo = "Best 3/4 GA average must be at least 30 for course grade.";
     else courseGradeInfo = "Eligible for course grade (if end semester attended).";
   } else if (course === "ba") {
-    const { F = 0 } = values;
-    if (F < 10) courseGradeInfo = "End term exam score must be at least 10/40 for course grade.";
+    // End term score in F required >= 10/40
+    if ((requiredFForTarget ?? 0) < 10) courseGradeInfo = "Need at least 10/40 in End term exam for course grade.";
     else courseGradeInfo = "Eligible for course grade (if end semester attended).";
   } else {
     courseGradeInfo = "Eligible for course grade (if end semester attended).";
@@ -265,11 +276,12 @@ export default function DiplomaMarksPredictor() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Diploma Final Exam Marks Predictor</CardTitle>
+        <CardTitle>Diploma Final Exam Score Predictor</CardTitle>
         <div className="text-xs mt-2 text-gray-600">{subjectInfo?.formula}</div>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {/* Subject selector */}
           <div>
             <Label>Subject</Label>
             <Select value={course} onValueChange={v => { setCourse(v); setForm({}); }}>
@@ -283,30 +295,57 @@ export default function DiplomaMarksPredictor() {
               </SelectContent>
             </Select>
           </div>
-          {(subjectInfo?.fields || []).map(f => (
-            <div key={f.id}>
-              <Label>{f.label}</Label>
-              <Input
-                type="number"
-                min={f.min}
-                max={f.max}
-                value={form[f.id] ?? ""}
-                placeholder="0"
-                onChange={e => setForm({ ...form, [f.id]: e.target.value })}
-                inputMode="numeric"
-              />
-            </div>
-          ))}
+          {/* Desired grade selector */}
+          <div>
+            <Label>Target Grade</Label>
+            <Select value={desiredGrade} onValueChange={setDesiredGrade}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {GRADE_LEVELS.map(g => (
+                  <SelectItem key={g.letter} value={g.letter}>{g.letter}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {/* Inputs except F */}
+          {(subjectInfo?.fields || [])
+            .filter(f => f.id !== "F")
+            .map(f => (
+              <div key={f.id}>
+                <Label>{f.label}</Label>
+                <Input
+                  type="number"
+                  min={f.min}
+                  max={f.max}
+                  value={form[f.id] ?? ""}
+                  placeholder="0"
+                  onChange={e => setForm({ ...form, [f.id]: e.target.value })}
+                  inputMode="numeric"
+                />
+              </div>
+            ))}
         </div>
         <div className={`p-3 rounded mb-3 ${eligible ? "bg-green-50 text-green-800" : "bg-yellow-50 text-yellow-800"}`}>{eligMsg}</div>
-        <div className="p-3 rounded bg-blue-50 text-blue-900 mb-3">
-          <div className="font-semibold">Total Score (T): <span className="font-bold">{T.toFixed(2)}</span> / 100</div>
-          <div className="flex gap-4 mt-1 text-sm">
-            <div>Predicted Grade: <span className="font-semibold">{gradeObtained}</span></div>
+        <div className="p-3 mb-3 rounded bg-amber-50 text-amber-900">
+          <div>Required <span className="font-bold">Final Exam (F)</span> score:</div>
+          <ul className="text-sm mt-1 ml-2 list-disc">
+            <li>
+              <span className="font-medium">To pass</span>: <span className={requiredFForPass == null ? "text-red-600 font-semibold" : ""}>
+                {requiredFForPass == null ? "Impossible" : `${requiredFForPass} /${Fmax}`}</span>
+            </li>
+            <li>
+              <span className="font-medium">To get grade '{desiredGrade}'</span>: <span className={requiredFForTarget == null ? "text-red-600 font-semibold" : ""}>
+                {requiredFForTarget == null ? "Impossible" : `${requiredFForTarget} /${Fmax}`}</span>
+            </li>
+          </ul>
+          <div className="text-xs mt-1 text-gray-500">
+            Shown scores are minimum F needed, assuming all other marks above are fixed.
           </div>
         </div>
         <div className="p-3 rounded bg-indigo-50 text-indigo-800 mb-3">{courseGradeInfo}</div>
-        <div className="text-xs text-gray-500">Enter scores to see prediction. Meets official IITM criteria as per latest handbook (2025).</div>
+        <div className="text-xs text-gray-500">Enter your scores to see the predicted minimum F needed. Meets official IITM Diploma (DS) calculation rules (2025).</div>
       </CardContent>
     </Card>
   );
