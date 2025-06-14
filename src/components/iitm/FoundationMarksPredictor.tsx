@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -201,9 +200,28 @@ const initialInputValues: Record<string, number> = {
 export default function FoundationMarksPredictor() {
   const [subjectKey, setSubjectKey] = useState<SubjectKey>("maths1");
   const [inputs, setInputs] = useState<Record<string, number>>(initialInputValues);
-
-  // Reset inputs when changing subject
   const subjectObj = SUBJECTS.find(s => s.key === subjectKey)!;
+
+  // Helper to extract which field is the assignment average in the selected subject
+  function getGAAValue(subjectKey: SubjectKey, inputs: Record<string, number>) {
+    if (subjectKey === "python") {
+      // The first input (GAA) is "GAA (objective)"
+      return typeof inputs.GAA === "number" ? inputs.GAA : 0;
+    }
+    // All other subjects: GAA field present 
+    return typeof inputs.GAA === "number" ? inputs.GAA : 0;
+  }
+
+  // Eligibility/error handling logic
+  // 1. Check GAA >= 40
+  // 2. Existing eligibility (quizzes/OPPE for python)
+  let eligibility: string | null = null;
+  const GAA_val = getGAAValue(subjectKey, inputs);
+  if (GAA_val < 40) {
+    eligibility = "Eligibility: Average assignment marks must be at least 40/100 to be eligible for the end term.";
+  } else {
+    eligibility = checkEligibility(subjectKey, inputs);
+  }
 
   // Handle input changes (clamp and parse)
   const handleInput = (id: string, val: string) => {
@@ -218,9 +236,6 @@ export default function FoundationMarksPredictor() {
     }
     setInputs(prev => ({ ...prev, [id]: v }));
   };
-
-  // For eligibility/error display
-  const eligibility = checkEligibility(subjectKey, inputs);
 
   return (
     <Card>
@@ -255,7 +270,15 @@ export default function FoundationMarksPredictor() {
                 max={f.max}
                 value={inputs[f.id] ?? ""}
                 placeholder="0"
-                onChange={e => handleInput(f.id, e.target.value)}
+                onChange={e => {
+                  let v = e.target.value === "" ? 0 : Number(e.target.value);
+                  if (isNaN(v)) v = 0;
+                  const field = subjectObj.inputFields.find(field => field.id === f.id);
+                  if (field) {
+                    v = Math.max(field.min, Math.min(field.max, v));
+                  }
+                  setInputs(prev => ({ ...prev, [f.id]: v }));
+                }}
               />
             </div>
           ))}
@@ -296,7 +319,8 @@ export default function FoundationMarksPredictor() {
         )}
         <div className="mt-2 text-xs text-gray-500">
           Input '0' for missing/absent quizzes. Scores are clamped to allowed ranges.<br/>
-          Assignment eligibility is assumed. Eligibility is automatically checked per subject.
+          Assignment eligibility is assumed. Eligibility is automatically checked per subject.<br/>
+          <span className="font-semibold text-yellow-800">Now: Minimum assignment average (GAA) of 40/100 is required for end term eligibility.</span>
         </div>
       </CardContent>
     </Card>

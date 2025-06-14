@@ -557,68 +557,12 @@ const IITMToolsTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Data Science + Foundation only: show subject selector and dynamic inputs */}
+            {/* Only show FoundationMarksPredictor for Data Science, Foundation */}
             {branch === "data-science" && level === "foundation" ? (
               <FoundationMarksPredictor />
             ) : (
-              // ... keep existing code (generic predictor fields and results) ...
-              <div className="space-y-6">
-                {/* ... keep existing code (original predictor input fields) ... */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="currentCGPA">Current CGPA</Label>
-                    <Input
-                      id="currentCGPA"
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="10"
-                      value={currentCGPA}
-                      onChange={(e) => setCurrentCGPA(Number(e.target.value))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="targetGrade">Target Grade</Label>
-                    <Select value={targetGrade} onValueChange={setTargetGrade}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="A+">A+ (90-100%)</SelectItem>
-                        <SelectItem value="A">A (80-89%)</SelectItem>
-                        <SelectItem value="B+">B+ (70-79%)</SelectItem>
-                        <SelectItem value="B">B (60-69%)</SelectItem>
-                        <SelectItem value="C+">C+ (50-59%)</SelectItem>
-                        <SelectItem value="C">C (40-49%)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <Button onClick={() => {
-                  const gradeToMarks = {
-                    "A+": 95,
-                    "A": 85,
-                    "B+": 75,
-                    "B": 65,
-                    "C+": 55,
-                    "C": 45
-                  };
-                  const baseMarks = gradeToMarks[targetGrade as keyof typeof gradeToMarks] || 75;
-                  const cgpaFactor = currentCGPA / 10;
-                  const predicted = Math.round(baseMarks * cgpaFactor);
-                  setPredictedMarks(predicted);
-                }} className="w-full bg-purple-600 hover:bg-purple-700">
-                  Predict Required Marks
-                </Button>
-
-                <div className="bg-purple-50 p-4 rounded-md text-center">
-                  <h3 className="text-lg font-bold mb-2">Predicted Marks Required</h3>
-                  <div className="text-4xl font-bold text-purple-600">{predictedMarks}%</div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Based on current CGPA: {currentCGPA} and target grade: {targetGrade}
-                  </p>
-                </div>
+              <div className="text-center text-gray-600 text-lg pt-12 pb-16">
+                Marks predictor is only available for <span className="font-semibold">Foundation subjects</span> of <span className="font-semibold">BS Data Science branch</span>.
               </div>
             )}
           </CardContent>
