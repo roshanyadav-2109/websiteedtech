@@ -288,14 +288,12 @@ export default function FoundationMarksPredictor() {
 
   const currentScore = calcCurrentScore();
 
-  // Update requiredFs to exclude "Pass" grade from table
+  // Update requiredFs to include "Already scored"
   const requiredFs = useMemo(() => {
     if (GAA_val < 40) return null;
     if (checkEligibility(subjectKey, numericInputs)) return null;
     const out: { grade: string; mark: number | null; already: boolean }[] = [];
     for (const [grade, threshold] of GRADES) {
-      // Skip 'Pass' - don't include in the array for the table
-      if (grade === "Pass") continue;
       // Has already scored this grade?
       if (currentScore >= threshold) {
         out.push({ grade, mark: null, already: true });
