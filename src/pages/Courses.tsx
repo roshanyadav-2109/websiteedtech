@@ -144,11 +144,6 @@ const Courses = () => {
     visible: { opacity: 1, y: 0 }
   };
 
-  const handleAddCourse = () => {
-    console.log('Adding new course');
-    // This will be implemented with admin forms
-  };
-
   return (
     <>
       <NavBar />
@@ -195,7 +190,7 @@ const Courses = () => {
               </div>
               
               <AdminAddButton 
-                onAdd={handleAddCourse}
+                contentType="courses"
               >
                 Add Course
               </AdminAddButton>
