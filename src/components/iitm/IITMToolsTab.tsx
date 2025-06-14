@@ -513,8 +513,12 @@ const IITMToolsTab = () => {
           </CardHeader>
           <CardContent className="p-6">
             {/* Data Science Grade Calculator */}
-            {branch === "data-science" ? (
-              <GradeCalculator />
+            {branch === "data-science" && level !== "all" ? (
+              <GradeCalculator level={level as "foundation" | "diploma" | "degree"} />
+            ) : branch === "data-science" && level === "all" ? (
+              <div className="text-center text-gray-600 text-lg pt-12 pb-16">
+                Please select a specific <span className="font-semibold">level</span> (Foundation, Diploma, or Degree) to use the grade calculator.
+              </div>
             ) : (
               <div className="text-center text-gray-600 text-lg pt-12 pb-16">
                 Grade calculator is only available for <span className="font-semibold">BS Data Science branch</span>.

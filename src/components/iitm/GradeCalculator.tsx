@@ -295,7 +295,6 @@ const ALL_SUBJECTS = {
         { id: "F", label: "Final Exam Score", min: 0, max: 100 }
       ]
     }
-    // Add more degree subjects as needed
   ]
 };
 
@@ -383,8 +382,11 @@ function getGradePoints(score: number): number {
   return 0;
 }
 
-export default function GradeCalculator() {
-  const [level, setLevel] = useState<"foundation" | "diploma" | "degree">("foundation");
+interface GradeCalculatorProps {
+  level: "foundation" | "diploma" | "degree";
+}
+
+export default function GradeCalculator({ level }: GradeCalculatorProps) {
   const [subject, setSubject] = useState("");
   const [values, setValues] = useState<Record<string, string>>({});
   const [calculatedGrade, setCalculatedGrade] = useState<{
@@ -395,13 +397,6 @@ export default function GradeCalculator() {
 
   const subjects = ALL_SUBJECTS[level];
   const currentSubject = subjects.find(s => s.key === subject);
-
-  const handleLevelChange = (newLevel: "foundation" | "diploma" | "degree") => {
-    setLevel(newLevel);
-    setSubject("");
-    setValues({});
-    setCalculatedGrade(null);
-  };
 
   const handleSubjectChange = (newSubject: string) => {
     setSubject(newSubject);
@@ -448,100 +443,77 @@ export default function GradeCalculator() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Award className="mr-2 h-5 w-5 text-green-600" />
-          Grade Calculator - Data Science Subjects
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Level Selection */}
-        <div>
-          <Label>Level</Label>
-          <Select value={level} onValueChange={handleLevelChange}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="foundation">Foundation</SelectItem>
-              <SelectItem value="diploma">Diploma</SelectItem>
-              <SelectItem value="degree">Degree</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Subject Selection */}
-        <div>
-          <Label>Subject</Label>
-          <Select value={subject} onValueChange={handleSubjectChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a subject" />
-            </SelectTrigger>
-            <SelectContent>
-              {subjects.map(subj => (
-                <SelectItem key={subj.key} value={subj.key}>
-                  {subj.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Input Fields */}
-        {currentSubject && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {currentSubject.fields.map(field => (
-              <div key={field.id}>
-                <Label htmlFor={field.id}>{field.label}</Label>
-                <Input
-                  id={field.id}
-                  type="number"
-                  min={field.min}
-                  max={field.max}
-                  value={values[field.id] || ""}
-                  onChange={(e) => handleInputChange(field.id, e.target.value)}
-                  placeholder="0"
-                />
-              </div>
+    <div className="space-y-6">
+      {/* Subject Selection */}
+      <div>
+        <Label>Subject</Label>
+        <Select value={subject} onValueChange={handleSubjectChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a subject" />
+          </SelectTrigger>
+          <SelectContent>
+            {subjects.map(subj => (
+              <SelectItem key={subj.key} value={subj.key}>
+                {subj.name}
+              </SelectItem>
             ))}
-          </div>
-        )}
+          </SelectContent>
+        </Select>
+      </div>
 
-        {/* Action Buttons */}
-        {currentSubject && (
-          <div className="flex gap-2">
-            <Button onClick={calculateGrade} className="bg-green-600 hover:bg-green-700">
-              Calculate Grade
-            </Button>
-            <Button variant="outline" onClick={resetCalculator}>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Reset
-            </Button>
-          </div>
-        )}
+      {/* Input Fields */}
+      {currentSubject && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {currentSubject.fields.map(field => (
+            <div key={field.id}>
+              <Label htmlFor={field.id}>{field.label}</Label>
+              <Input
+                id={field.id}
+                type="number"
+                min={field.min}
+                max={field.max}
+                value={values[field.id] || ""}
+                onChange={(e) => handleInputChange(field.id, e.target.value)}
+                placeholder="0"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
-        {/* Results */}
-        {calculatedGrade && (
-          <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-            <h3 className="text-lg font-bold mb-4 text-green-800">Your Grade Results</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{calculatedGrade.score}</div>
-                <div className="text-sm text-gray-600">Total Score</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{calculatedGrade.letter}</div>
-                <div className="text-sm text-gray-600">Grade Letter</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{calculatedGrade.points}</div>
-                <div className="text-sm text-gray-600">Grade Points</div>
-              </div>
+      {/* Action Buttons */}
+      {currentSubject && (
+        <div className="flex gap-2">
+          <Button onClick={calculateGrade} className="bg-green-600 hover:bg-green-700">
+            Calculate Grade
+          </Button>
+          <Button variant="outline" onClick={resetCalculator}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Reset
+          </Button>
+        </div>
+      )}
+
+      {/* Results */}
+      {calculatedGrade && (
+        <div className="bg-green-50 p-6 rounded-lg border border-green-200">
+          <h3 className="text-lg font-bold mb-4 text-green-800">Your Grade Results</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{calculatedGrade.score}</div>
+              <div className="text-sm text-gray-600">Total Score</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{calculatedGrade.letter}</div>
+              <div className="text-sm text-gray-600">Grade Letter</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">{calculatedGrade.points}</div>
+              <div className="text-sm text-gray-600">Grade Points</div>
             </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 }
