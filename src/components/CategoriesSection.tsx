@@ -8,19 +8,19 @@ const categories = [
     title: "NEET",
     description: "Comprehensive resources for medical aspirants",
     color: "bg-gradient-to-br from-[#D946EF] to-[#8B5CF6]",
-    link: "/exam-preparation/neet",
+    link: "/neet-prep",
   },
   {
     title: "JEE",
     description: "Advanced preparation for engineering entrance",
     color: "bg-gradient-to-br from-[#3B82F6] to-[#2563EB]",
-    link: "/exam-preparation/jee",
+    link: "/jee-prep",
   },
   {
     title: "IITM BS",
     description: "Specialized content for Data Science & Electronic Systems",
     color: "bg-gradient-to-br from-[#10B981] to-[#059669]",
-    link: "/exam-preparation/iitm-bs",
+    link: "/iitm-bs-prep",
   },
 ];
 

@@ -1,4 +1,3 @@
-
 import React from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { BookOpen, FileText, Users, Calendar, Bell, GraduationCap } from "lucide-react";
 import { motion } from "framer-motion";
+import AdminAddButton from "@/components/admin/AdminAddButton";
 
 const ExamPreparation = () => {
   const examTypes = [
@@ -70,11 +70,34 @@ const ExamPreparation = () => {
 
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Choose Your Exam</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Select from our specialized exam preparation programs designed to help you excel
-              </p>
+            <div className="flex justify-between items-center mb-12">
+              <div className="text-center flex-1">
+                <h2 className="text-3xl font-bold mb-4">Choose Your Exam</h2>
+                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                  Select from our specialized exam preparation programs designed to help you excel
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <AdminAddButton 
+                  contentType="notes"
+                  examType="ALL"
+                >
+                  Add Notes
+                </AdminAddButton>
+                <AdminAddButton 
+                  contentType="pyqs"
+                  examType="ALL"
+                >
+                  Add PYQs
+                </AdminAddButton>
+                <AdminAddButton 
+                  contentType="courses"
+                  examType="ALL"
+                >
+                  Add Course
+                </AdminAddButton>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
