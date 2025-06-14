@@ -138,6 +138,39 @@ export type Database = {
         }
         Relationships: []
       }
+      employees: {
+        Row: {
+          created_at: string | null
+          employee_code: string
+          end_date: string | null
+          full_name: string
+          id: string
+          is_active: boolean
+          position: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          employee_code: string
+          end_date?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean
+          position: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          employee_code?: string
+          end_date?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          position?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       enrollments: {
         Row: {
           amount: number
