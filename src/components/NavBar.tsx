@@ -1,6 +1,7 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -44,9 +45,32 @@ const NavBar = () => {
             <Link to="/courses" className="text-gray-700 hover:text-royal transition-colors">
               Courses
             </Link>
-            <Link to="/exam-preparation" className="text-gray-700 hover:text-royal transition-colors">
-              Exam Prep
-            </Link>
+            
+            {/* Exam Prep Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="text-gray-700 hover:text-royal transition-colors flex items-center">
+                  Exam Prep
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem asChild>
+                  <Link to="/exam-preparation">All Exams</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/jee-prep">JEE Preparation</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/neet-prep">NEET Preparation</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/iitm-bs-prep">IITM BS Preparation</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Link to="/career" className="text-gray-700 hover:text-royal transition-colors">
               Career
             </Link>
@@ -121,7 +145,16 @@ const NavBar = () => {
                 Courses
               </Link>
               <Link to="/exam-preparation" className="block px-3 py-2 text-gray-700 hover:text-royal">
-                Exam Prep
+                Exam Preparation
+              </Link>
+              <Link to="/jee-prep" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+                JEE Prep
+              </Link>
+              <Link to="/neet-prep" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+                NEET Prep
+              </Link>
+              <Link to="/iitm-bs-prep" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+                IITM BS Prep
               </Link>
               <Link to="/career" className="block px-3 py-2 text-gray-700 hover:text-royal">
                 Career

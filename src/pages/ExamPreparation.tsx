@@ -13,7 +13,7 @@ const ExamPreparation = () => {
   const examTypes = [
     {
       title: "NEET - Medical MBBS",
-      path: "/exam-preparation/neet",
+      path: "/neet-prep",
       description: "Comprehensive resources for medical entrance exams",
       icon: BookOpen,
       color: "from-blue-500 to-purple-600",
@@ -21,7 +21,7 @@ const ExamPreparation = () => {
     },
     {
       title: "IIT Madras BS Degree - UG",
-      path: "/exam-preparation/iitm-bs",
+      path: "/iitm-bs-prep",
       description: "Resources for IIT Madras Bachelor of Science programs",
       icon: GraduationCap,
       color: "from-green-500 to-teal-600",
@@ -29,7 +29,7 @@ const ExamPreparation = () => {
     },
     {
       title: "JEE Mains - Engineering",
-      path: "/exam-preparation/jee",
+      path: "/jee-prep",
       description: "Study materials for engineering entrance exams",
       icon: FileText,
       color: "from-orange-500 to-pink-600",
@@ -162,29 +162,6 @@ const ExamPreparation = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gradient-to-r from-royal/10 to-royal/5 rounded-2xl p-8 md:p-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <h2 className="text-3xl font-bold mb-4">Ready to begin your preparation?</h2>
-                  <p className="text-lg text-gray-700 mb-6">
-                    Start your journey toward exam success with our comprehensive preparation resources
-                  </p>
-                  <Button className="bg-royal hover:bg-royal-dark text-white px-8 py-3 text-lg">
-                    Get Started Now
-                  </Button>
-                </div>
-                <div className="hidden md:flex justify-end">
-                  <div className="rounded-full bg-white shadow-xl p-8">
-                    <GraduationCap className="h-32 w-32 text-royal" />
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>

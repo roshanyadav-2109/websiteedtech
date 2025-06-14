@@ -50,9 +50,12 @@ const App = () => (
             <Route path="/profile/complete" element={<ProfileComplete />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/exam-preparation" element={<ExamPreparation />} />
+            
+            {/* Exam preparation pages with correct paths */}
             <Route path="/jee-prep" element={<JEEPrep />} />
             <Route path="/neet-prep" element={<NEETPrep />} />
             <Route path="/iitm-bs-prep" element={<IITMBSPrep />} />
+            
             <Route path="/career" element={<Career />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
