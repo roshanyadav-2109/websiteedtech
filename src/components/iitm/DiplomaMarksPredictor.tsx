@@ -119,16 +119,118 @@ const COURSES = [
     grade_criteria: [
       "Attended end-term exam"
     ]
-  }
-];
-
-const GRADE_LEVELS = [
-  { letter: "Pass", min: 40 },
-  { letter: "D", min: 50 },
-  { letter: "C", min: 60 },
-  { letter: "B", min: 70 },
-  { letter: "A", min: 80 },
-  { letter: "S", min: 90 },
+  },
+  // Programming Diploma subjects:
+  {
+    key: "pdsa",
+    name: "Programming Data Structures and Algorithms using Python (PDSA)",
+    fields: [
+      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+      { id: "Qz1", label: "Quiz 1 Score (Qz1)", min: 0, max: 100 },
+      { id: "Qz2", label: "Quiz 2 Score (Qz2)", min: 0, max: 100 },
+      { id: "OP", label: "Online Proctored Programming Exam (OP)", min: 0, max: 100 }
+    ],
+    formula: "T = 0.1×GAA + 0.4×F + 0.2×OP + max(0.2×max(Qz1,Qz2), 0.15×Qz1+0.15×Qz2)",
+    eligibility: [
+      "Assignment average (Best 5/7) ≥ 40/100",
+      "Attended at least one quiz"
+    ],
+    grade_criteria: [
+      "Attended end sem exam"
+    ]
+  },
+  {
+    key: "dbms",
+    name: "Database Management System",
+    fields: [
+      { id: "GAA1", label: "Assignment Avg 1 (GAA1)", min: 0, max: 100 },
+      { id: "GAA2", label: "Assignment Avg 2 (GAA2)", min: 0, max: 100 },
+      { id: "GAA3", label: "Assignment Avg 3 (GAA3)", min: 0, max: 100 },
+      { id: "OP", label: "Online Proctored Programming Exam (OP)", min: 0, max: 100 },
+      { id: "Qz1", label: "Quiz 1 (Qz1)", min: 0, max: 100 },
+      { id: "Qz2", label: "Quiz 2 (Qz2)", min: 0, max: 100 }
+    ],
+    formula: "T = 0.04×GAA1 + 0.03×GAA2 + 0.03×GAA3 + 0.2×OP + max(0.45×F+0.15×max(Qz1,Qz2), 0.4×F+0.10×Qz1+0.20×Qz2)",
+    eligibility: [
+      "Assignment average (Best 5/7) ≥ 40/100",
+      "Attended at least one quiz"
+    ],
+    grade_criteria: [
+      "Attended end sem exam"
+    ]
+  },
+  {
+    key: "ad1",
+    name: "Application Development - 1",
+    fields: [
+      { id: "GLA", label: "Graded Lab Avg (GLA)", min: 0, max: 100 },
+      { id: "GA", label: "Assignment Avg (GA)", min: 0, max: 100 },
+      { id: "Qz1", label: "Quiz 1 (Qz1)", min: 0, max: 100 },
+      { id: "Qz2", label: "Quiz 2 (Qz2)", min: 0, max: 100 },
+    ],
+    formula: "T = 0.15×GLA + 0.05×GA + max(0.35×F+0.2×Qz1+0.25×Qz2, 0.4×F+0.3×Best(Qz1,Qz2))",
+    eligibility: [
+      "Assignment average (Best 5/7) ≥ 40/100",
+      "Attended at least one quiz"
+    ],
+    grade_criteria: [
+      "Attended end sem exam"
+    ]
+  },
+  {
+    key: "java",
+    name: "Programming Concepts using Java",
+    fields: [
+      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+      { id: "Qz1", label: "Quiz 1 (Qz1)", min: 0, max: 100 },
+      { id: "Qz2", label: "Quiz 2 (Qz2)", min: 0, max: 100 },
+      { id: "PE1", label: "Programming Exam 1 (PE1)", min: 0, max: 100 },
+      { id: "PE2", label: "Programming Exam 2 (PE2)", min: 0, max: 100 }
+    ],
+    formula: "T = 0.1×GAA + 0.3×F + 0.2×Max(PE1,PE2) + 0.1×Min(PE1,PE2) + max(0.25×Max(Qz1,Qz2), 0.15×Qz1+0.25×Qz2)",
+    eligibility: [
+      "Assignment average (Best 5/7) ≥ 40/100",
+      "Attended at least one quiz"
+    ],
+    grade_criteria: [
+      "Attended end sem exam"
+    ]
+  },
+  {
+    key: "syscommands",
+    name: "System Commands",
+    fields: [
+      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+      { id: "Qz1", label: "Quiz 1 (Qz1)", min: 0, max: 100 },
+      { id: "OPE", label: "Online Proctored Exam (OPE)", min: 0, max: 100 },
+      { id: "BPTA", label: "Biweekly Programming Test Avg (BPTA)", min: 0, max: 100 }
+    ],
+    formula: "T = 0.10×GAA + 0.2×Qz1 + 0.3×OPE + 0.3×F + 0.1×BPTA",
+    eligibility: [
+      "Assignment average (Best 5/7) ≥ 40/100",
+    ],
+    grade_criteria: [
+      "Attended end sem exam"
+    ]
+  },
+  {
+    key: "ad2",
+    name: "Application Development - 2",
+    fields: [
+      { id: "GAA1", label: "Assignment Avg 1 (GAA1)", min: 0, max: 100 },
+      { id: "GAA2", label: "Assignment Avg 2 (GAA2)", min: 0, max: 100 },
+      { id: "Qz1", label: "Quiz 1 (Qz1)", min: 0, max: 100 },
+      { id: "Qz2", label: "Quiz 2 (Qz2)", min: 0, max: 100 }
+    ],
+    formula: "T = 0.05×GAA1 + 0.05×GAA2 + max(0.35×F+0.25×Qz1+0.3×Qz2, 0.5×F+0.3×Best(Qz1,Qz2))",
+    eligibility: [
+      "Assignment average (Best 5/7) ≥ 40/100",
+      "Attended at least one quiz"
+    ],
+    grade_criteria: [
+      "Attended end sem exam"
+    ]
+  },
 ];
 
 function parseNumOrZero(val: string | number) {
@@ -170,6 +272,44 @@ const calcScore = (courseKey: string, values: Record<string, number>, F: number)
     case "tools": {
       const { GAA = 0, ROE1 = 0, P1 = 0, P2 = 0 } = values;
       return 0.15 * GAA + 0.2 * ROE1 + 0.2 * P1 + 0.2 * P2 + 0.25 * F;
+    }
+    case "pdsa": {
+      const { GAA = 0, OP = 0, Qz1 = 0, Qz2 = 0 } = values;
+      const qpart = Math.max(0.2 * Math.max(Qz1, Qz2), 0.15 * Qz1 + 0.15 * Qz2);
+      return 0.1 * GAA + 0.4 * F + 0.2 * OP + qpart;
+    }
+    case "dbms": {
+      const { GAA1 = 0, GAA2 = 0, GAA3 = 0, OP = 0, Qz1 = 0, Qz2 = 0 } = values;
+      const qpart = Math.max(
+        0.45 * F + 0.15 * Math.max(Qz1, Qz2),
+        0.4 * F + 0.1 * Qz1 + 0.2 * Qz2
+      );
+      return 0.04 * GAA1 + 0.03 * GAA2 + 0.03 * GAA3 + 0.2 * OP + qpart;
+    }
+    case "ad1": {
+      const { GLA = 0, GA = 0, Qz1 = 0, Qz2 = 0 } = values;
+      const p1 = 0.35 * F + 0.2 * Qz1 + 0.25 * Qz2;
+      const p2 = 0.4 * F + 0.3 * Math.max(Qz1, Qz2);
+      return 0.15 * GLA + 0.05 * GA + Math.max(p1, p2);
+    }
+    case "java": {
+      const { GAA = 0, Qz1 = 0, Qz2 = 0, PE1 = 0, PE2 = 0 } = values;
+      const qpart = Math.max(0.25 * Math.max(Qz1, Qz2), 0.15 * Qz1 + 0.25 * Qz2);
+      const pe_max = Math.max(PE1, PE2), pe_min = Math.min(PE1, PE2);
+      return Math.min(
+        100,
+        0.1 * GAA + 0.3 * F + 0.2 * pe_max + 0.1 * pe_min + qpart
+      ); // capped to 100
+    }
+    case "syscommands": {
+      const { GAA = 0, Qz1 = 0, OPE = 0, BPTA = 0 } = values;
+      return 0.10 * GAA + 0.2 * Qz1 + 0.3 * OPE + 0.3 * F + 0.1 * BPTA;
+    }
+    case "ad2": {
+      const { GAA1 = 0, GAA2 = 0, Qz1 = 0, Qz2 = 0 } = values;
+      const p1 = 0.35 * F + 0.25 * Qz1 + 0.3 * Qz2;
+      const p2 = 0.5 * F + 0.3 * Math.max(Qz1, Qz2);
+      return 0.05 * GAA1 + 0.05 * GAA2 + Math.max(p1, p2);
     }
     default:
       return 0;
@@ -224,6 +364,21 @@ const getEligibility = (courseKey: string, values: Record<string, number>): [boo
       if (GAA < 40) return [false, "Assignment average (best 4/5) must be at least 40/100."];
       return [true, "Eligible for Final Exam"];
     }
+    case "pdsa":
+    case "dbms":
+    case "ad1":
+    case "java":
+    case "syscommands":
+    case "ad2":
+      const { GAA = 0, GAA1 = 0 } = values;
+      // Use GAA (or GAA1 for ad2/dbms) for check:
+      if ((typeof GAA === "number" && GAA < 40) || (typeof GAA1 === "number" && GAA1 < 40)) {
+        return [false, "Assignments avg (best 5/7) must be at least 40."];
+      }
+      const { Qz1 = 0, Qz2 = 0 } = values;
+      if ("Qz1" in values && "Qz2" in values && Qz1 <= 0 && Qz2 <= 0)
+        return [false, "At least one quiz score needed (>0)."];
+      return [true, "Eligible for Final Exam"];
     default:
       return [true, "Eligible"];
   }
@@ -241,6 +396,9 @@ export default function DiplomaMarksPredictor() {
     if (f.id !== "F") values[f.id] = parseNumOrZero(form[f.id]);
   });
 
+  // only show table if at least one mark entered
+  const markEntered = Object.values(form).some((v) => v && v !== "" && !isNaN(Number(v)));
+
   // Eligibility for final exam
   const [eligible, eligMsg] = getEligibility(course, values);
 
@@ -253,32 +411,30 @@ export default function DiplomaMarksPredictor() {
     { letter: "D", min: 50 },
     { letter: "Pass", min: 40 },
   ];
-  // Business Analytics subject: F out of 40
   const Fmax = course === "ba" ? 40 : 100;
 
-  // Compute required F for each grade, in a row: [{letter, requiredF}]
   const requiredFTable = allGrades.map(g => ({
     letter: g.letter,
     min: g.min,
     requiredF: requiredF(course, values, g.min),
   }));
 
-  // Extra course grade eligibility info (not Pass/Fail; for higher grade award)
+  // Reduced/shortened course grade info, with only relevant/highlighted part
   let courseGradeInfo = "";
   if (course === "ml_practice") {
     const { OPPE1 = 0, OPPE2 = 0 } = values;
-    if (OPPE1 < 40 && OPPE2 < 40) courseGradeInfo = "Need at least one programming exam score ≥ 40/100 for course grade.";
-    else courseGradeInfo = "Eligible for course grade (if end semester attended).";
+    if (OPPE1 < 40 && OPPE2 < 40) courseGradeInfo = "At least one programming exam needs ≥ 40/100 for grading.";
+    else courseGradeInfo = "Eligible for course grade.";
   } else if (course === "bdm") {
     const { GA = 0 } = values;
-    if (GA < 30) courseGradeInfo = "Best 3/4 GA average must be at least 30 for course grade.";
-    else courseGradeInfo = "Eligible for course grade (if end semester attended).";
+    if (GA < 30) courseGradeInfo = "Best 3/4 GA avg ≥ 30 for grade.";
+    else courseGradeInfo = "Eligible for course grade.";
   } else if (course === "ba") {
-    // End term score in F required >= 10/40, but we report required F for each grade as per the table
-    // Just a tip to the user
-    courseGradeInfo = "Note: Need at least 10/40 in End term exam for course grade.";
+    courseGradeInfo = "End term (F) ≥ 10/40 needed for course grade.";
+  } else if (course === "syscommands") {
+    courseGradeInfo = "Programming exam (OPE) ≥ 40 for grade.";
   } else {
-    courseGradeInfo = "Eligible for course grade (if end semester attended).";
+    courseGradeInfo = "Attend end sem exam for course grade.";
   }
 
   return (
@@ -322,36 +478,41 @@ export default function DiplomaMarksPredictor() {
             ))}
         </div>
         <div className={`p-3 rounded mb-3 ${eligible ? "bg-green-50 text-green-800" : "bg-yellow-50 text-yellow-800"}`}>{eligMsg}</div>
-        <div className="mb-3">
-          <div className="font-semibold mb-2">Minimum Final Exam (F) score required for each grade (if eligible):</div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border bg-white rounded shadow">
-              <thead>
-                <tr className="bg-indigo-100">
-                  <th className="py-2 px-3 text-left">Grade</th>
-                  <th className="py-2 px-3 text-left">Minimum Total Score</th>
-                  <th className="py-2 px-3 text-left">Required F (out of {Fmax})</th>
-                </tr>
-              </thead>
-              <tbody>
-                {requiredFTable.map(row => (
-                  <tr key={row.letter} className="border-t">
-                    <td className="py-2 px-3 font-bold">{row.letter}</td>
-                    <td className="py-2 px-3">{row.min}</td>
-                    <td className="py-2 px-3">
-                      {row.requiredF == null ? <span className="text-red-600 font-semibold">Impossible</span> : `${row.requiredF} /${Fmax}`}
-                    </td>
+        {/* Only show table if at least one mark is entered */}
+        {markEntered && (
+          <div className="mb-3">
+            <div className="font-semibold mb-2">Minimum Final Exam (F) score needed for each grade:</div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border bg-white rounded shadow">
+                <thead>
+                  <tr className="bg-indigo-100">
+                    <th className="py-2 px-3 text-left">Grade</th>
+                    <th className="py-2 px-3 text-left">Total Score</th>
+                    <th className="py-2 px-3 text-left">Required F (out of {Fmax})</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {requiredFTable.map(row => (
+                    <tr key={row.letter} className="border-t">
+                      <td className="py-2 px-3 font-bold">{row.letter}</td>
+                      <td className="py-2 px-3">{row.min}</td>
+                      <td className="py-2 px-3">
+                        {row.requiredF == null ? <span className="text-red-600 font-semibold">Impossible</span> : `${row.requiredF} /${Fmax}`}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Reduced explanation */}
+            <div className="text-xs mt-2 text-gray-500">
+              This shows the minimum F marks needed for each grade with your current inputs.<br/>
+              If "Impossible", the grade can't be reached with your current scores.
+            </div>
           </div>
-          <div className="text-xs mt-2 text-gray-500">
-            Table shows the <b>minimum Final Exam (F) marks</b> needed to achieve each grade, according to current marks entered above. "Impossible" means it's not attainable.
-          </div>
-        </div>
+        )}
         <div className="p-3 rounded bg-indigo-50 text-indigo-800 mb-3">{courseGradeInfo}</div>
-        <div className="text-xs text-gray-500">Enter your scores to see the predicted F needed for each grade. Meets official IITM Diploma (DS) calculation rules (2025).</div>
+        <div className="text-xs text-gray-400">Enter your scores to see what you need in the final.</div>
       </CardContent>
     </Card>
   );
