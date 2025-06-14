@@ -1,7 +1,6 @@
 
 import React from "react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
+import { InfiniteSlider } from "@/components/ui/infinite-slider";
 
 const partners = [
   {
@@ -28,6 +27,21 @@ const partners = [
     name: "DataScience.ai",
     description: "Data science learning platform",
     image: "https://picsum.photos/100/100?random=5"
+  },
+  {
+    name: "LearnFast",
+    description: "Accelerated learning programs",
+    image: "https://picsum.photos/100/100?random=6"
+  },
+  {
+    name: "FutureMinds",
+    description: "Nurturing innovation in young learners",
+    image: "https://picsum.photos/100/100?random=7"
+  },
+  {
+    name: "SkillUp",
+    description: "Platform for practical skills development",
+    image: "https://picsum.photos/100/100?random=8"
   }
 ];
 
@@ -41,38 +55,26 @@ const PartnershipsSection = () => {
             Student-founded and partnered companies working to transform education
           </p>
         </div>
-        <Carousel
-          className="w-full max-w-4xl mx-auto"
-          plugins={[
-            Autoplay({
-              delay: 3000,
-              stopOnInteraction: false,
-              stopOnMouseEnter: true
-            })
-          ]}
+        <InfiniteSlider
+          gap={40}
+          duration={60}
+          reverse
+          className="w-full"
         >
-          <CarouselContent>
-            {partners.map((partner, index) => (
-              <CarouselItem key={index} className="px-4">
-                <div className="flex-none w-full border rounded-lg p-6 bg-white shadow-sm h-full flex flex-col items-center">
-                  <div className="flex justify-center mb-4">
-                    <img 
-                      src={partner.image} 
-                      alt={partner.name} 
-                      className="w-24 h-24 rounded-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold text-center mb-2">{partner.name}</h3>
-                  <p className="text-gray-600 text-center text-sm">{partner.description}</p>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <div className="flex justify-center gap-2 mt-8">
-            <CarouselPrevious className="relative transform-none translate-y-0 left-0" />
-            <CarouselNext className="relative transform-none translate-y-0 right-0" />
-          </div>
-        </Carousel>
+          {partners.map((partner, index) => (
+            <div key={index} className="flex-none w-72 border rounded-lg p-6 bg-white shadow-sm h-full flex flex-col items-center hover:shadow-md transition-shadow">
+              <div className="flex justify-center mb-4">
+                <img 
+                  src={partner.image} 
+                  alt={partner.name} 
+                  className="w-24 h-24 rounded-full object-cover"
+                />
+              </div>
+              <h3 className="text-xl font-bold text-center mb-2">{partner.name}</h3>
+              <p className="text-gray-600 text-center text-sm">{partner.description}</p>
+            </div>
+          ))}
+        </InfiniteSlider>
       </div>
     </section>
   );
