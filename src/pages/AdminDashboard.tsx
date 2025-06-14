@@ -1,8 +1,8 @@
+
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import AdminCheck from "@/components/admin/AdminCheck";
-import SuperAdminPanel from "@/components/admin/SuperAdminPanel";
 import ContentManagementTab from "@/components/admin/ContentManagementTab";
 
 // Import existing admin components
@@ -15,6 +15,7 @@ import NewsManagerTab from "@/components/admin/NewsManagerTab";
 import DatesManagerTab from "@/components/admin/DatesManagerTab";
 import JobsManagerTab from "@/components/admin/JobsManagerTab";
 import EmployeeManagerTab from "@/components/admin/EmployeeManagerTab";
+import AdminManagementTab from "@/components/admin/AdminManagementTab";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("content-management");
@@ -73,6 +74,12 @@ const AdminDashboard = () => {
               <TabsContent value="employees" className="mt-0">
                 <AdminCheck requireSuperAdmin>
                   <EmployeeManagerTab />
+                </AdminCheck>
+              </TabsContent>
+
+              <TabsContent value="admins" className="mt-0">
+                <AdminCheck requireSuperAdmin>
+                  <AdminManagementTab />
                 </AdminCheck>
               </TabsContent>
             </Tabs>

@@ -2,11 +2,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, User } from 'lucide-react';
 
 const AdminHeader: React.FC = () => {
-  const { user, signOut, isSuperAdmin } = useAuth();
+  const { user, signOut } = useAuth();
+  const { isSuperAdmin } = useAdminCheck();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -18,7 +20,7 @@ const AdminHeader: React.FC = () => {
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
           {isSuperAdmin && (
             <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded">
               Super Admin

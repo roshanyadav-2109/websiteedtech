@@ -10,6 +10,7 @@ import {
   GraduationCap,
   Briefcase,
   Shield,
+  Users,
   Menu,
   X
 } from 'lucide-react';
@@ -25,6 +26,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
 
   const menuItems = [
+    { id: 'content-management', label: 'Content Overview', icon: FileText },
     { id: 'courses', label: 'Courses', icon: BookOpen },
     { id: 'notes', label: 'Notes', icon: FileText },
     { id: 'pyqs', label: 'PYQs', icon: GraduationCap },
@@ -33,8 +35,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) 
     { id: 'jobs', label: 'Jobs', icon: Briefcase },
   ];
 
+  // Add employees tab for super admin
   if (isSuperAdmin) {
-    menuItems.push({ id: 'admins', label: 'Admin Management', icon: Shield });
+    menuItems.push({ id: 'employees', label: 'Employees', icon: Users });
   }
 
   const handleTabClick = (tabId: string) => {
