@@ -332,12 +332,6 @@ const DEGREE_COURSES = [
   }
 ];
 
-// Parse string/number value to number, fallback to 0 on NaN
-function parseNumOrZero(v: string | number | undefined) {
-  const n = Number(v);
-  return isNaN(n) ? 0 : n;
-}
-
 // Per course, calculate T given values and F
 function calcScore(courseKey: string, values: Record<string, number>, F: number) {
   switch (courseKey) {
@@ -499,10 +493,6 @@ const getEligibility = (courseKey: string, values: Record<string, number>): [boo
     if (Qz1 <= 0 && Qz2 <= 0 && Qz3 <= 0) return [false, "At least one quiz score must be entered (>0)."];
   }
   return [true, "Eligible for Final Exam"];
-};
-
-const hasMarksEntered = (form: Record<string, string>): boolean => {
-  return Object.values(form).some((v) => v && `${v}` !== "" && !isNaN(Number(v)));
 };
 
 export default function DegreeMarksPredictor() {
