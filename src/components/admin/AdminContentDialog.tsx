@@ -20,15 +20,9 @@ interface AdminContentDialogProps {
 }
 
 const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
-  isOpen,
-  onClose,
-  contentType,
-  examType,
-  prefilledSubject,
-  branch,
-  level,
-  classLevel
+  isOpen, onClose, contentType, examType, prefilledSubject, branch, level, classLevel
 }) => {
+  const { isAdmin } = useBackend(); // Only allow if admin
   const { addNote, addPyq } = useBackend();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,6 +61,8 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
       class_level: classLevel || prev.class_level
     }));
   }, [prefilledSubject, examType, branch, level, classLevel]);
+
+  if (!isAdmin) return null;
 
   const examTypes = ['IITM_BS', 'JEE', 'NEET'];
   const classLevels = ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];

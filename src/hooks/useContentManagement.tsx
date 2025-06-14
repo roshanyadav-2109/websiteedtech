@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -55,7 +54,6 @@ export const useContentManagement = () => {
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
-
       if (error) {
         console.error('Error loading notes:', error);
         toast({
@@ -78,7 +76,6 @@ export const useContentManagement = () => {
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
-
       if (error) {
         console.error('Error loading pyqs:', error);
         toast({
@@ -103,7 +100,6 @@ export const useContentManagement = () => {
       });
       return false;
     }
-
     try {
       const { error } = await supabase
         .from('notes')
@@ -111,9 +107,8 @@ export const useContentManagement = () => {
           ...noteData,
           created_by: user.id,
           download_count: 0,
-          is_active: true
+          is_active: true,
         }]);
-
       if (error) {
         console.error('Error adding note:', error);
         toast({
@@ -127,7 +122,7 @@ export const useContentManagement = () => {
           title: "Success",
           description: "Note added successfully",
         });
-        await loadNotes(); // Refresh the list
+        await loadNotes();
         return true;
       }
     } catch (error) {
@@ -145,7 +140,6 @@ export const useContentManagement = () => {
       });
       return false;
     }
-
     try {
       const { error } = await supabase
         .from('pyqs')
@@ -153,9 +147,8 @@ export const useContentManagement = () => {
           ...pyqData,
           created_by: user.id,
           download_count: 0,
-          is_active: true
+          is_active: true,
         }]);
-
       if (error) {
         console.error('Error adding pyq:', error);
         toast({
@@ -169,7 +162,7 @@ export const useContentManagement = () => {
           title: "Success",
           description: "Previous year question added successfully",
         });
-        await loadPyqs(); // Refresh the list
+        await loadPyqs();
         return true;
       }
     } catch (error) {
@@ -198,7 +191,7 @@ export const useContentManagement = () => {
           title: "Success",
           description: "Note deleted successfully",
         });
-        await loadNotes(); // Refresh the list
+        await loadNotes();
         return true;
       }
     } catch (error) {
@@ -227,7 +220,7 @@ export const useContentManagement = () => {
           title: "Success",
           description: "Previous year question deleted successfully",
         });
-        await loadPyqs(); // Refresh the list
+        await loadPyqs();
         return true;
       }
     } catch (error) {
@@ -256,7 +249,7 @@ export const useContentManagement = () => {
           title: "Success",
           description: "Note updated successfully",
         });
-        await loadNotes(); // Refresh the list
+        await loadNotes();
         return true;
       }
     } catch (error) {
@@ -285,7 +278,7 @@ export const useContentManagement = () => {
           title: "Success",
           description: "Previous year question updated successfully",
         });
-        await loadPyqs(); // Refresh the list
+        await loadPyqs();
         return true;
       }
     } catch (error) {

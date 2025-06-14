@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useDownloadHandler } from '@/hooks/useDownloadHandler';
@@ -40,6 +39,8 @@ interface BackendIntegratedWrapperProps {
 export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> = ({ children }) => {
   const { isAdmin, isLoading: isAdminLoading } = useAdminCheck();
   const { handleDownload, downloadCounts, updateDownloadCount } = useDownloadHandler();
+  
+  // UseContentManagement already fetches notes/pyqs with is_active filtering
   const {
     notes,
     pyqs,
@@ -54,6 +55,7 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     refreshPyqs
   } = useContentManagement();
 
+  // context value (unchanged)
   const contextValue: BackendContextType = {
     isAdmin,
     isAdminLoading,
