@@ -24,8 +24,7 @@ const Courses = () => {
     { id: "all", name: "All Courses" },
     { id: "iitm-bs", name: "IITM BS" },
     { id: "neet", name: "NEET" },
-    { id: "jee", name: "JEE" },
-    { id: "placement", name: "Placement" }
+    { id: "jee", name: "JEE" }
   ];
 
   const courses = [
@@ -137,7 +136,7 @@ const Courses = () => {
 
   const filteredCourses = selectedCategory === "all" 
     ? courses 
-    : courses.filter(course => course.category === selectedCategory);
+    : courses.filter(course => course.category === selectedCategory && course.category !== "placement");
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
