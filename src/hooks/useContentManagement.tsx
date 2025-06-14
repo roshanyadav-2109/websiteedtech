@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface Note {
   id: string;
@@ -49,11 +49,13 @@ export const useContentManagement = () => {
 
   const loadNotes = async () => {
     try {
+      console.log('Loading notes...');
       const { data, error } = await supabase
         .from('notes')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
+      
       if (error) {
         console.error('Error loading notes:', error);
         toast({
@@ -62,6 +64,7 @@ export const useContentManagement = () => {
           variant: "destructive"
         });
       } else {
+        console.log('Loaded notes:', data?.length || 0);
         setNotes(data || []);
       }
     } catch (error) {
@@ -71,11 +74,13 @@ export const useContentManagement = () => {
 
   const loadPyqs = async () => {
     try {
+      console.log('Loading PYQs...');
       const { data, error } = await supabase
         .from('pyqs')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
+      
       if (error) {
         console.error('Error loading pyqs:', error);
         toast({
@@ -84,6 +89,7 @@ export const useContentManagement = () => {
           variant: "destructive"
         });
       } else {
+        console.log('Loaded PYQs:', data?.length || 0);
         setPyqs(data || []);
       }
     } catch (error) {
@@ -100,7 +106,9 @@ export const useContentManagement = () => {
       });
       return false;
     }
+    
     try {
+      console.log('Adding note:', noteData);
       const { error } = await supabase
         .from('notes')
         .insert([{
@@ -109,20 +117,22 @@ export const useContentManagement = () => {
           download_count: 0,
           is_active: true,
         }]);
+      
       if (error) {
         console.error('Error adding note:', error);
         toast({
           title: "Add Error",
-          description: "Failed to add note",
+          description: error.message || "Failed to add note",
           variant: "destructive"
         });
         return false;
       } else {
+        console.log('Note added successfully');
         toast({
           title: "Success",
-          description: "Note added successfully",
+          description: "Note added successfully and is now visible to all users",
         });
-        await loadNotes();
+        await loadNotes(); // Refresh the list
         return true;
       }
     } catch (error) {
@@ -140,7 +150,9 @@ export const useContentManagement = () => {
       });
       return false;
     }
+    
     try {
+      console.log('Adding PYQ:', pyqData);
       const { error } = await supabase
         .from('pyqs')
         .insert([{
@@ -149,20 +161,22 @@ export const useContentManagement = () => {
           download_count: 0,
           is_active: true,
         }]);
+      
       if (error) {
         console.error('Error adding pyq:', error);
         toast({
           title: "Add Error",
-          description: "Failed to add previous year question",
+          description: error.message || "Failed to add previous year question",
           variant: "destructive"
         });
         return false;
       } else {
+        console.log('PYQ added successfully');
         toast({
           title: "Success",
-          description: "Previous year question added successfully",
+          description: "Previous year question added successfully and is now visible to all users",
         });
-        await loadPyqs();
+        await loadPyqs(); // Refresh the list
         return true;
       }
     } catch (error) {
