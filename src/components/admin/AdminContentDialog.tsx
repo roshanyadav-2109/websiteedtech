@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useBackend } from '@/components/BackendIntegratedWrapper';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface AdminContentDialogProps {
   isOpen: boolean;
@@ -17,7 +17,6 @@ interface AdminContentDialogProps {
   branch?: string;
   level?: string;
   classLevel?: string;
-  contentToEdit?: any;
 }
 
 const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
@@ -28,57 +27,279 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
   prefilledSubject,
   branch,
   level,
-  classLevel,
-  contentToEdit
+  classLevel
 }) => {
-  const { addNote, addPyq, updateNote, updatePyq } = useBackend();
+  const { addNote, addPyq } = useBackend();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isEditMode = !!contentToEdit;
 
-  const initialFormData = {
+  const [formData, setFormData] = useState({
     title: '',
     description: '',
-    subject: prefilledSubject || '',
-    file_link: '',
     content_url: '',
-    year: '',
-    exam_type: examType || '',
+    subject: prefilledSubject || '',
     class_level: classLevel || '',
+    exam_type: examType || '',
     branch: branch || '',
     level: level || '',
+    year: '',
+    date_value: '',
+    category: '',
+    name: '',
+    group_link: '',
+    group_type: '',
+    content: '',
+    is_featured: false,
+    is_highlighted: false,
     price: '',
     duration: '',
-    category: '',
-    features: '',
-    image_url: ''
+    features: ''
+  });
+
+  // Update form data when props change
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      subject: prefilledSubject || prev.subject,
+      exam_type: examType || prev.exam_type,
+      branch: branch || prev.branch,
+      level: level || prev.level,
+      class_level: classLevel || prev.class_level
+    }));
+  }, [prefilledSubject, examType, branch, level, classLevel]);
+
+  const examTypes = ['IITM_BS', 'JEE', 'NEET'];
+  const classLevels = ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
+  const groupTypes = ['Telegram', 'WhatsApp', 'Discord', 'Facebook'];
+
+  // Electronic Systems subjects by level
+  const electronicSystemsSubjects = {
+    'Qualifier Level': [
+      'English I',
+      'Math for Electronics I', 
+      'Electronic Systems Thinking and Circuits',
+      'Introduction to C Programming'
+    ],
+    'Foundation Level': [
+      'English I',
+      'Math for Electronics I',
+      'English II',
+      'Electronic Systems Thinking and Circuits',
+      'Electronic Systems Thinking and Circuits Lab',
+      'Introduction to C Programming',
+      'C Programming Laboratory',
+      'Introduction to Linux and Programming',
+      'Linux Systems Laboratory',
+      'Digital Systems',
+      'Electrical and Electronic Circuits',
+      'Electronics Laboratory',
+      'Embedded C Programming',
+      'Embedded C Programming Laboratory'
+    ],
+    'Diploma Level': [
+      'Math for Electronics II',
+      'Signals and Systems',
+      'Analog Electronic Systems',
+      'Analog Electronics Laboratory',
+      'Python Programming',
+      'Digital System Design',
+      'Digital System Design Laboratory',
+      'Digital Signal Processing',
+      'Sensors and Applications',
+      'Sensors Laboratory',
+      'Control Engineering',
+      'Electronics System Project'
+    ],
+    'BS Degree Level': [
+      'Embedded Linux and FPGAs',
+      'Embedded Linux and FPGAs Lab',
+      'Electromagnetic Fields and Transmission Lines',
+      'Electronic Product Design',
+      'Computer Organisation',
+      'Strategies for Professional Growth',
+      'Probability and Statistics',
+      'Communication Systems',
+      'Internet of Things (IoT)',
+      'Semiconductor Devices and VLSI Technology',
+      'Analog Circuits',
+      'Digital IC Design',
+      'Power Management for Electronic Systems',
+      'Biomedical Electronic Systems',
+      'Operating Systems',
+      'Database Management Systems',
+      'Programming Data Structures and Algorithms using Python',
+      'Modern Application Development I',
+      'Machine Learning Foundation',
+      'Programming Concepts using Java',
+      'Modern Application Development II',
+      'Machine Learning Techniques',
+      'Machine Learning Practice',
+      'Deep Learning',
+      'Deep Learning for Computer Vision',
+      'Speech Technology',
+      'Deep Learning Practice',
+      'Industry 4.0',
+      'Design Thinking for Data-Driven App Development',
+      'Financial Forensics',
+      'Market Research',
+      'Game Theory and Strategy',
+      'Managerial Economics',
+      'Corporate Finance',
+      'Apprenticeship in Electronics Systems 1',
+      'Apprenticeship in Electronics Systems 2'
+    ]
   };
 
-  const [formData, setFormData] = useState(initialFormData);
-  
-  useEffect(() => {
-    if (isEditMode && contentToEdit) {
-      setFormData({
-        title: contentToEdit.title || '',
-        description: contentToEdit.description || '',
-        subject: contentToEdit.subject || '',
-        file_link: contentToEdit.file_link || '',
-        content_url: contentToEdit.content_url || '',
-        year: contentToEdit.year?.toString() || '',
-        exam_type: contentToEdit.exam_type || '',
-        class_level: contentToEdit.class_level || '',
-        branch: contentToEdit.branch || '',
-        level: contentToEdit.level || '',
-        price: contentToEdit.price?.toString() || '',
-        duration: contentToEdit.duration || '',
-        category: contentToEdit.category || '',
-        features: Array.isArray(contentToEdit.features) ? contentToEdit.features.join(', ') : '',
-        image_url: contentToEdit.image_url || ''
-      });
-    } else {
-      setFormData(initialFormData);
+  // Data Science subjects by level
+  const dataScienceSubjects = {
+    'Qualifier Level': [
+      'English I',
+      'Mathematics for Data Science I',
+      'Statistics for Data Science I',
+      'Computational Thinking'
+    ],
+    'Foundation Level': [
+      'Mathematics for Data Science I',
+      'Statistics for Data Science I',
+      'Computational Thinking',
+      'English I',
+      'Mathematics for Data Science II',
+      'Statistics for Data Science II',
+      'Programming in Python',
+      'English II'
+    ],
+    'Diploma Level': [
+      'Database Management Systems',
+      'Programming, Data Structures and Algorithms using Python',
+      'Modern Application Development I',
+      'Modern Application Development I - Project',
+      'Programming Concepts using Java',
+      'Modern Application Development II',
+      'Modern Application Development II - Project',
+      'System Commands',
+      'Machine Learning Foundations',
+      'Business Data Management',
+      'Business Data Management - Project',
+      'Machine Learning Techniques',
+      'Machine Learning Practice',
+      'Machine Learning Practice - Project',
+      'Business Analytics',
+      'Tools in Data Science'
+    ],
+    'BSc Degree Level': [
+      'Software Engineering',
+      'Software Testing',
+      'AI: Search Methods for Problem Solving',
+      'Deep Learning',
+      'Strategies for Professional Growth',
+      'Algorithmic Thinking in Bioinformatics',
+      'Big Data and Biological Networks',
+      'Data Visualization Design',
+      'Special topics in Machine Learning (Reinforcement Learning)',
+      'Speech Technology',
+      'Design Thinking for Data-Driven App Development',
+      'Industry 4.0',
+      'Sequential Decision Making',
+      'Market Research',
+      'Privacy & Security in Online Social Media',
+      'Introduction to Big Data',
+      'Financial Forensics',
+      'Linear Statistical Models',
+      'Advanced Algorithms',
+      'Statistical Computing',
+      'Computer Systems Design',
+      'Programming in C',
+      'Mathematical Thinking',
+      'Large Language Models',
+      'Introduction to Natural Language Processing (i-NLP)',
+      'Deep Learning for Computer Vision',
+      'Managerial Economics',
+      'Game Theory and Strategy',
+      'Corporate Finance',
+      'Deep Learning Practice',
+      'Operating Systems',
+      'Mathematical Foundations of Generative AI',
+      'Algorithms for Data Science (ADS)',
+      'Machine Learning Operations (MLOps)'
+    ]
+  };
+
+  // Dynamic subject selection based on exam type, branch, and level
+  const getSubjectsForExamType = (examType: string, branch?: string, level?: string) => {
+    switch (examType) {
+      case 'NEET':
+        return ['Zoology', 'Botany', 'Inorganic Chemistry', 'Organic Chemistry', 'Physical Chemistry', 'Physics'];
+      case 'JEE':
+        return ['Mathematics', 'Inorganic Chemistry', 'Organic Chemistry', 'Physical Chemistry', 'Physics'];
+      case 'IITM_BS':
+        if (branch === 'Electronic Systems' && level) {
+          return electronicSystemsSubjects[level as keyof typeof electronicSystemsSubjects] || [];
+        }
+        if (branch === 'Data Science' && level) {
+          return dataScienceSubjects[level as keyof typeof dataScienceSubjects] || [];
+        }
+        return [];
+      default:
+        return ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Botany', 'Zoology', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Programming', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals'];
     }
-  }, [isOpen, isEditMode, contentToEdit, prefilledSubject, examType, classLevel, branch, level]);
+  };
+
+  // Dynamic class levels based on exam type
+  const getClassLevelsForExamType = (examType: string) => {
+    switch (examType) {
+      case 'NEET':
+      case 'JEE':
+        return ['11th', '12th'];
+      case 'IITM_BS':
+        return ['Qualifier Level', 'Foundation Level', 'Diploma Level', 'BS Degree Level', 'BSc Degree Level'];
+      default:
+        return ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
+    }
+  };
+
+  // Only Electronic Systems and Data Science for IITM BS
+  const getIITMBranches = () => {
+    return ['Electronic Systems', 'Data Science'];
+  };
+
+  // Dynamic course categories
+  const getCourseCategoriesForExamType = (examType: string) => {
+    switch (examType) {
+      case 'NEET':
+        return ['neet'];
+      case 'JEE':
+        return ['jee'];
+      case 'IITM_BS':
+        return ['iitm-bs'];
+      default:
+        return ['all', 'neet', 'jee', 'iitm-bs', 'placement'];
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      content_url: '',
+      subject: prefilledSubject || '',
+      class_level: classLevel || '',
+      exam_type: examType || '',
+      branch: branch || '',
+      level: level || '',
+      year: '',
+      date_value: '',
+      category: '',
+      name: '',
+      group_link: '',
+      group_type: '',
+      content: '',
+      is_featured: false,
+      is_highlighted: false,
+      price: '',
+      duration: '',
+      features: ''
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,407 +307,567 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
 
     try {
       let success = false;
-      const noteData = {
+
+      if (contentType === 'notes') {
+        success = await addNote({
           title: formData.title,
-          description: formData.description,
           subject: formData.subject,
-          file_link: formData.file_link,
           content_url: formData.content_url,
-          exam_type: formData.exam_type,
+          description: formData.description,
           class_level: formData.class_level,
+          exam_type: formData.exam_type,
           branch: formData.branch,
           level: formData.level
-      };
-      const pyqData = {
+        });
+      } else if (contentType === 'pyqs') {
+        success = await addPyq({
           title: formData.title,
-          description: formData.description,
           subject: formData.subject,
           year: formData.year ? parseInt(formData.year) : null,
           exam_type: formData.exam_type,
+          content_url: formData.content_url,
+          description: formData.description,
           class_level: formData.class_level,
           branch: formData.branch,
-          level: formData.level,
-          file_link: formData.file_link,
-          content_url: formData.content_url
-      };
-
-      if (isEditMode) {
-        if (contentType === 'notes') {
-          success = await updateNote(contentToEdit.id, noteData);
-        } else if (contentType === 'pyqs') {
-          success = await updatePyq(contentToEdit.id, pyqData);
-        }
-      } else {
-        if (contentType === 'notes') {
-          success = await addNote(noteData);
-        } else if (contentType === 'pyqs') {
-          success = await addPyq(pyqData);
-        } else if (contentType === 'courses') {
-          toast({
-            title: "Course Creation",
-            description: "Course creation functionality will be implemented soon",
-          });
-          success = true;
-        }
+          level: formData.level
+        });
       }
 
       if (success) {
-        setFormData(initialFormData);
+        resetForm();
         onClose();
+        toast({
+          title: "Success",
+          description: `${contentType === 'notes' ? 'Note' : 'PYQ'} added successfully for ${formData.subject}`,
+        });
       }
     } catch (error) {
       console.error('Error submitting form:', error);
       toast({
         title: "Error",
-        description: "Failed to submit form",
-        variant: "destructive"
+        description: "Failed to add content",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const renderForm = () => {
-    if (contentType === 'notes') {
-      return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              required
-            />
-          </div>
+  const getDialogTitle = () => {
+    const subjectPrefix = prefilledSubject ? `${prefilledSubject} ` : '';
+    switch (contentType) {
+      case 'notes': return `Add New ${subjectPrefix}Note`;
+      case 'pyqs': return `Add New ${subjectPrefix}Previous Year Question`;
+      case 'news': return 'Add News Update';
+      case 'dates': return 'Add Important Date';
+      case 'communities': return 'Add Community';
+      case 'courses': return 'Add Course';
+      case 'syllabus': return 'Add Syllabus';
+      default: return 'Add Content';
+    }
+  };
 
-          <div>
-            <Label htmlFor="subject">Subject</Label>
-            <Input
-              id="subject"
-              value={formData.subject}
-              onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-            />
-          </div>
+  const renderFormFields = () => {
+    switch (contentType) {
+      case 'notes':
+      case 'pyqs':
+        return (
+          <>
+            <div>
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                placeholder={`Enter ${prefilledSubject ? prefilledSubject + ' ' : ''}title`}
+              />
+            </div>
 
-          <div>
-            <Label htmlFor="exam_type">Exam Type</Label>
-            <Select value={formData.exam_type} onValueChange={(value) => setFormData(prev => ({ ...prev, exam_type: value }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select exam type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="JEE">JEE</SelectItem>
-                <SelectItem value="NEET">NEET</SelectItem>
-                <SelectItem value="IITM_BS">IITM BS</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Enter description"
+              />
+            </div>
 
-          {formData.exam_type === 'IITM_BS' && (
-            <>
+            <div>
+              <Label htmlFor="content_url">Content Link (PDF/Document)</Label>
+              <Input
+                id="content_url"
+                type="url"
+                value={formData.content_url}
+                onChange={(e) => setFormData(prev => ({ ...prev, content_url: e.target.value }))}
+                placeholder="https://example.com/document.pdf"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="exam_type">Exam Type</Label>
+                <Select 
+                  value={formData.exam_type} 
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      exam_type: value,
+                      subject: '', // Reset subject when exam type changes
+                      class_level: '', // Reset class level when exam type changes
+                      branch: value === 'IITM_BS' ? prev.branch : '', // Keep branch only for IITM_BS
+                      level: value === 'IITM_BS' ? prev.level : '' // Keep level only for IITM_BS
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select exam type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {examTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="class_level">Class Level</Label>
+                <Select 
+                  value={formData.class_level} 
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      class_level: value,
+                      subject: '' // Reset subject when class level changes for IITM_BS
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select class level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getClassLevelsForExamType(formData.exam_type).map((level) => (
+                      <SelectItem key={level} value={level}>{level}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {formData.exam_type === 'IITM_BS' && (
               <div>
                 <Label htmlFor="branch">Branch</Label>
-                <Select value={formData.branch} onValueChange={(value) => setFormData(prev => ({ ...prev, branch: value }))}>
+                <Select 
+                  value={formData.branch} 
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      branch: value,
+                      subject: '' // Reset subject when branch changes
+                    }));
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select branch" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Data Science">Data Science</SelectItem>
-                    <SelectItem value="Electronic Systems">Electronic Systems</SelectItem>
+                    {getIITMBranches().map((branch) => (
+                      <SelectItem key={branch} value={branch}>{branch}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
+            )}
 
-              <div>
-                <Label htmlFor="level">Level</Label>
-                <Select value={formData.level} onValueChange={(value) => setFormData(prev => ({ ...prev, level: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Foundation">Foundation</SelectItem>
-                    <SelectItem value="Diploma">Diploma</SelectItem>
-                    <SelectItem value="Degree">Degree</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
-
-          {(formData.exam_type === 'JEE' || formData.exam_type === 'NEET') && (
             <div>
-              <Label htmlFor="class_level">Class Level</Label>
-              <Select value={formData.class_level} onValueChange={(value) => setFormData(prev => ({ ...prev, class_level: value }))}>
+              <Label htmlFor="subject">Subject</Label>
+              <Select 
+                value={formData.subject} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select class" />
+                  <SelectValue placeholder="Select subject" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="11">Class 11</SelectItem>
-                  <SelectItem value="12">Class 12</SelectItem>
+                  {getSubjectsForExamType(formData.exam_type, formData.branch, formData.class_level).map((subject) => (
+                    <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-          )}
 
+            {contentType === 'pyqs' && (
+              <div>
+                <Label htmlFor="year">Year</Label>
+                <Input
+                  id="year"
+                  type="number"
+                  value={formData.year}
+                  onChange={(e) => setFormData(prev => ({ ...prev, year: e.target.value }))}
+                  placeholder="2024"
+                  min="2000"
+                  max="2030"
+                />
+              </div>
+            )}
+
+            {formData.exam_type === 'IITM_BS' && (
+              <div>
+                <Label htmlFor="level">Level</Label>
+                <Input
+                  id="level"
+                  value={formData.level}
+                  onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value }))}
+                  placeholder="e.g., foundation, diploma, degree"
+                />
+              </div>
+            )}
+          </>
+        );
+
+      case 'courses':
+        return (
+          <>
+            <div>
+              <Label htmlFor="title">Course Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                placeholder="Enter course title"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                required
+                placeholder="Enter course description"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="exam_type">Exam Type</Label>
+                <Select 
+                  value={formData.exam_type} 
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      exam_type: value,
+                      category: getCourseCategoriesForExamType(value)[0] || ''
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select exam type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {examTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getCourseCategoriesForExamType(formData.exam_type).map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category === 'iitm-bs' ? 'IITM BS' : category.toUpperCase()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="price">Price</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                  required
+                  placeholder="Enter price"
+                />
+              </div>
+              <div>
+                <Label htmlFor="duration">Duration</Label>
+                <Input
+                  id="duration"
+                  value={formData.duration}
+                  onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
+                  required
+                  placeholder="e.g., 6 months, 1 year"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="features">Features (comma-separated)</Label>
+              <Textarea
+                id="features"
+                value={formData.features}
+                onChange={(e) => setFormData(prev => ({ ...prev, features: e.target.value }))}
+                placeholder="Feature 1, Feature 2, Feature 3"
+              />
+            </div>
+          </>
+        );
+
+      case 'news':
+        return (
+          <>
+            <div>
+              <Label htmlFor="title">News Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                placeholder="Enter news title"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="content">Content</Label>
+              <Textarea
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                rows={4}
+                required
+                placeholder="Enter news content"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="exam_type">Exam Type</Label>
+                <Select value={formData.exam_type} onValueChange={(value) => setFormData(prev => ({ ...prev, exam_type: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select exam type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Exams</SelectItem>
+                    {examTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Input
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                  placeholder="e.g., Admission, Results, Updates"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="is_featured"
+                checked={formData.is_featured}
+                onChange={(e) => setFormData(prev => ({ ...prev, is_featured: e.target.checked }))}
+              />
+              <Label htmlFor="is_featured">Mark as Featured</Label>
+            </div>
+          </>
+        );
+
+      case 'dates':
+        return (
+          <>
+            <div>
+              <Label htmlFor="title">Event Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                placeholder="Enter event title"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="date_value">Date</Label>
+              <Input
+                id="date_value"
+                type="date"
+                value={formData.date_value}
+                onChange={(e) => setFormData(prev => ({ ...prev, date_value: e.target.value }))}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Enter event description"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="exam_type">Exam Type</Label>
+                <Select value={formData.exam_type} onValueChange={(value) => setFormData(prev => ({ ...prev, exam_type: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select exam type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {examTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Input
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                  placeholder="e.g., Exam, Registration, Results"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="is_highlighted"
+                checked={formData.is_highlighted}
+                onChange={(e) => setFormData(prev => ({ ...prev, is_highlighted: e.target.checked }))}
+              />
+              <Label htmlFor="is_highlighted">Highlight this date</Label>
+            </div>
+          </>
+        );
+
+      case 'communities':
+        return (
+          <>
+            <div>
+              <Label htmlFor="name">Community Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                required
+                placeholder="Enter community name"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Enter community description"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="group_link">Group Link</Label>
+              <Input
+                id="group_link"
+                type="url"
+                value={formData.group_link}
+                onChange={(e) => setFormData(prev => ({ ...prev, group_link: e.target.value }))}
+                required
+                placeholder="https://t.me/groupname or WhatsApp link"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="group_type">Group Type</Label>
+                <Select value={formData.group_type} onValueChange={(value) => setFormData(prev => ({ ...prev, group_type: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select group type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {groupTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="exam_type">Exam Type</Label>
+                <Select value={formData.exam_type} onValueChange={(value) => setFormData(prev => ({ ...prev, exam_type: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select exam type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {examTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        );
+
+      default:
+        return (
           <div>
-            <Label htmlFor="file_link">File Link</Label>
-            <Input
-              id="file_link"
-              type="url"
-              value={formData.file_link}
-              onChange={(e) => setFormData(prev => ({ ...prev, file_link: e.target.value }))}
-              placeholder="https://example.com/file.pdf"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <Button type="submit" disabled={isSubmitting} className="flex-1">
-              {isSubmitting ? 'Saving...' : isEditMode ? 'Save Changes' : 'Add Note'}
-            </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-          </div>
-        </form>
-      );
-    }
-
-    if (contentType === 'pyqs') {
-      return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title *</Label>
+            <Label htmlFor="title">Title</Label>
             <Input
               id="title"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
               required
+              placeholder="Enter title"
             />
           </div>
-
-          <div>
-            <Label htmlFor="subject">Subject</Label>
-            <Input
-              id="subject"
-              value={formData.subject}
-              onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="year">Year</Label>
-            <Input
-              id="year"
-              type="number"
-              value={formData.year}
-              onChange={(e) => setFormData(prev => ({ ...prev, year: e.target.value }))}
-              placeholder="2024"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="exam_type">Exam Type</Label>
-            <Select value={formData.exam_type} onValueChange={(value) => setFormData(prev => ({ ...prev, exam_type: value }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select exam type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="JEE">JEE</SelectItem>
-                <SelectItem value="NEET">NEET</SelectItem>
-                <SelectItem value="IITM_BS">IITM BS</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {formData.exam_type === 'IITM_BS' && (
-            <>
-              <div>
-                <Label htmlFor="branch">Branch</Label>
-                <Select value={formData.branch} onValueChange={(value) => setFormData(prev => ({ ...prev, branch: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select branch" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Data Science">Data Science</SelectItem>
-                    <SelectItem value="Electronic Systems">Electronic Systems</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="level">Level</Label>
-                <Select value={formData.level} onValueChange={(value) => setFormData(prev => ({ ...prev, level: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Foundation">Foundation</SelectItem>
-                    <SelectItem value="Diploma">Diploma</SelectItem>
-                    <SelectItem value="Degree">Degree</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
-
-          {(formData.exam_type === 'JEE' || formData.exam_type === 'NEET') && (
-            <div>
-              <Label htmlFor="class_level">Class Level</Label>
-              <Select value={formData.class_level} onValueChange={(value) => setFormData(prev => ({ ...prev, class_level: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select class" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="11">Class 11</SelectItem>
-                  <SelectItem value="12">Class 12</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          <div>
-            <Label htmlFor="file_link">File Link</Label>
-            <Input
-              id="file_link"
-              type="url"
-              value={formData.file_link}
-              onChange={(e) => setFormData(prev => ({ ...prev, file_link: e.target.value }))}
-              placeholder="https://example.com/file.pdf"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <Button type="submit" disabled={isSubmitting} className="flex-1">
-              {isSubmitting ? 'Saving...' : isEditMode ? 'Save Changes' : 'Add PYQ'}
-            </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-          </div>
-        </form>
-      );
+        );
     }
-
-    if (contentType === 'courses') {
-      return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">Course Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description *</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="category">Category</Label>
-            <Input
-              id="category"
-              value={formData.category}
-              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="price">Price</Label>
-            <Input
-              id="price"
-              type="number"
-              value={formData.price}
-              onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="duration">Duration</Label>
-            <Input
-              id="duration"
-              value={formData.duration}
-              onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-              placeholder="e.g., 6 months"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="features">Features (comma separated)</Label>
-            <Textarea
-              id="features"
-              value={formData.features}
-              onChange={(e) => setFormData(prev => ({ ...prev, features: e.target.value }))}
-              placeholder="Feature 1, Feature 2, Feature 3"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="image_url">Image URL</Label>
-            <Input
-              id="image_url"
-              type="url"
-              value={formData.image_url}
-              onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-            />
-          </div>
-
-          <div className="flex gap-2">
-            <Button type="submit" disabled={isSubmitting} className="flex-1">
-              {isSubmitting ? 'Adding...' : 'Add Course'}
-            </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-          </div>
-        </form>
-      );
-    }
-
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">Form for {contentType} is not yet implemented.</p>
-        <Button onClick={onClose} className="mt-4">Close</Button>
-      </div>
-    );
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {isEditMode ? 'Edit' : 'Add'} {contentType === 'notes' ? 'Note' : contentType === 'pyqs' ? 'Previous Year Question' : contentType === 'courses' ? 'Course' : contentType}
-          </DialogTitle>
+          <DialogTitle>{getDialogTitle()}</DialogTitle>
+          <DialogDescription>
+            Fill in the form below to add new {prefilledSubject ? `${prefilledSubject} ` : ''}content
+            {branch && level ? ` for ${branch} ${level}` : ''}
+          </DialogDescription>
         </DialogHeader>
-        {renderForm()}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {renderFormFields()}
+          
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting} className="bg-royal hover:bg-royal-dark">
+              {isSubmitting ? 'Adding...' : 'Add Content'}
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

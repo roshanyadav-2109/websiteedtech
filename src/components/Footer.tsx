@@ -60,19 +60,19 @@ const Footer = () => {
             <h3 className="text-white text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/jee-prep" className="hover:text-white transition-colors">JEE Resources</Link>
+                <Link to="/exam-preparation/jee" className="hover:text-white transition-colors">JEE Resources</Link>
               </li>
               <li>
-                <Link to="/neet-prep" className="hover:text-white transition-colors">NEET Resources</Link>
+                <Link to="/exam-preparation/neet" className="hover:text-white transition-colors">NEET Resources</Link>
               </li>
               <li>
-                <Link to="/iitm-bs-prep" className="hover:text-white transition-colors">IITM BS Resources</Link>
+                <Link to="/exam-preparation/iitm-bs" className="hover:text-white transition-colors">IITM BS Resources</Link>
               </li>
               <li>
-                <Link to="/career" className="hover:text-white transition-colors">Skill Enhancement</Link>
+                <Link to="/resources/skills" className="hover:text-white transition-colors">Skill Enhancement</Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-white transition-colors">Blog & Articles</Link>
+                <Link to="/blog" className="hover:text-white transition-colors">Blog & Articles</Link>
               </li>
             </ul>
           </div>
@@ -82,8 +82,8 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <Mail size={18} className="mr-2 mt-1" />
-                <a href="mailto:help.unknowniitians@gmail.com" className="hover:text-white transition-colors">
-                  help.unknowniitians@gmail.com
+                <a href="mailto:support@unknowniitians.com" className="hover:text-white transition-colors">
+                  support@unknowniitians.com
                 </a>
               </li>
               <li>
