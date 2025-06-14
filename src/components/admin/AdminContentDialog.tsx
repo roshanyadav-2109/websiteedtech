@@ -74,6 +74,52 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
   const branches = ['CSE', 'Physics', 'Mathematics', 'Data Science', 'Economics', 'Electronic Systems'];
   const groupTypes = ['Telegram', 'WhatsApp', 'Discord', 'Facebook'];
 
+  // Dynamic subject selection based on exam type
+  const getSubjectsForExamType = (examType: string) => {
+    switch (examType) {
+      case 'NEET':
+        return ['Zoology', 'Botany', 'Inorganic Chemistry', 'Organic Chemistry', 'Physical Chemistry', 'Physics'];
+      case 'JEE':
+        return ['Mathematics', 'Inorganic Chemistry', 'Organic Chemistry', 'Physical Chemistry', 'Physics'];
+      case 'IITM_BS':
+        return ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals', 'Programming'];
+      default:
+        return ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Botany', 'Zoology', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Programming', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals'];
+    }
+  };
+
+  // Dynamic class levels based on exam type
+  const getClassLevelsForExamType = (examType: string) => {
+    switch (examType) {
+      case 'NEET':
+      case 'JEE':
+        return ['11th', '12th'];
+      case 'IITM_BS':
+        return ['Foundation Level', 'Diploma Level', 'Degree Level'];
+      default:
+        return ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
+    }
+  };
+
+  // Dynamic branches for IITM BS
+  const getIITMBranches = () => {
+    return ['CSE', 'Physics', 'Mathematics', 'Data Science', 'Economics', 'Electronic Systems'];
+  };
+
+  // Dynamic course categories
+  const getCourseCategoriesForExamType = (examType: string) => {
+    switch (examType) {
+      case 'NEET':
+        return ['neet'];
+      case 'JEE':
+        return ['jee'];
+      case 'IITM_BS':
+        return ['iitm-bs'];
+      default:
+        return ['all', 'neet', 'jee', 'iitm-bs', 'placement'];
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -206,7 +252,19 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="exam_type">Exam Type</Label>
-                <Select value={formData.exam_type} onValueChange={(value) => setFormData(prev => ({ ...prev, exam_type: value }))}>
+                <Select 
+                  value={formData.exam_type} 
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      exam_type: value,
+                      subject: '', // Reset subject when exam type changes
+                      class_level: '', // Reset class level when exam type changes
+                      branch: value === 'IITM_BS' ? prev.branch : '', // Keep branch only for IITM_BS
+                      level: value === 'IITM_BS' ? prev.level : '' // Keep level only for IITM_BS
+                    }));
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select exam type" />
                   </SelectTrigger>
@@ -224,7 +282,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
                     <SelectValue placeholder="Select subject" />
                   </SelectTrigger>
                   <SelectContent>
-                    {subjects.map((subject) => (
+                    {getSubjectsForExamType(formData.exam_type).map((subject) => (
                       <SelectItem key={subject} value={subject}>{subject}</SelectItem>
                     ))}
                   </SelectContent>
@@ -255,34 +313,139 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
                     <SelectValue placeholder="Select class level" />
                   </SelectTrigger>
                   <SelectContent>
-                    {classLevels.map((level) => (
+                    {getClassLevelsForExamType(formData.exam_type).map((level) => (
                       <SelectItem key={level} value={level}>{level}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+              {formData.exam_type === 'IITM_BS' && (
+                <div>
+                  <Label htmlFor="branch">Branch</Label>
+                  <Select value={formData.branch} onValueChange={(value) => setFormData(prev => ({ ...prev, branch: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getIITMBranches().map((branch) => (
+                        <SelectItem key={branch} value={branch}>{branch}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+
+            {formData.exam_type === 'IITM_BS' && (
               <div>
-                <Label htmlFor="branch">Branch</Label>
-                <Select value={formData.branch} onValueChange={(value) => setFormData(prev => ({ ...prev, branch: value }))}>
+                <Label htmlFor="level">Level</Label>
+                <Input
+                  id="level"
+                  value={formData.level}
+                  onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value }))}
+                  placeholder="e.g., foundation, diploma, degree"
+                />
+              </div>
+            )}
+          </>
+        );
+
+      case 'courses':
+        return (
+          <>
+            <div>
+              <Label htmlFor="title">Course Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                required
+                placeholder="Enter course title"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                required
+                placeholder="Enter course description"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="exam_type">Exam Type</Label>
+                <Select 
+                  value={formData.exam_type} 
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      exam_type: value,
+                      category: getCourseCategoriesForExamType(value)[0] || ''
+                    }));
+                  }}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select branch" />
+                    <SelectValue placeholder="Select exam type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {branches.map((branch) => (
-                      <SelectItem key={branch} value={branch}>{branch}</SelectItem>
+                    {examTypes.map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getCourseCategoriesForExamType(formData.exam_type).map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category === 'iitm-bs' ? 'IITM BS' : category.toUpperCase()}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="price">Price</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                  required
+                  placeholder="Enter price"
+                />
+              </div>
+              <div>
+                <Label htmlFor="duration">Duration</Label>
+                <Input
+                  id="duration"
+                  value={formData.duration}
+                  onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
+                  required
+                  placeholder="e.g., 6 months, 1 year"
+                />
+              </div>
+            </div>
+
             <div>
-              <Label htmlFor="level">Level</Label>
-              <Input
-                id="level"
-                value={formData.level}
-                onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value }))}
-                placeholder="e.g., foundation, diploma, degree"
+              <Label htmlFor="features">Features (comma-separated)</Label>
+              <Textarea
+                id="features"
+                value={formData.features}
+                onChange={(e) => setFormData(prev => ({ ...prev, features: e.target.value }))}
+                placeholder="Feature 1, Feature 2, Feature 3"
               />
             </div>
           </>
@@ -487,67 +650,6 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-          </>
-        );
-
-      case 'courses':
-        return (
-          <>
-            <div>
-              <Label htmlFor="title">Course Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                required
-                placeholder="Enter course title"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                required
-                placeholder="Enter course description"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="price">Price</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                  required
-                  placeholder="Enter price"
-                />
-              </div>
-              <div>
-                <Label htmlFor="duration">Duration</Label>
-                <Input
-                  id="duration"
-                  value={formData.duration}
-                  onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-                  required
-                  placeholder="e.g., 6 months, 1 year"
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="features">Features (comma-separated)</Label>
-              <Textarea
-                id="features"
-                value={formData.features}
-                onChange={(e) => setFormData(prev => ({ ...prev, features: e.target.value }))}
-                placeholder="Feature 1, Feature 2, Feature 3"
-              />
             </div>
           </>
         );
