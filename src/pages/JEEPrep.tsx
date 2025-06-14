@@ -39,11 +39,6 @@ const JEEPrep = () => {
     return content;
   };
 
-  const handleAddContent = (contentType: string) => {
-    console.log(`Adding ${contentType} for JEE`);
-    // This will be implemented with admin forms
-  };
-
   const subjects = ["Physics", "Mathematics", "Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry"];
   const classes = [
     { value: "class11", label: "Class 11" },
@@ -55,6 +50,7 @@ const JEEPrep = () => {
       <NavBar />
       
       <main className="pt-20">
+        {/* Hero Section */}
         <section className="bg-gradient-to-r from-royal to-royal-dark text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl sm:text-5xl font-bold mb-6">JEE Preparation</h1>
@@ -110,7 +106,8 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("notes")}
+                    contentType="notes"
+                    examType="JEE"
                   >
                     Add Notes
                   </AdminAddButton>
@@ -160,7 +157,8 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("pyqs")}
+                    contentType="pyqs"
+                    examType="JEE"
                   >
                     Add PYQs
                   </AdminAddButton>
@@ -172,7 +170,8 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Study Groups</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("study-groups")}
+                    contentType="communities"
+                    examType="JEE"
                   >
                     Add Study Group
                   </AdminAddButton>
@@ -188,7 +187,8 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">News Updates</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("news-updates")}
+                    contentType="news"
+                    examType="JEE"
                   >
                     Add News
                   </AdminAddButton>
@@ -204,7 +204,8 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Important Dates</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("important-dates")}
+                    contentType="dates"
+                    examType="JEE"
                   >
                     Add Date
                   </AdminAddButton>

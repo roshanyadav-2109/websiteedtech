@@ -40,11 +40,6 @@ const NEETPrep = () => {
     return content;
   };
 
-  const handleAddContent = (contentType: string) => {
-    console.log(`Adding ${contentType} for NEET`);
-    // This will be implemented with admin forms
-  };
-
   const subjects = ["Physics", "Botany", "Zoology", "Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry"];
   const classes = [
     { value: "class11", label: "Class 11" },
@@ -111,7 +106,8 @@ const NEETPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("notes")}
+                    contentType="notes"
+                    examType="NEET"
                   >
                     Add Notes
                   </AdminAddButton>
@@ -160,7 +156,8 @@ const NEETPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("pyqs")}
+                    contentType="pyqs"
+                    examType="NEET"
                   >
                     Add PYQs
                   </AdminAddButton>
@@ -172,7 +169,8 @@ const NEETPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Study Groups</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("study-groups")}
+                    contentType="communities"
+                    examType="NEET"
                   >
                     Add Study Group
                   </AdminAddButton>
@@ -188,7 +186,8 @@ const NEETPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">News Updates</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("news-updates")}
+                    contentType="news"
+                    examType="NEET"
                   >
                     Add News
                   </AdminAddButton>
@@ -204,7 +203,8 @@ const NEETPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Important Dates</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("important-dates")}
+                    contentType="dates"
+                    examType="NEET"
                   >
                     Add Date
                   </AdminAddButton>

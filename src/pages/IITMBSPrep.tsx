@@ -34,11 +34,6 @@ const IITMBSPrep = () => {
     return content;
   };
 
-  const handleAddContent = (contentType: string) => {
-    console.log(`Adding ${contentType} for IITM BS`);
-    // This will be implemented with admin forms
-  };
-
   return (
     <>
       <NavBar />
@@ -108,7 +103,8 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Branch Notes</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("notes")}
+                    contentType="notes"
+                    examType="IITM_BS"
                   >
                     Add Notes
                   </AdminAddButton>
@@ -120,7 +116,8 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("pyqs")}
+                    contentType="pyqs"
+                    examType="IITM_BS"
                   >
                     Add PYQs
                   </AdminAddButton>
@@ -139,7 +136,8 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Communities</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("communities")}
+                    contentType="communities"
+                    examType="IITM_BS"
                   >
                     Add Community
                   </AdminAddButton>
@@ -151,7 +149,8 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Premium Courses</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("courses")}
+                    contentType="courses"
+                    examType="IITM_BS"
                   >
                     Add Course
                   </AdminAddButton>
@@ -163,7 +162,8 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Syllabus</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("syllabus")}
+                    contentType="syllabus"
+                    examType="IITM_BS"
                   >
                     Add Syllabus
                   </AdminAddButton>
@@ -175,7 +175,8 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">News & Updates</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("news")}
+                    contentType="news"
+                    examType="IITM_BS"
                   >
                     Add News
                   </AdminAddButton>
@@ -187,7 +188,8 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Important Dates</h2>
                   <AdminAddButton 
-                    onAdd={() => handleAddContent("dates")}
+                    contentType="dates"
+                    examType="IITM_BS"
                   >
                     Add Date
                   </AdminAddButton>
