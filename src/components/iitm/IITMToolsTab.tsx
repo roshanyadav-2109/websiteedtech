@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, Award, RefreshCw } from "lucide-react";
 import FoundationMarksPredictor from "./FoundationMarksPredictor";
+import DiplomaMarksPredictor from "./DiplomaMarksPredictor";
 
 const FOUNDATION_SUBJECTS = [
   {
@@ -557,12 +558,15 @@ const IITMToolsTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Only show FoundationMarksPredictor for Data Science, Foundation */}
+            {/* Foundation: Data Science, Foundation */}
             {branch === "data-science" && level === "foundation" ? (
               <FoundationMarksPredictor />
+            ) : branch === "data-science" && level === "diploma" ? (
+              // NEW: Show diploma marks predictor
+              <DiplomaMarksPredictor />
             ) : (
               <div className="text-center text-gray-600 text-lg pt-12 pb-16">
-                Marks predictor is only available for <span className="font-semibold">Foundation subjects</span> of <span className="font-semibold">BS Data Science branch</span>.
+                Marks predictor is only available for <span className="font-semibold">Foundation or Diploma subjects</span> of <span className="font-semibold">BS Data Science branch</span>.
               </div>
             )}
           </CardContent>
