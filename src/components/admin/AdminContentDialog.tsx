@@ -14,6 +14,9 @@ interface AdminContentDialogProps {
   contentType: 'notes' | 'pyqs' | 'news' | 'dates' | 'communities' | 'courses' | 'syllabus';
   examType?: string;
   prefilledSubject?: string;
+  branch?: string;
+  level?: string;
+  classLevel?: string;
 }
 
 const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
@@ -21,7 +24,10 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
   onClose,
   contentType,
   examType,
-  prefilledSubject
+  prefilledSubject,
+  branch,
+  level,
+  classLevel
 }) => {
   const { addNote, addPyq } = useBackend();
   const { toast } = useToast();
@@ -32,10 +38,10 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
     description: '',
     content_url: '',
     subject: prefilledSubject || '',
-    class_level: '',
+    class_level: classLevel || '',
     exam_type: examType || '',
-    branch: '',
-    level: '',
+    branch: branch || '',
+    level: level || '',
     year: '',
     date_value: '',
     category: '',
@@ -50,12 +56,17 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
     features: ''
   });
 
-  // Update subject when prefilledSubject changes
+  // Update form data when props change
   useEffect(() => {
-    if (prefilledSubject) {
-      setFormData(prev => ({ ...prev, subject: prefilledSubject }));
-    }
-  }, [prefilledSubject]);
+    setFormData(prev => ({
+      ...prev,
+      subject: prefilledSubject || prev.subject,
+      exam_type: examType || prev.exam_type,
+      branch: branch || prev.branch,
+      level: level || prev.level,
+      class_level: classLevel || prev.class_level
+    }));
+  }, [prefilledSubject, examType, branch, level, classLevel]);
 
   const examTypes = ['IITM_BS', 'JEE', 'NEET'];
   const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Botany', 'Zoology', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Programming', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals'];
@@ -69,10 +80,10 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
       description: '',
       content_url: '',
       subject: prefilledSubject || '',
-      class_level: '',
+      class_level: classLevel || '',
       exam_type: examType || '',
-      branch: '',
-      level: '',
+      branch: branch || '',
+      level: level || '',
       year: '',
       date_value: '',
       category: '',
@@ -125,7 +136,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
         onClose();
         toast({
           title: "Success",
-          description: `${contentType === 'notes' ? 'Note' : 'PYQ'} added successfully`,
+          description: `${contentType === 'notes' ? 'Note' : 'PYQ'} added successfully for ${formData.subject}`,
         });
       }
     } catch (error) {
@@ -271,7 +282,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
                 id="level"
                 value={formData.level}
                 onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value }))}
-                placeholder="e.g., Beginner, Intermediate, Advanced"
+                placeholder="e.g., foundation, diploma, degree"
               />
             </div>
           </>
@@ -563,7 +574,8 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
           <DialogDescription>
-            Fill in the form below to add new {prefilledSubject ? prefilledSubject + ' ' : ''}content
+            Fill in the form below to add new {prefilledSubject ? `${prefilledSubject} ` : ''}content
+            {branch && level ? ` for ${branch} ${level}` : ''}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">

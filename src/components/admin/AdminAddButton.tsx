@@ -1,65 +1,53 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import { useBackend } from '@/components/BackendIntegratedWrapper';
 import AdminContentDialog from './AdminContentDialog';
 
 interface AdminAddButtonProps {
-  onClick?: () => void;
-  onAdd?: () => void;
-  children?: React.ReactNode;
-  disabled?: boolean;
-  contentType?: 'notes' | 'pyqs' | 'news' | 'dates' | 'communities' | 'courses' | 'syllabus';
+  contentType: 'notes' | 'pyqs' | 'news' | 'dates' | 'communities' | 'courses' | 'syllabus';
   examType?: string;
+  children: React.ReactNode;
+  prefilledSubject?: string;
+  branch?: string;
+  level?: string;
+  classLevel?: string;
 }
 
-const AdminAddButton: React.FC<AdminAddButtonProps> = ({ 
-  onClick, 
-  onAdd,
-  children, 
-  disabled = false,
-  contentType = 'notes',
-  examType
+const AdminAddButton: React.FC<AdminAddButtonProps> = ({
+  contentType,
+  examType,
+  children,
+  prefilledSubject,
+  branch,
+  level,
+  classLevel
 }) => {
-  const { isAdmin, isAdminLoading } = useBackend();
+  const { isAdmin } = useBackend();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Don't render if not admin or still loading
-  if (isAdminLoading || !isAdmin) {
+  if (!isAdmin) {
     return null;
   }
-
-  const handleClick = () => {
-    if (onClick) {
-      onClick();
-    } else if (onAdd) {
-      onAdd();
-    } else {
-      setIsDialogOpen(true);
-    }
-  };
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
 
   return (
     <>
       <Button 
-        onClick={handleClick} 
-        disabled={disabled}
-        className="bg-royal hover:bg-royal-dark"
+        onClick={() => setIsDialogOpen(true)}
+        className="bg-royal hover:bg-royal-dark text-white"
       >
-        <Plus className="mr-2 h-4 w-4" />
-        {children || `Add ${contentType}`}
+        {children}
       </Button>
-
+      
       <AdminContentDialog
         isOpen={isDialogOpen}
-        onClose={handleCloseDialog}
+        onClose={() => setIsDialogOpen(false)}
         contentType={contentType}
         examType={examType}
+        prefilledSubject={prefilledSubject}
+        branch={branch}
+        level={level}
+        classLevel={classLevel}
       />
     </>
   );

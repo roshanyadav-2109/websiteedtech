@@ -88,7 +88,7 @@ const JEEPYQTab = ({ downloads, onDownload }: JEEPYQTabProps) => {
           </Tabs>
         </div>
 
-        {/* Filters and Add Button */}
+        {/* Filters and Subject-Specific Add Button */}
         <div className="flex justify-between items-end mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
             <div>
@@ -127,6 +127,7 @@ const JEEPYQTab = ({ downloads, onDownload }: JEEPYQTabProps) => {
           <AdminAddButton 
             contentType="pyqs"
             examType="JEE"
+            prefilledSubject={activeSubject}
           >
             Add {activeSubject} PYQs
           </AdminAddButton>

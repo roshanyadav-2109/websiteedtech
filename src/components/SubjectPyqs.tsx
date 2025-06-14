@@ -13,6 +13,9 @@ interface PyqSet {
   description: string;
   subject: string;
   examType: string;
+  class_level?: string;
+  branch?: string;
+  level?: string;
 }
 
 interface SubjectPyqsProps {
@@ -22,15 +25,41 @@ interface SubjectPyqsProps {
   pyqsByYear: Record<string, PyqSet[]>;
   downloads: Record<string, number>;
   onDownload: (id: string) => void;
+  classLevel?: string;
+  branch?: string;
+  level?: string;
 }
 
-const SubjectPyqs = ({ subject, examType, years, pyqsByYear, downloads, onDownload }: SubjectPyqsProps) => {
+const SubjectPyqs = ({ 
+  subject, 
+  examType, 
+  years, 
+  pyqsByYear, 
+  downloads, 
+  onDownload,
+  classLevel,
+  branch,
+  level
+}: SubjectPyqsProps) => {
   const [selectedYear, setSelectedYear] = useState(years[0] || "");
 
-  // Filter PYQs by subject and exam type
-  const filteredPyqs = pyqsByYear[selectedYear]?.filter(pyq => 
-    pyq.subject === subject && pyq.examType === examType
-  ) || [];
+  // Enhanced filtering based on exam type
+  const filteredPyqs = pyqsByYear[selectedYear]?.filter(pyq => {
+    const subjectMatch = pyq.subject === subject;
+    const examTypeMatch = pyq.examType === examType;
+    
+    // Additional filtering based on exam type
+    if (examType === "NEET" || examType === "JEE") {
+      const classMatch = classLevel ? pyq.class_level === classLevel : true;
+      return subjectMatch && examTypeMatch && classMatch;
+    } else if (examType === "IITM_BS") {
+      const branchMatch = branch ? pyq.branch === branch : true;
+      const levelMatch = level ? pyq.level === level : true;
+      return subjectMatch && examTypeMatch && branchMatch && levelMatch;
+    }
+    
+    return subjectMatch && examTypeMatch;
+  }) || [];
 
   return (
     <div className="mt-4">
@@ -54,6 +83,7 @@ const SubjectPyqs = ({ subject, examType, years, pyqsByYear, downloads, onDownlo
         <AdminAddButton 
           contentType="pyqs"
           examType={examType}
+          prefilledSubject={subject}
         >
           Add {subject} PYQs
         </AdminAddButton>

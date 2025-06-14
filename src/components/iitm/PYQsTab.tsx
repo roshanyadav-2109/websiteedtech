@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -125,7 +126,7 @@ const PYQsTab = () => {
         </Tabs>
       </div>
 
-      {/* Exam Type, Year and Add Button */}
+      {/* Exam Type, Year and Subject-Specific Add Button */}
       <div className="flex justify-between items-end mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
           <div>
@@ -159,6 +160,9 @@ const PYQsTab = () => {
         <AdminAddButton 
           contentType="pyqs"
           examType="IITM_BS"
+          prefilledSubject={activeSubject}
+          branch={branch}
+          level={level}
         >
           Add {activeSubject} PYQs
         </AdminAddButton>
