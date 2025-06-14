@@ -9,6 +9,7 @@ import { Calculator, TrendingUp, Award, RefreshCw } from "lucide-react";
 import FoundationMarksPredictor from "./FoundationMarksPredictor";
 import DiplomaMarksPredictor from "./DiplomaMarksPredictor";
 import DegreeMarksPredictor from "./DegreeMarksPredictor";
+import GradeCalculator from "./GradeCalculator";
 
 const FOUNDATION_SUBJECTS = [
   {
@@ -329,14 +330,14 @@ const IITMToolsTab = () => {
       id: "grade",
       name: "Grade Calculator",
       icon: Award,
-      description: "Convert marks to grades with filtering",
+      description: "Calculate grades for specific subjects",
       needsFiltering: true
     },
     {
       id: "predictor",
       name: "Marks Predictor",
       icon: TrendingUp,
-      description: "Predict required marks based on CGPA",
+      description: "Predict required marks based on current scores",
       needsFiltering: true
     }
   ];
@@ -511,40 +512,14 @@ const IITMToolsTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="totalMarks">Total Marks</Label>
-                  <Input
-                    id="totalMarks"
-                    type="number"
-                    value={totalMarks}
-                    onChange={(e) => setTotalMarks(Number(e.target.value))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="obtainedMarks">Obtained Marks</Label>
-                  <Input
-                    id="obtainedMarks"
-                    type="number"
-                    value={obtainedMarks}
-                    onChange={(e) => setObtainedMarks(Number(e.target.value))}
-                  />
-                </div>
+            {/* Data Science Grade Calculator */}
+            {branch === "data-science" ? (
+              <GradeCalculator />
+            ) : (
+              <div className="text-center text-gray-600 text-lg pt-12 pb-16">
+                Grade calculator is only available for <span className="font-semibold">BS Data Science branch</span>.
               </div>
-
-              <Button onClick={calculateGrade} className="w-full bg-green-600 hover:bg-green-700">
-                Calculate Grade
-              </Button>
-
-              <div className="bg-green-50 p-4 rounded-md text-center">
-                <h3 className="text-lg font-bold mb-2">Your Grade</h3>
-                <div className="text-4xl font-bold text-green-600">{calculatedGrade}</div>
-                <p className="text-sm text-gray-600 mt-2">
-                  Percentage: {totalMarks > 0 ? ((obtainedMarks / totalMarks) * 100).toFixed(1) : 0}%
-                </p>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}
