@@ -193,25 +193,13 @@ function calcRequiredF(
   }
 }
 
-// Eligibility check -- enhanced for Python "Pass theory but not OPPE"
-function checkEligibility(subjKey: SubjectKey, inputs: Record<string, number>, theoryPassedT?: number): string | null {
+// Eligibility check -- Python OPPE only for passing
+function checkEligibility(subjKey: SubjectKey, inputs: Record<string, number>): string | null {
   switch (subjKey) {
     case "python":
-      const oppe1 = inputs.OPPE1 ?? 0;
-      const oppe2 = inputs.OPPE2 ?? 0;
-      // If theoryPassedT is specified, and we pass theory but not OPPE, return special message
-      if (typeof theoryPassedT === "number") {
-        if (oppe1 < 40 && oppe2 < 40) {
-          // User's calculated T passes, but OPPE does not
-          return "Passed theory, but did not clear OPPE eligibility (need OPPE1 or OPPE2 ≥ 40).";
-        }
-      } else {
-        if (oppe1 < 40 && oppe2 < 40)
-          return "Eligibility: At least one of OPPE1 or OPPE2 must be ≥ 40.";
-      }
-      return null;
+      // Only check for GAA ≥ 40 and at least one quiz >0 for eligibility
+      return null; // handled separately, do NOT block for OPPE here
     default:
-      // All other: must have Qz1 > 0 or Qz2 > 0
       if((inputs.Qz1 ?? 0) === 0 && (inputs.Qz2 ?? 0) === 0)
         return "Eligibility: At least one quiz (Qz1 or Qz2) must be attempted (>0).";
       return null;
@@ -245,7 +233,7 @@ export default function FoundationMarksPredictor() {
     numericInputs[field.id] = parseInputNumber(inputs[field.id] ?? "", field.min, field.max);
   });
 
-  // Eligibility logic
+  // Eligibility logic (OPPE ignored for "can appear" eligibility)
   let eligibility: string | null = null;
   const GAA_val = getGAAValue(subjectKey, inputs);
   if (GAA_val < 40) {
@@ -255,42 +243,10 @@ export default function FoundationMarksPredictor() {
     eligibility = checkEligibility(subjectKey, numericInputs);
   }
 
-  // Python special: check if theory mark passes but OPPE fails
-  let passTheoryButNotOppeMsg: string | null = null;
-  if (subjectKey === "python" && GAA_val >= 40) {
-    // "Theory" here = all but F, using merged GAA
-    const userTheoryScore =
-      0.15 * numericInputs.GAA +
-      0.15 * numericInputs.Qz1 +
-      0.2 * numericInputs.OPPE1 +
-      0.2 * numericInputs.OPPE2;
-    // If theory mark passes but both OPPE <40, show message
-    if (
-      userTheoryScore >= 40 &&
-      numericInputs.OPPE1 < 40 &&
-      numericInputs.OPPE2 < 40
-    ) {
-      passTheoryButNotOppeMsg =
-        "You passed the theory component but did not clear OPPE eligibility (at least one of OPPE1 or OPPE2 must be ≥ 40 to pass the subject).";
-    }
-  }
-
-  // Input update
-  const handleInput = (id: string, val: string) => {
-    // Only allow numbers (including 0) and empty string
-    if (/^(\d{0,3})$/.test(val) || val === "") {
-      setInputs(prev => ({ ...prev, [id]: val }));
-    }
-  };
-
-  // Required F for each grade
+  // Required F for each grade (can always compute regardless of OPPE for Python)
   const requiredFs = useMemo(() => {
-    // Only show if GAA eligibility and all non-quiz eligibility passed
     if (GAA_val < 40) return null;
     if (checkEligibility(subjectKey, numericInputs)) return null;
-    if (subjectKey === "python" && numericInputs.OPPE1 < 40 && numericInputs.OPPE2 < 40) {
-      return null;
-    }
     const out: { grade: string; mark: number | null }[] = [];
     for (const [grade, threshold] of GRADES) {
       const val = calcRequiredF(subjectKey, numericInputs, threshold);
@@ -304,6 +260,27 @@ export default function FoundationMarksPredictor() {
     }
     return out;
   }, [subjectKey, numericInputs, GAA_val]);
+
+  // Special warning if can appear but not eligible to pass for Python (both OPPE<40)
+  let pythonOPPEWarning: string | null = null;
+  if (
+    subjectKey === "python" &&
+    GAA_val >= 40 &&
+    (requiredFs?.[0].mark !== null) && // Pass grade attainable
+    numericInputs.OPPE1 < 40 &&
+    numericInputs.OPPE2 < 40
+  ) {
+    pythonOPPEWarning =
+      "Note: To PASS the subject, at least one of OPPE1 or OPPE2 must be ≥ 40, regardless of your calculated End Term marks.";
+  }
+
+  // Input update
+  const handleInput = (id: string, val: string) => {
+    // Only allow numbers (including 0) and empty string
+    if (/^(\d{0,3})$/.test(val) || val === "") {
+      setInputs(prev => ({ ...prev, [id]: val }));
+    }
+  };
 
   // ALSO calculate specific "required F" just for pass, for old logic
   const requiredFMark = useMemo(() => {
@@ -365,10 +342,6 @@ export default function FoundationMarksPredictor() {
           <div className="p-3 rounded bg-yellow-100 text-yellow-900 font-medium mb-4">
             {eligibility}
           </div>
-        ) : passTheoryButNotOppeMsg ? (
-          <div className="p-3 rounded bg-rose-100 text-rose-900 font-medium mb-4">
-            {passTheoryButNotOppeMsg}
-          </div>
         ) : (
           <div className="p-3 rounded bg-green-50 text-green-900 font-medium mb-4">
             Eligible for end term!
@@ -401,18 +374,16 @@ export default function FoundationMarksPredictor() {
                 ))}
               </tbody>
             </table>
-            {subjectKey === "python" && (
-              <div className="text-xs text-blue-700 mt-1">
-                <strong>Note:</strong> To pass, at least one of OPPE1 or OPPE2 must be ≥ 40.
-              </div>
-            )}
           </div>
         )}
-        {/* Reduced info */}
+        {/* Python OPPE warning for passing */}
+        {pythonOPPEWarning && (
+          <div className="p-3 rounded bg-rose-100 text-rose-900 font-medium mb-3">
+            {pythonOPPEWarning}
+          </div>
+        )}
         <div className="mt-2 text-xs text-gray-500">
-          Enter your scores above to see the minimum End Term marks needed for each grade.<br />
-          Assignment average must be 40+ for end term eligibility.<br />
-          For Python, enter your average assignment score directly (objective and programming combined).
+          Enter your scores above to see the minimum End Term marks needed for each grade.
         </div>
       </CardContent>
     </Card>
