@@ -178,12 +178,22 @@ function calcRequiredF(subjKey: SubjectKey, inputs: Record<string, number>, targ
   }
 }
 
-// Eligibility check
-function checkEligibility(subjKey: SubjectKey, inputs: Record<string, number>): string | null {
+// Eligibility check -- enhanced for Python "Pass theory but not OPPE"
+function checkEligibility(subjKey: SubjectKey, inputs: Record<string, number>, theoryPassedT?: number): string | null {
   switch (subjKey) {
     case "python":
-      if ((inputs.OPPE1 ?? 0) < 40 && (inputs.OPPE2 ?? 0) < 40)
-        return "Eligibility: At least one of OPPE1 or OPPE2 must be ≥ 40.";
+      const oppe1 = inputs.OPPE1 ?? 0;
+      const oppe2 = inputs.OPPE2 ?? 0;
+      // If theoryPassedT is specified, and we pass theory but not OPPE, return special message
+      if (typeof theoryPassedT === "number") {
+        if (oppe1 < 40 && oppe2 < 40) {
+          // User's calculated T passes, but OPPE does not
+          return "Passed theory, but did not clear OPPE eligibility (need OPPE1 or OPPE2 ≥ 40).";
+        }
+      } else {
+        if (oppe1 < 40 && oppe2 < 40)
+          return "Eligibility: At least one of OPPE1 or OPPE2 must be ≥ 40.";
+      }
       return null;
     default:
       // All other: must have Qz1 > 0 or Qz2 > 0
@@ -193,48 +203,74 @@ function checkEligibility(subjKey: SubjectKey, inputs: Record<string, number>): 
   }
 }
 
-const initialInputValues: Record<string, number> = {
-  GAA: 0, Qz1: 0, Qz2: 0, Bonus: 0, GAAP: 0, OPPE1: 0, OPPE2: 0,
+// Modified: treat blank input as undefined, and allow user to freely type value until submission/blur
+const initialInputValues: Record<string, string> = {
+  GAA: "", Qz1: "", Qz2: "", Bonus: "", GAAP: "", OPPE1: "", OPPE2: "",
 };
 
 export default function FoundationMarksPredictor() {
   const [subjectKey, setSubjectKey] = useState<SubjectKey>("maths1");
-  const [inputs, setInputs] = useState<Record<string, number>>(initialInputValues);
+  const [inputs, setInputs] = useState<Record<string, string>>(initialInputValues);
   const subjectObj = SUBJECTS.find(s => s.key === subjectKey)!;
 
-  // Helper to extract which field is the assignment average in the selected subject
-  function getGAAValue(subjectKey: SubjectKey, inputs: Record<string, number>) {
-    if (subjectKey === "python") {
-      // The first input (GAA) is "GAA (objective)"
-      return typeof inputs.GAA === "number" ? inputs.GAA : 0;
-    }
-    // All other subjects: GAA field present 
-    return typeof inputs.GAA === "number" ? inputs.GAA : 0;
+  // Utility to parse and clamp for calculations only
+  const parseInputNumber = (val: string, min: number, max: number): number =>
+    val === "" ? 0 : Math.max(min, Math.min(max, Number(val)));
+
+  // Helper for assignment avg
+  function getGAAValue(subjectKey: SubjectKey, sinputs: Record<string, string>) {
+    const v = sinputs.GAA === "" ? 0 : Number(sinputs.GAA);
+    return isNaN(v) ? 0 : v;
   }
 
-  // Eligibility/error handling logic
-  // 1. Check GAA >= 40
-  // 2. Existing eligibility (quizzes/OPPE for python)
+  // CALCULATION LOGIC
+  // Create numeric values for calculation
+  const numericInputs: Record<string, number> = {};
+  subjectObj.inputFields.forEach(field => {
+    numericInputs[field.id] = parseInputNumber(inputs[field.id] ?? "", field.min, field.max);
+  });
+
+  // Eligibility logic
   let eligibility: string | null = null;
   const GAA_val = getGAAValue(subjectKey, inputs);
   if (GAA_val < 40) {
     eligibility = "Eligibility: Average assignment marks must be at least 40/100 to be eligible for the end term.";
   } else {
-    eligibility = checkEligibility(subjectKey, inputs);
+    eligibility = checkEligibility(subjectKey, numericInputs);
   }
 
-  // Handle input changes (clamp and parse)
-  const handleInput = (id: string, val: string) => {
-    let v = val === "" ? 0 : Number(val);
-    if (isNaN(v)) v = 0;
-    const field = subjectObj.inputFields.find(f => f.id === id);
-    if (field) {
-      if (id === "Bonus")
-        v = Math.max(field.min, Math.min(field.max, v));
-      else
-        v = Math.max(field.min, Math.min(field.max, v));
+  // Python special: check if theory mark passes but OPPE fails
+  let passTheoryButNotOppeMsg: string | null = null;
+  if (subjectKey === "python" && GAA_val >= 40) {
+    // Calculate actual theory mark
+    const userTheoryScore = (() => {
+      const GAA = parseInputNumber(inputs.GAA ?? "", 0, 100);
+      const GAAP = parseInputNumber(inputs.GAAP ?? "", 0, 100);
+      const Qz1 = parseInputNumber(inputs.Qz1 ?? "", 0, 100);
+      const OPPE1 = parseInputNumber(inputs.OPPE1 ?? "", 0, 100);
+      const OPPE2 = parseInputNumber(inputs.OPPE2 ?? "", 0, 100);
+      // Use their latest theory input; F is not input, only calculated, so skip here.
+      return (
+        0.05 * GAA +
+        0.1 * GAAP +
+        0.15 * Qz1 +
+        0.2 * OPPE1 +
+        0.2 * OPPE2
+        // + 0.3*F => F not yet available, ignore for theory eligibility.
+      );
+    })();
+    // If score >= 40 (just as a pass, not full T) but OPPEs are both <40, show special msg
+    if (userTheoryScore >= 40 && (numericInputs.OPPE1 < 40 && numericInputs.OPPE2 < 40)) {
+      passTheoryButNotOppeMsg = checkEligibility(subjectKey, numericInputs, userTheoryScore);
     }
-    setInputs(prev => ({ ...prev, [id]: v }));
+  }
+
+  // Input update
+  const handleInput = (id: string, val: string) => {
+    // Always allow user input (including empty), but restrict length and optionally warn on invalid input
+    if (val.match(/^(\d{0,3})?$/)) { // max 3 digits
+      setInputs(prev => ({ ...prev, [id]: val }));
+    }
   };
 
   return (
@@ -270,56 +306,29 @@ export default function FoundationMarksPredictor() {
                 max={f.max}
                 value={inputs[f.id] ?? ""}
                 placeholder="0"
-                onChange={e => {
-                  let v = e.target.value === "" ? 0 : Number(e.target.value);
-                  if (isNaN(v)) v = 0;
-                  const field = subjectObj.inputFields.find(field => field.id === f.id);
-                  if (field) {
-                    v = Math.max(field.min, Math.min(field.max, v));
-                  }
-                  setInputs(prev => ({ ...prev, [f.id]: v }));
-                }}
+                onChange={e => handleInput(f.id, e.target.value)}
+                inputMode="numeric"
               />
             </div>
           ))}
         </div>
+        {/* Only eligibility info, no table */}
         {eligibility ? (
           <div className="p-3 rounded bg-yellow-100 text-yellow-900 font-medium mb-4">
             {eligibility}
           </div>
+        ) : passTheoryButNotOppeMsg ? (
+          <div className="p-3 rounded bg-rose-100 text-rose-900 font-medium mb-4">
+            {passTheoryButNotOppeMsg}
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-center border-separate border-spacing-x-2">
-              <thead>
-                <tr className="bg-royal/10">
-                  <th className="py-2">Grade</th>
-                  <th className="py-2">Target Score (T)</th>
-                  <th className="py-2">Required Final Exam Score (F)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {GRADES.map(([grade, T]) => {
-                  const reqF = calcRequiredF(subjectKey, inputs, T);
-                  return (
-                    <tr key={grade} className="">
-                      <td className="font-semibold">{grade}</td>
-                      <td>{T}</td>
-                      <td>
-                        {reqF === null
-                          ? <span className="text-red-700">Not possible</span>
-                          : <span className="text-royal font-bold">{reqF.toFixed(2)}</span>
-                        }
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="p-3 rounded bg-green-50 text-green-900 font-medium mb-4">
+            You are eligible for end term!
           </div>
         )}
         <div className="mt-2 text-xs text-gray-500">
-          Input '0' for missing/absent quizzes. Scores are clamped to allowed ranges.<br/>
-          Assignment eligibility is assumed. Eligibility is automatically checked per subject.<br/>
+          Input '0' for missing/absent quizzes. Scores are clamped to allowed ranges for eligibility checks.<br/>
+          Assignment eligibility is automatically checked per subject.<br/>
           <span className="font-semibold text-yellow-800">Now: Minimum assignment average (GAA) of 40/100 is required for end term eligibility.</span>
         </div>
       </CardContent>
