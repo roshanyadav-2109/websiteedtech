@@ -1,67 +1,42 @@
 
-import React, { useState, useEffect } from "react";
-import { Menu, Bell, User } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { LogOut, User } from 'lucide-react';
 
-const AdminHeader = () => {
-  const [userEmail, setUserEmail] = useState("");
+const AdminHeader: React.FC = () => {
+  const { user, signOut, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getUserInfo = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data?.session?.user?.email) {
-        setUserEmail(data.session.user.email);
-      }
-    };
-
-    getUserInfo();
-  }, []);
-
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/admin");
-  };
-
-  const getInitials = (email: string) => {
-    return email.substring(0, 2).toUpperCase();
+    await signOut();
+    navigate('/');
   };
 
   return (
-    <header className="h-16 bg-white border-b flex items-center justify-between px-4 md:px-6">
-      <div className="flex items-center md:hidden">
-        <Button variant="ghost" size="sm" className="md:hidden mr-2">
-          <Menu className="h-5 w-5" />
-        </Button>
-        <h1 className="text-lg font-bold text-royal">Admin CMS</h1>
-      </div>
-
-      <div className="flex items-center ml-auto">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-royal text-white">
-                  {getInitials(userEmail)}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem className="font-medium">{userEmail}</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+    <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          {isSuperAdmin && (
+            <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded">
+              Super Admin
+            </span>
+          )}
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <User className="h-4 w-4" />
+            <span>{user?.email}</span>
+          </div>
+          
+          <Button variant="outline" size="sm" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
       </div>
     </header>
   );
