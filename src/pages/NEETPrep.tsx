@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -131,7 +132,6 @@ const NEETPrep = () => {
                   </Tabs>
                 </div>
 
-                {/* Class Filter */}
                 <div className="mb-6">
                   <Tabs value={activeClass} onValueChange={setActiveClass}>
                     <div className="overflow-x-auto pb-2">

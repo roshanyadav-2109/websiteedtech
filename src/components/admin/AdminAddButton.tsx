@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { useBackend } from '@/components/BackendIntegratedWrapper';
 
 interface AdminAddButtonProps {
   onClick?: () => void;
@@ -20,6 +21,13 @@ const AdminAddButton: React.FC<AdminAddButtonProps> = ({
   contentType,
   examType
 }) => {
+  const { isAdmin, isAdminLoading } = useBackend();
+
+  // Don't render if not admin or still loading
+  if (isAdminLoading || !isAdmin) {
+    return null;
+  }
+
   const handleClick = () => {
     if (onClick) onClick();
     if (onAdd) onAdd();
