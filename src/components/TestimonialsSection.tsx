@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 const testimonials = [
   {
@@ -34,7 +35,16 @@ const TestimonialsSection = () => {
           </p>
         </div>
 
-        <Carousel className="w-full max-w-5xl mx-auto">
+        <Carousel
+          className="w-full max-w-5xl mx-auto"
+          plugins={[
+            Autoplay({
+              delay: 3500,
+              stopOnInteraction: false,
+              stopOnMouseEnter: true
+            })
+          ]}
+        >
           <CarouselContent>
             {testimonials.map((testimonial, index) => (
               <CarouselItem key={index} className="px-4">

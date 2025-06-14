@@ -1,4 +1,3 @@
-
 import React from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -77,43 +76,6 @@ const About = () => {
                   With bigger plans on the horizon, Unknown IITians is on a mission to redefine success in education—one student at a time. The journey has only begun, and the future holds limitless possibilities.
                 </p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Meet Our Board Members */}
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">Meet our Board Members</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-3xl mx-auto">
-              <Card className="border-none shadow-premium overflow-hidden">
-                <div className="aspect-w-1 aspect-h-1">
-                  <img 
-                    src="https://via.placeholder.com/400x400?text=Founder" 
-                    alt="Co-Founder"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <CardContent className="p-6 text-center">
-                  <h3 className="font-bold text-xl mb-1">Anonymous</h3>
-                  <p className="text-gray-500">Co-Founder, Unknown IITians</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-none shadow-premium overflow-hidden">
-                <div className="aspect-w-1 aspect-h-1">
-                  <img 
-                    src="https://via.placeholder.com/400x400?text=Co-Founder" 
-                    alt="Co-Founder"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <CardContent className="p-6 text-center">
-                  <h3 className="font-bold text-xl mb-1">Anonymous</h3>
-                  <p className="text-gray-500">Co-Founder, Unknown IITians</p>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </section>
