@@ -91,10 +91,15 @@ const SUBJECTS: {
   {
     key: "python",
     name: "Programming in Python",
-    formula: "T = 0.05 × GAA (objective) + 0.1 × GAAP + 0.15 × Qz1 + 0.2 × OPPE1 + 0.2 × OPPE2 + 0.3 × F",
+    formula:
+      "T = 0.15 × GAA (Assignments: Objective + Programming avg) + 0.15 × Qz1 + 0.2 × OPPE1 + 0.2 × OPPE2 + 0.3 × F",
     inputFields: [
-      { id: "GAA", label: "GAA (Objective)", min: 0, max: 100 },
-      { id: "GAAP", label: "GAAP (Programming)", min: 0, max: 100 },
+      {
+        id: "GAA",
+        label: "Assignment Avg (GAA: Objective & Programming)",
+        min: 0,
+        max: 100,
+      },
       { id: "Qz1", label: "Quiz 1 Score (Qz1)", min: 0, max: 100 },
       { id: "OPPE1", label: "OPPE1 Score", min: 0, max: 100 },
       { id: "OPPE2", label: "OPPE2 Score", min: 0, max: 100 },
@@ -123,11 +128,15 @@ const GRADES: [string, number][] = [
 ];
 
 // Calculation logic
-function calcRequiredF(subjKey: SubjectKey, inputs: Record<string, number>, targetT: number): number|null {
-  // Clamp helpers
-  const clamp = (x: number, minv = 0, maxv = 100) => Math.max(minv, Math.min(maxv, x));
-  // Convert undefined/NaN/null to 0 and clamp
-  const n = (x: unknown, minv=0, maxv=100) => clamp(typeof x === "number" && !isNaN(x) ? x : 0, minv, maxv);
+function calcRequiredF(
+  subjKey: SubjectKey,
+  inputs: Record<string, number>,
+  targetT: number
+): number | null {
+  const clamp = (x: number, minv = 0, maxv = 100) =>
+    Math.max(minv, Math.min(maxv, x));
+  const n = (x: unknown, minv = 0, maxv = 100) =>
+    clamp(typeof x === "number" && !isNaN(x) ? x : 0, minv, maxv);
 
   switch (subjKey) {
     case "maths1":
@@ -160,21 +169,27 @@ function calcRequiredF(subjKey: SubjectKey, inputs: Record<string, number>, targ
         }
       }
       return null;
-    case "python":
-      {
-        const GAA = n(inputs.GAA), GAAP = n(inputs.GAAP), Qz1 = n(inputs.Qz1), OPPE1 = n(inputs.OPPE1), OPPE2 = n(inputs.OPPE2);
-        const reqF = (targetT - 0.05*GAA - 0.1*GAAP - 0.15*Qz1 - 0.2*OPPE1 - 0.2*OPPE2)/0.3;
-        if (reqF <= 100 && reqF >= 0) return reqF;
-        return null;
-      }
-    default:
-      {
-        // Formula: 0.1*GAA + 0.4*F + 0.25*Qz1 + 0.25*Qz2
-        const GAA = n(inputs.GAA), Qz1 = n(inputs.Qz1), Qz2 = n(inputs.Qz2);
-        const reqF = (targetT - 0.1*GAA - 0.25*Qz1 - 0.25*Qz2)/0.4;
-        if (reqF <= 100 && reqF >= 0) return reqF;
-        return null;
-      }
+    case "python": {
+      // Now, GAA is the combined/average of objective and programming, both entered as one number
+      const GAA = n(inputs.GAA); // Treated as already averaged
+      const Qz1 = n(inputs.Qz1);
+      const OPPE1 = n(inputs.OPPE1);
+      const OPPE2 = n(inputs.OPPE2);
+      // 0.15 * GAA + 0.15 * Qz1 + 0.2 * OPPE1 + 0.2 * OPPE2 + 0.3 * F = targetT
+      const reqF =
+        (targetT - 0.15 * GAA - 0.15 * Qz1 - 0.2 * OPPE1 - 0.2 * OPPE2) / 0.3;
+      if (reqF <= 100 && reqF >= 0) return reqF;
+      return null;
+    }
+    default: {
+      // For most, 0.1*GAA + 0.4*F + 0.25*Qz1 + 0.25*Qz2
+      const GAA = n(inputs.GAA),
+        Qz1 = n(inputs.Qz1),
+        Qz2 = n(inputs.Qz2);
+      const reqF = (targetT - 0.1 * GAA - 0.25 * Qz1 - 0.25 * Qz2) / 0.4;
+      if (reqF <= 100 && reqF >= 0) return reqF;
+      return null;
+    }
   }
 }
 
@@ -224,7 +239,7 @@ export default function FoundationMarksPredictor() {
   }
 
   // CALCULATION LOGIC
-  // Create numeric values for calculation
+  // Only use fields present in subject
   const numericInputs: Record<string, number> = {};
   subjectObj.inputFields.forEach(field => {
     numericInputs[field.id] = parseInputNumber(inputs[field.id] ?? "", field.min, field.max);
@@ -234,7 +249,8 @@ export default function FoundationMarksPredictor() {
   let eligibility: string | null = null;
   const GAA_val = getGAAValue(subjectKey, inputs);
   if (GAA_val < 40) {
-    eligibility = "Eligibility: Average assignment marks must be at least 40/100 to be eligible for the end term.";
+    eligibility =
+      "Eligibility: Assignment average must be at least 40/100 to appear for end term.";
   } else {
     eligibility = checkEligibility(subjectKey, numericInputs);
   }
@@ -242,23 +258,20 @@ export default function FoundationMarksPredictor() {
   // Python special: check if theory mark passes but OPPE fails
   let passTheoryButNotOppeMsg: string | null = null;
   if (subjectKey === "python" && GAA_val >= 40) {
-    // Calculate actual theory mark (not including F)
-    const userTheoryScore = (() => {
-      const GAA = parseInputNumber(inputs.GAA ?? "", 0, 100);
-      const GAAP = parseInputNumber(inputs.GAAP ?? "", 0, 100);
-      const Qz1 = parseInputNumber(inputs.Qz1 ?? "", 0, 100);
-      const OPPE1 = parseInputNumber(inputs.OPPE1 ?? "", 0, 100);
-      const OPPE2 = parseInputNumber(inputs.OPPE2 ?? "", 0, 100);
-      return (
-        0.05 * GAA +
-        0.1 * GAAP +
-        0.15 * Qz1 +
-        0.2 * OPPE1 +
-        0.2 * OPPE2
-      );
-    })();
-    if (userTheoryScore >= 40 && (numericInputs.OPPE1 < 40 && numericInputs.OPPE2 < 40)) {
-      passTheoryButNotOppeMsg = "Passed theory, but did not clear OPPE eligibility (to pass the subject, at least one of OPPE1 or OPPE2 must be ≥ 40).";
+    // "Theory" here = all but F, using merged GAA
+    const userTheoryScore =
+      0.15 * numericInputs.GAA +
+      0.15 * numericInputs.Qz1 +
+      0.2 * numericInputs.OPPE1 +
+      0.2 * numericInputs.OPPE2;
+    // If theory mark passes but both OPPE <40, show message
+    if (
+      userTheoryScore >= 40 &&
+      numericInputs.OPPE1 < 40 &&
+      numericInputs.OPPE2 < 40
+    ) {
+      passTheoryButNotOppeMsg =
+        "You passed the theory component but did not clear OPPE eligibility (at least one of OPPE1 or OPPE2 must be ≥ 40 to pass the subject).";
     }
   }
 
@@ -270,13 +283,32 @@ export default function FoundationMarksPredictor() {
     }
   };
 
-  // Calculate required End Term (F) to get PASS (thresholds: 40 for Pass)
-  const requiredFMark = React.useMemo(() => {
-    // Only show if user is eligible for end term and not missing GAA eligibility nor quiz eligibility
+  // Required F for each grade
+  const requiredFs = useMemo(() => {
+    // Only show if GAA eligibility and all non-quiz eligibility passed
     if (GAA_val < 40) return null;
     if (checkEligibility(subjectKey, numericInputs)) return null;
+    if (subjectKey === "python" && numericInputs.OPPE1 < 40 && numericInputs.OPPE2 < 40) {
+      return null;
+    }
+    const out: { grade: string; mark: number | null }[] = [];
+    for (const [grade, threshold] of GRADES) {
+      const val = calcRequiredF(subjectKey, numericInputs, threshold);
+      out.push({
+        grade,
+        mark:
+          val === null || val > 100
+            ? null
+            : Math.ceil(val * 100) / 100,
+      });
+    }
+    return out;
+  }, [subjectKey, numericInputs, GAA_val]);
 
-    // For Python, if neither OPPE passes, don't show required F yet
+  // ALSO calculate specific "required F" just for pass, for old logic
+  const requiredFMark = useMemo(() => {
+    if (GAA_val < 40) return null;
+    if (checkEligibility(subjectKey, numericInputs)) return null;
     if (
       subjectKey === "python" &&
       numericInputs.OPPE1 < 40 &&
@@ -284,14 +316,10 @@ export default function FoundationMarksPredictor() {
     ) {
       return null;
     }
-
     const val = calcRequiredF(subjectKey, numericInputs, 40);
     if (val === null || val > 100) return null;
     return Math.ceil(val * 100) / 100;
   }, [subjectKey, numericInputs, GAA_val]);
-
-  // For OPPE eligibility: you need OPPE1 >= 40 or OPPE2 >= 40 to PASS subject
-  // eligibility already shows message for not eligible for end term if GAA < 40 or no quiz attempted
 
   return (
     <Card>
@@ -343,26 +371,48 @@ export default function FoundationMarksPredictor() {
           </div>
         ) : (
           <div className="p-3 rounded bg-green-50 text-green-900 font-medium mb-4">
-            You are eligible for end term!
+            Eligible for end term!
           </div>
         )}
-        {/* Required End Term Marks */}
-        {requiredFMark !== null && (
-          <div className="mt-3 p-3 rounded bg-blue-50 text-blue-900 font-medium mb-4">
-            <span>
-              Required End Term (F) marks to pass: <span className="font-bold">{requiredFMark}</span> / 100
-            </span>
-            {(subjectKey === "python") && (
+        {/* Required End Term Marks for Each Grade */}
+        {requiredFs && (
+          <div className="overflow-x-auto mt-2 mb-3">
+            <table className="min-w-full bg-blue-50 text-blue-900 rounded">
+              <thead>
+                <tr>
+                  <th className="py-1 px-2 font-semibold text-left">Grade</th>
+                  <th className="py-1 px-2 font-semibold text-left">
+                    Required F (End Term) / 100
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {requiredFs.map(({ grade, mark }) => (
+                  <tr key={grade}>
+                    <td className="py-1 px-2">{grade}</td>
+                    <td className="py-1 px-2">
+                      {mark === null ? (
+                        <span className="text-gray-400">Not attainable</span>
+                      ) : (
+                        <span className="font-semibold">{mark}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {subjectKey === "python" && (
               <div className="text-xs text-blue-700 mt-1">
-                <strong>Note:</strong> To pass the subject, at least one of OPPE1 or OPPE2 must be ≥ 40, <br /> and you must meet the minimum requirement in the theoretical component.
+                <strong>Note:</strong> To pass, at least one of OPPE1 or OPPE2 must be ≥ 40.
               </div>
             )}
           </div>
         )}
+        {/* Reduced info */}
         <div className="mt-2 text-xs text-gray-500">
-          Input '0' for missing/absent quizzes. Scores are clamped to allowed ranges for eligibility checks.<br/>
-          Assignment eligibility is automatically checked per subject.<br/>
-          <span className="font-semibold text-yellow-800">Now: Minimum assignment average (GAA) of 40/100 is required for end term eligibility.</span>
+          Enter your scores above to see the minimum End Term marks needed for each grade.<br />
+          Assignment average must be 40+ for end term eligibility.<br />
+          For Python, enter your average assignment score directly (objective and programming combined).
         </div>
       </CardContent>
     </Card>
