@@ -4,7 +4,9 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/comp
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AuthWrapper from "@/components/AuthWrapper";
+import AdminAddButton from "@/components/admin/AdminAddButton";
 
 interface JEEPYQTabProps {
   downloads: Record<string, number>;
@@ -18,100 +20,116 @@ interface PYQ {
   year: string;
   session: string;
   shift: string;
+  subject: string;
 }
 
 const JEEPYQTab = ({ downloads, onDownload }: JEEPYQTabProps) => {
+  const [activeSubject, setActiveSubject] = useState("Physics");
   const [year, setYear] = useState("2024");
   const [session, setSession] = useState("January");
   const [availableSessions, setAvailableSessions] = useState<string[]>(["January", "April"]);
   
+  const subjects = ["Physics", "Mathematics", "Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry"];
   const years = ["2024", "2023", "2022", "2021", "2020"];
   
   const pyqs: PYQ[] = [
-    // 2024
-    { id: "jee-2024-jan-shift1", title: "JEE Main 2024 January Shift 1", description: "Complete paper with solutions", year: "2024", session: "January", shift: "Shift 1" },
-    { id: "jee-2024-jan-shift2", title: "JEE Main 2024 January Shift 2", description: "Complete paper with solutions", year: "2024", session: "January", shift: "Shift 2" },
-    { id: "jee-2024-apr-shift1", title: "JEE Main 2024 April Shift 1", description: "Complete paper with solutions", year: "2024", session: "April", shift: "Shift 1" },
-    { id: "jee-2024-apr-shift2", title: "JEE Main 2024 April Shift 2", description: "Complete paper with solutions", year: "2024", session: "April", shift: "Shift 2" },
+    // Physics
+    { id: "jee-2024-jan-shift1-phy", title: "Physics January Shift 1", description: "Complete Physics paper with solutions", year: "2024", session: "January", shift: "Shift 1", subject: "Physics" },
+    { id: "jee-2024-jan-shift2-phy", title: "Physics January Shift 2", description: "Complete Physics paper with solutions", year: "2024", session: "January", shift: "Shift 2", subject: "Physics" },
+    { id: "jee-2024-apr-shift1-phy", title: "Physics April Shift 1", description: "Complete Physics paper with solutions", year: "2024", session: "April", shift: "Shift 1", subject: "Physics" },
     
-    // 2023
-    { id: "jee-2023-jan-shift1", title: "JEE Main 2023 January Shift 1", description: "Complete paper with solutions", year: "2023", session: "January", shift: "Shift 1" },
-    { id: "jee-2023-jan-shift2", title: "JEE Main 2023 January Shift 2", description: "Complete paper with solutions", year: "2023", session: "January", shift: "Shift 2" },
-    { id: "jee-2023-apr-shift1", title: "JEE Main 2023 April Shift 1", description: "Complete paper with solutions", year: "2023", session: "April", shift: "Shift 1" },
-    { id: "jee-2023-apr-shift2", title: "JEE Main 2023 April Shift 2", description: "Complete paper with solutions", year: "2023", session: "April", shift: "Shift 2" },
+    // Mathematics
+    { id: "jee-2024-jan-shift1-math", title: "Mathematics January Shift 1", description: "Complete Mathematics paper with solutions", year: "2024", session: "January", shift: "Shift 1", subject: "Mathematics" },
+    { id: "jee-2024-jan-shift2-math", title: "Mathematics January Shift 2", description: "Complete Mathematics paper with solutions", year: "2024", session: "January", shift: "Shift 2", subject: "Mathematics" },
     
-    // 2022
-    { id: "jee-2022-jun-shift1", title: "JEE Main 2022 June Shift 1", description: "Complete paper with solutions", year: "2022", session: "June", shift: "Shift 1" },
-    { id: "jee-2022-jun-shift2", title: "JEE Main 2022 June Shift 2", description: "Complete paper with solutions", year: "2022", session: "June", shift: "Shift 2" },
-    { id: "jee-2022-jul-shift1", title: "JEE Main 2022 July Shift 1", description: "Complete paper with solutions", year: "2022", session: "July", shift: "Shift 1" },
-    { id: "jee-2022-jul-shift2", title: "JEE Main 2022 July Shift 2", description: "Complete paper with solutions", year: "2022", session: "July", shift: "Shift 2" },
+    // Organic Chemistry
+    { id: "jee-2024-jan-shift1-org", title: "Organic Chemistry January Shift 1", description: "Complete Organic Chemistry paper", year: "2024", session: "January", shift: "Shift 1", subject: "Organic Chemistry" },
+    { id: "jee-2024-jan-shift2-org", title: "Organic Chemistry January Shift 2", description: "Complete Organic Chemistry paper", year: "2024", session: "January", shift: "Shift 2", subject: "Organic Chemistry" },
     
-    // 2021
-    { id: "jee-2021-feb-shift1", title: "JEE Main 2021 February Shift 1", description: "Complete paper with solutions", year: "2021", session: "February", shift: "Shift 1" },
-    { id: "jee-2021-feb-shift2", title: "JEE Main 2021 February Shift 2", description: "Complete paper with solutions", year: "2021", session: "February", shift: "Shift 2" },
-    { id: "jee-2021-mar-shift1", title: "JEE Main 2021 March Shift 1", description: "Complete paper with solutions", year: "2021", session: "March", shift: "Shift 1" },
-    { id: "jee-2021-mar-shift2", title: "JEE Main 2021 March Shift 2", description: "Complete paper with solutions", year: "2021", session: "March", shift: "Shift 2" },
+    // Inorganic Chemistry
+    { id: "jee-2024-jan-shift1-inorg", title: "Inorganic Chemistry January Shift 1", description: "Complete Inorganic Chemistry paper", year: "2024", session: "January", shift: "Shift 1", subject: "Inorganic Chemistry" },
     
-    // 2020
-    { id: "jee-2020-jan-shift1", title: "JEE Main 2020 January Shift 1", description: "Complete paper with solutions", year: "2020", session: "January", shift: "Shift 1" },
-    { id: "jee-2020-jan-shift2", title: "JEE Main 2020 January Shift 2", description: "Complete paper with solutions", year: "2020", session: "January", shift: "Shift 2" },
-    { id: "jee-2020-sep-shift1", title: "JEE Main 2020 September Shift 1", description: "Complete paper with solutions", year: "2020", session: "September", shift: "Shift 1" },
-    { id: "jee-2020-sep-shift2", title: "JEE Main 2020 September Shift 2", description: "Complete paper with solutions", year: "2020", session: "September", shift: "Shift 2" },
+    // Physical Chemistry
+    { id: "jee-2024-jan-shift1-phys", title: "Physical Chemistry January Shift 1", description: "Complete Physical Chemistry paper", year: "2024", session: "January", shift: "Shift 1", subject: "Physical Chemistry" },
   ];
   
-  // Update available sessions based on selected year
+  // Update available sessions based on selected year and subject
   useEffect(() => {
-    const sessionsForYear = [...new Set(pyqs
-      .filter(pyq => pyq.year === year)
+    const sessionsForYearAndSubject = [...new Set(pyqs
+      .filter(pyq => pyq.year === year && pyq.subject === activeSubject)
       .map(pyq => pyq.session))];
     
-    setAvailableSessions(sessionsForYear);
+    setAvailableSessions(sessionsForYearAndSubject);
     
-    // If current session isn't available for this year, select the first available one
-    if (!sessionsForYear.includes(session) && sessionsForYear.length > 0) {
-      setSession(sessionsForYear[0]);
+    if (!sessionsForYearAndSubject.includes(session) && sessionsForYearAndSubject.length > 0) {
+      setSession(sessionsForYearAndSubject[0]);
     }
-  }, [year]);
+  }, [year, activeSubject]);
   
   const filteredPapers = pyqs.filter(
-    pyq => pyq.year === year && pyq.session === session
+    pyq => pyq.year === year && pyq.session === session && pyq.subject === activeSubject
   );
 
   return (
     <AuthWrapper>
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-            <Select value={year} onValueChange={setYear}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Year" />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((y) => (
-                  <SelectItem key={y} value={y}>
-                    {y}
-                  </SelectItem>
+        {/* Subject Tabs */}
+        <div className="mb-6">
+          <Tabs value={activeSubject} onValueChange={setActiveSubject}>
+            <div className="overflow-x-auto pb-2">
+              <TabsList className="w-full min-w-fit">
+                {subjects.map((subject) => (
+                  <TabsTrigger key={subject} value={subject} className="rounded-md flex-shrink-0">
+                    {subject}
+                  </TabsTrigger>
                 ))}
-              </SelectContent>
-            </Select>
+              </TabsList>
+            </div>
+          </Tabs>
+        </div>
+
+        {/* Filters and Add Button */}
+        <div className="flex justify-between items-end mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+              <Select value={year} onValueChange={setYear}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((y) => (
+                    <SelectItem key={y} value={y}>
+                      {y}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
+              <Select value={session} onValueChange={setSession} disabled={availableSessions.length === 0}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Session" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableSessions.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
-            <Select value={session} onValueChange={setSession} disabled={availableSessions.length === 0}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Session" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableSessions.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+
+          <AdminAddButton 
+            contentType="pyqs"
+            examType="JEE"
+          >
+            Add {activeSubject} PYQs
+          </AdminAddButton>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
@@ -143,7 +161,7 @@ const JEEPYQTab = ({ downloads, onDownload }: JEEPYQTabProps) => {
           
           {filteredPapers.length === 0 && (
             <div className="col-span-3 text-center py-8 text-gray-500">
-              No previous year papers available for this selection. Please try a different year or session.
+              No {activeSubject} papers available for {year} {session}. Please try a different selection.
             </div>
           )}
         </div>

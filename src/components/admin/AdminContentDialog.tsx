@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,20 +6,22 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useBackend } from '@/components/BackendIntegratedWrapper';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface AdminContentDialogProps {
   isOpen: boolean;
   onClose: () => void;
   contentType: 'notes' | 'pyqs' | 'news' | 'dates' | 'communities' | 'courses' | 'syllabus';
   examType?: string;
+  prefilledSubject?: string;
 }
 
 const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
   isOpen,
   onClose,
   contentType,
-  examType
+  examType,
+  prefilledSubject
 }) => {
   const { addNote, addPyq } = useBackend();
   const { toast } = useToast();
@@ -30,7 +31,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
     title: '',
     description: '',
     content_url: '',
-    subject: '',
+    subject: prefilledSubject || '',
     class_level: '',
     exam_type: examType || '',
     branch: '',
@@ -49,10 +50,17 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
     features: ''
   });
 
+  // Update subject when prefilledSubject changes
+  useEffect(() => {
+    if (prefilledSubject) {
+      setFormData(prev => ({ ...prev, subject: prefilledSubject }));
+    }
+  }, [prefilledSubject]);
+
   const examTypes = ['IITM_BS', 'JEE', 'NEET'];
-  const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Botany', 'Zoology', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry'];
+  const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Botany', 'Zoology', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Programming', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals'];
   const classLevels = ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
-  const branches = ['CSE', 'Physics', 'Mathematics', 'Data Science', 'Economics'];
+  const branches = ['CSE', 'Physics', 'Mathematics', 'Data Science', 'Economics', 'Electronic Systems'];
   const groupTypes = ['Telegram', 'WhatsApp', 'Discord', 'Facebook'];
 
   const resetForm = () => {
@@ -60,7 +68,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
       title: '',
       description: '',
       content_url: '',
-      subject: '',
+      subject: prefilledSubject || '',
       class_level: '',
       exam_type: examType || '',
       branch: '',
@@ -133,9 +141,10 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
   };
 
   const getDialogTitle = () => {
+    const subjectPrefix = prefilledSubject ? `${prefilledSubject} ` : '';
     switch (contentType) {
-      case 'notes': return 'Add New Note';
-      case 'pyqs': return 'Add New Previous Year Question';
+      case 'notes': return `Add New ${subjectPrefix}Note`;
+      case 'pyqs': return `Add New ${subjectPrefix}Previous Year Question`;
       case 'news': return 'Add News Update';
       case 'dates': return 'Add Important Date';
       case 'communities': return 'Add Community';
@@ -158,7 +167,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 required
-                placeholder="Enter title"
+                placeholder={`Enter ${prefilledSubject ? prefilledSubject + ' ' : ''}title`}
               />
             </div>
 
@@ -554,7 +563,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
           <DialogDescription>
-            Fill in the form below to add new content
+            Fill in the form below to add new {prefilledSubject ? prefilledSubject + ' ' : ''}content
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
