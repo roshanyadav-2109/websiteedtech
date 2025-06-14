@@ -18,7 +18,9 @@ import JobsManagerTab from "@/components/admin/JobsManagerTab";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("content-management");
-  const { isLoading } = useAuth();
+  const { isLoading, user } = useAuth();
+
+  console.log('AdminDashboard - Auth state:', { isLoading, user: user?.email });
 
   if (isLoading) {
     return (

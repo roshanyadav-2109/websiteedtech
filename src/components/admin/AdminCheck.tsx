@@ -16,6 +16,14 @@ const AdminCheck: React.FC<AdminCheckProps> = ({ children, requireSuperAdmin = f
 
   const isLoading = authLoading || adminLoading;
 
+  console.log('AdminCheck state:', { 
+    user: user?.email, 
+    isAdmin, 
+    isLoading, 
+    authLoading, 
+    adminLoading 
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -25,21 +33,25 @@ const AdminCheck: React.FC<AdminCheckProps> = ({ children, requireSuperAdmin = f
   }
 
   if (!user) {
+    console.log('No user, redirecting to admin login');
     return <Navigate to="/admin/login" replace />;
   }
 
   if (!isAdmin) {
+    console.log('User is not admin, showing access denied');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
           <p className="text-gray-600">You don't have permission to access this area.</p>
           <p className="text-sm text-gray-500 mt-2">Current user: {user.email}</p>
+          <p className="text-sm text-gray-500">Admin status: {isAdmin ? 'Yes' : 'No'}</p>
         </div>
       </div>
     );
   }
 
+  console.log('Admin access granted');
   return <>{children}</>;
 };
 

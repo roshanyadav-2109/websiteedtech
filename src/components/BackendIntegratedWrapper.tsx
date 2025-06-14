@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useDownloadHandler } from '@/hooks/useDownloadHandler';
@@ -55,7 +56,9 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     refreshPyqs
   } = useContentManagement();
 
-  // context value (unchanged)
+  console.log('BackendIntegratedWrapper - Admin status:', { isAdmin, isAdminLoading });
+
+  // context value
   const contextValue: BackendContextType = {
     isAdmin,
     isAdminLoading,

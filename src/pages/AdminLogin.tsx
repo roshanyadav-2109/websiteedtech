@@ -19,7 +19,9 @@ const AdminLogin = () => {
   const { user, isAdmin } = useAuth();
 
   useEffect(() => {
+    console.log('AdminLogin: checking auth state', { user: user?.email, isAdmin });
     if (user && isAdmin) {
+      console.log('User is already authenticated and admin, redirecting to dashboard');
       navigate('/admin/dashboard');
     }
   }, [user, isAdmin, navigate]);
@@ -28,21 +30,33 @@ const AdminLogin = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    console.log('Attempting login for:', email);
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
+
+      console.log('Login successful:', data.user?.email);
 
       toast({
         title: "Login successful",
         description: "Welcome to the admin panel",
       });
 
-      // Navigation will be handled by the useEffect
+      // Small delay to allow auth state to update
+      setTimeout(() => {
+        navigate('/admin/dashboard');
+      }, 500);
+
     } catch (error: any) {
+      console.error('Login failed:', error);
       toast({
         title: "Login failed",
         description: error.message || "Invalid credentials",
