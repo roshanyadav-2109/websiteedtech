@@ -395,7 +395,7 @@ const IITMToolsTab = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="qualifier">Qualifier</SelectItem>
+                    {/* Removed Qualifier level */}
                     <SelectItem value="foundation">Foundation</SelectItem>
                     <SelectItem value="diploma">Diploma</SelectItem>
                     <SelectItem value="degree">Degree</SelectItem>
