@@ -272,12 +272,13 @@ const Career = () => {
         {/* Join UI Section */}
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 gap-12 items-center">
               <motion.div
-                initial={{ x: -50, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ y: 0, opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5 }}
+                className="text-center max-w-4xl mx-auto"
               >
                 <h2 className="text-4xl font-bold mb-6 text-gray-900">
                   Join Unknown IITians!
@@ -291,20 +292,6 @@ const Career = () => {
                 <Button className="bg-royal hover:bg-royal-dark text-white px-8 py-6 text-lg">
                   Start Your Journey
                 </Button>
-              </motion.div>
-
-              <motion.div
-                className="rounded-xl overflow-hidden shadow-xl"
-                initial={{ x: 50, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <img
-                  src="/public/lovable-uploads/762c4371-c234-41a8-89e6-0c0563f920b2.png"
-                  alt="Team collaboration"
-                  className="w-full h-auto object-cover"
-                />
               </motion.div>
             </div>
           </div>
