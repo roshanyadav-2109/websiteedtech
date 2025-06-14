@@ -1,7 +1,7 @@
 
 "use client";
 import React from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 
 type Testimonial = {
   text: string;
@@ -19,7 +19,7 @@ export const TestimonialsColumn = (props: {
     <div className={props.className}>
       <motion.div
         animate={{
-          translateY: "-50%",
+          y: "-50%",
         }}
         transition={{
           duration: props.duration || 10,
