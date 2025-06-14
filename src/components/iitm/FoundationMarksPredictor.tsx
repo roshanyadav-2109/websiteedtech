@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -242,36 +242,56 @@ export default function FoundationMarksPredictor() {
   // Python special: check if theory mark passes but OPPE fails
   let passTheoryButNotOppeMsg: string | null = null;
   if (subjectKey === "python" && GAA_val >= 40) {
-    // Calculate actual theory mark
+    // Calculate actual theory mark (not including F)
     const userTheoryScore = (() => {
       const GAA = parseInputNumber(inputs.GAA ?? "", 0, 100);
       const GAAP = parseInputNumber(inputs.GAAP ?? "", 0, 100);
       const Qz1 = parseInputNumber(inputs.Qz1 ?? "", 0, 100);
       const OPPE1 = parseInputNumber(inputs.OPPE1 ?? "", 0, 100);
       const OPPE2 = parseInputNumber(inputs.OPPE2 ?? "", 0, 100);
-      // Use their latest theory input; F is not input, only calculated, so skip here.
       return (
         0.05 * GAA +
         0.1 * GAAP +
         0.15 * Qz1 +
         0.2 * OPPE1 +
         0.2 * OPPE2
-        // + 0.3*F => F not yet available, ignore for theory eligibility.
       );
     })();
-    // If score >= 40 (just as a pass, not full T) but OPPEs are both <40, show special msg
     if (userTheoryScore >= 40 && (numericInputs.OPPE1 < 40 && numericInputs.OPPE2 < 40)) {
-      passTheoryButNotOppeMsg = checkEligibility(subjectKey, numericInputs, userTheoryScore);
+      passTheoryButNotOppeMsg = "Passed theory, but did not clear OPPE eligibility (to pass the subject, at least one of OPPE1 or OPPE2 must be ≥ 40).";
     }
   }
 
   // Input update
   const handleInput = (id: string, val: string) => {
-    // Always allow user input (including empty), but restrict length and optionally warn on invalid input
-    if (val.match(/^(\d{0,3})?$/)) { // max 3 digits
+    // Only allow numbers (including 0) and empty string
+    if (/^(\d{0,3})$/.test(val) || val === "") {
       setInputs(prev => ({ ...prev, [id]: val }));
     }
   };
+
+  // Calculate required End Term (F) to get PASS (thresholds: 40 for Pass)
+  const requiredFMark = React.useMemo(() => {
+    // Only show if user is eligible for end term and not missing GAA eligibility nor quiz eligibility
+    if (GAA_val < 40) return null;
+    if (checkEligibility(subjectKey, numericInputs)) return null;
+
+    // For Python, if neither OPPE passes, don't show required F yet
+    if (
+      subjectKey === "python" &&
+      numericInputs.OPPE1 < 40 &&
+      numericInputs.OPPE2 < 40
+    ) {
+      return null;
+    }
+
+    const val = calcRequiredF(subjectKey, numericInputs, 40);
+    if (val === null || val > 100) return null;
+    return Math.ceil(val * 100) / 100;
+  }, [subjectKey, numericInputs, GAA_val]);
+
+  // For OPPE eligibility: you need OPPE1 >= 40 or OPPE2 >= 40 to PASS subject
+  // eligibility already shows message for not eligible for end term if GAA < 40 or no quiz attempted
 
   return (
     <Card>
@@ -312,7 +332,7 @@ export default function FoundationMarksPredictor() {
             </div>
           ))}
         </div>
-        {/* Only eligibility info, no table */}
+        {/* Eligibility info */}
         {eligibility ? (
           <div className="p-3 rounded bg-yellow-100 text-yellow-900 font-medium mb-4">
             {eligibility}
@@ -324,6 +344,19 @@ export default function FoundationMarksPredictor() {
         ) : (
           <div className="p-3 rounded bg-green-50 text-green-900 font-medium mb-4">
             You are eligible for end term!
+          </div>
+        )}
+        {/* Required End Term Marks */}
+        {requiredFMark !== null && (
+          <div className="mt-3 p-3 rounded bg-blue-50 text-blue-900 font-medium mb-4">
+            <span>
+              Required End Term (F) marks to pass: <span className="font-bold">{requiredFMark}</span> / 100
+            </span>
+            {(subjectKey === "python") && (
+              <div className="text-xs text-blue-700 mt-1">
+                <strong>Note:</strong> To pass the subject, at least one of OPPE1 or OPPE2 must be ≥ 40, <br /> and you must meet the minimum requirement in the theoretical component.
+              </div>
+            )}
           </div>
         )}
         <div className="mt-2 text-xs text-gray-500">
