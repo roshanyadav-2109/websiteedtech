@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import AdminCheck from "@/components/admin/AdminCheck";
 import SuperAdminPanel from "@/components/admin/SuperAdminPanel";
+import ContentManagementTab from "@/components/admin/ContentManagementTab";
 
 // Import existing admin components
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -16,7 +17,7 @@ import DatesManagerTab from "@/components/admin/DatesManagerTab";
 import JobsManagerTab from "@/components/admin/JobsManagerTab";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("courses");
+  const [activeTab, setActiveTab] = useState("content-management");
   const { isLoading } = useAuth();
 
   if (isLoading) {
@@ -39,6 +40,10 @@ const AdminDashboard = () => {
           
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsContent value="content-management" className="mt-0">
+                <ContentManagementTab />
+              </TabsContent>
+              
               <TabsContent value="courses" className="mt-0">
                 <CoursesManagerTab />
               </TabsContent>
