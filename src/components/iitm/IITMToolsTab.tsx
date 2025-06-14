@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,188 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, Award, RefreshCw } from "lucide-react";
+
+const FOUNDATION_SUBJECTS = [
+  {
+    key: "maths1",
+    label: "Mathematics 1",
+    formula: "T = 0.1 × GAA + max(0.6 × F + 0.2 × max(Qz1, Qz2), 0.4 × F + 0.2 × Qz1 + 0.3 × Qz2)",
+    inputFields: [
+      { id: "GAA", name: "Assignment Average (GAA)", type: "number", min: 0, max: 100 },
+      { id: "Qz1", name: "Quiz 1 Score (Qz1)", type: "number", min: 0, max: 100 },
+      { id: "Qz2", name: "Quiz 2 Score (Qz2)", type: "number", min: 0, max: 100 },
+    ],
+  },
+  {
+    key: "english1",
+    label: "English 1",
+    formula: "T = 0.1 × GAA + max(0.5 × F + 0.2 × max(Qz1, Qz2), 0.4 × F + 0.2 × Qz1 + 0.3 × Qz2)",
+    inputFields: [
+      { id: "GAA", name: "Assignment Average (GAA)", type: "number", min: 0, max: 100 },
+      { id: "Qz1", name: "Quiz 1 Score (Qz1)", type: "number", min: 0, max: 100 },
+      { id: "Qz2", name: "Quiz 2 Score (Qz2)", type: "number", min: 0, max: 100 },
+    ],
+  },
+  {
+    key: "statistics1",
+    label: "Statistics 1",
+    formula: "T = 0.1 × GAA + max(0.6 × F + 0.2 × max(Qz1, Qz2), 0.4 × F + 0.2 × Qz1 + 0.3 × Qz2) + Bonus",
+    inputFields: [
+      { id: "GAA", name: "Assignment Average (GAA)", type: "number", min: 0, max: 100 },
+      { id: "Qz1", name: "Quiz 1 Score (Qz1)", type: "number", min: 0, max: 100 },
+      { id: "Qz2", name: "Quiz 2 Score (Qz2)", type: "number", min: 0, max: 100 },
+      { id: "Bonus", name: "Bonus Marks (0-5)", type: "number", min: 0, max: 5 }
+    ],
+  },
+  {
+    key: "english2",
+    label: "English 2",
+    formula: "T = 0.1 × GAA + 0.4 × F + 0.25 × Qz1 + 0.25 × Qz2",
+    inputFields: [
+      { id: "GAA", name: "Assignment Average (GAA)", type: "number", min: 0, max: 100 },
+      { id: "Qz1", name: "Quiz 1 Score (Qz1)", type: "number", min: 0, max: 100 },
+      { id: "Qz2", name: "Quiz 2 Score (Qz2)", type: "number", min: 0, max: 100 },
+    ],
+  },
+  {
+    key: "statistics2",
+    label: "Statistics 2",
+    formula: "T = 0.1 × GAA + 0.4 × F + 0.25 × Qz1 + 0.25 × Qz2",
+    inputFields: [
+      { id: "GAA", name: "Assignment Average (GAA)", type: "number", min: 0, max: 100 },
+      { id: "Qz1", name: "Quiz 1 Score (Qz1)", type: "number", min: 0, max: 100 },
+      { id: "Qz2", name: "Quiz 2 Score (Qz2)", type: "number", min: 0, max: 100 },
+    ],
+  },
+  {
+    key: "computational",
+    label: "Computational Thinking",
+    formula: "T = 0.1 × GAA + 0.4 × F + 0.25 × Qz1 + 0.25 × Qz2",
+    inputFields: [
+      { id: "GAA", name: "Assignment Average (GAA)", type: "number", min: 0, max: 100 },
+      { id: "Qz1", name: "Quiz 1 Score (Qz1)", type: "number", min: 0, max: 100 },
+      { id: "Qz2", name: "Quiz 2 Score (Qz2)", type: "number", min: 0, max: 100 },
+    ],
+  },
+  {
+    key: "python",
+    label: "Programming in Python",
+    formula: "T = 0.05 × GAA (objective) + 0.1 × GAAP + 0.15 × Qz1 + 0.2 × OPPE1 + 0.2 × OPPE2 + 0.3 × F",
+    inputFields: [
+      { id: "GAA", name: "GAA (objective, avg of 10 objective assignments)", type: "number", min: 0, max: 100 },
+      { id: "GAAP", name: "GAAP (avg of best 7 of 8 programming assignments)", type: "number", min: 0, max: 100 },
+      { id: "Qz1", name: "Quiz 1 Score (Qz1)", type: "number", min: 0, max: 100 },
+      { id: "OPPE1", name: "OPPE1 Score", type: "number", min: 0, max: 100 },
+      { id: "OPPE2", name: "OPPE2 Score", type: "number", min: 0, max: 100 },
+    ],
+  },
+  {
+    key: "maths2",
+    label: "Mathematics 2",
+    formula: "T = 0.1 × GAA + 0.4 × F + 0.25 × Qz1 + 0.25 × Qz2",
+    inputFields: [
+      { id: "GAA", name: "Assignment Average (GAA)", type: "number", min: 0, max: 100 },
+      { id: "Qz1", name: "Quiz 1 Score (Qz1)", type: "number", min: 0, max: 100 },
+      { id: "Qz2", name: "Quiz 2 Score (Qz2)", type: "number", min: 0, max: 100 },
+    ],
+  }
+];
+
+const getFoundationSubject = (key: string) => FOUNDATION_SUBJECTS.find(s => s.key === key);
+
+// Calculation helpers for each subject
+function calculateFoundationMarks(subjKey: string, values: any, fValue: number | null) {
+  // Clamp helper
+  const clamp = (x: number, minv=0, maxv=100) => Math.max(minv, Math.min(maxv, x));
+  // If fValue is null: use current input, else, use predicted
+  if (subjKey === "maths1") {
+    const { GAA, Qz1, Qz2 } = values;
+    const F = fValue ?? values.F;
+    const part1 = 0.1 * GAA + 0.6 * F + 0.2 * Math.max(Qz1, Qz2);
+    const part2 = 0.1 * GAA + 0.4 * F + 0.2 * Qz1 + 0.3 * Qz2;
+    return Math.max(part1, part2);
+  }
+  if (subjKey === "english1") {
+    const { GAA, Qz1, Qz2 } = values;
+    const F = fValue ?? values.F;
+    const part1 = 0.1 * GAA + 0.5 * F + 0.2 * Math.max(Qz1, Qz2);
+    const part2 = 0.1 * GAA + 0.4 * F + 0.2 * Qz1 + 0.3 * Qz2;
+    return Math.max(part1, part2);
+  }
+  if (subjKey === "statistics1") {
+    const { GAA, Qz1, Qz2, Bonus } = values;
+    const F = fValue ?? values.F;
+    const bonus = clamp(Bonus, 0, 5);
+    const part1 = 0.1 * GAA + 0.6 * F + 0.2 * Math.max(Qz1, Qz2) + bonus;
+    const part2 = 0.1 * GAA + 0.4 * F + 0.2 * Qz1 + 0.3 * Qz2 + bonus;
+    return Math.max(part1, part2);
+  }
+  if (subjKey === "python") {
+    const { GAA, GAAP, Qz1, OPPE1, OPPE2 } = values;
+    const F = fValue ?? values.F;
+    return (
+      0.05 * GAA +
+      0.1 * GAAP +
+      0.15 * Qz1 +
+      0.2 * OPPE1 +
+      0.2 * OPPE2 +
+      0.3 * F
+    );
+  }
+  // default formula
+  const { GAA, Qz1, Qz2 } = values;
+  const F = fValue ?? values.F;
+  return 0.1 * GAA + 0.4 * F + 0.25 * Qz1 + 0.25 * Qz2;
+}
+
+// Predict required F for passing/target for each subject
+function predictRequiredF(subjKey: string, values: any, targetT: number) {
+  const clamp = (x: number, minv=0, maxv=100) => Math.max(minv, Math.min(maxv, x));
+  if (subjKey === "maths1") {
+    // min F such that T >= targetT (either formula)
+    let foundF = 100;
+    for (let f = 0; f <= 100; f++) {
+      let t = calculateFoundationMarks("maths1", values, f);
+      if (t >= targetT) {
+        foundF = f;
+        break;
+      }
+    }
+    return clamp(foundF);
+  }
+  if (subjKey === "english1") {
+    let foundF = 100;
+    for (let f = 0; f <= 100; f++) {
+      let t = calculateFoundationMarks("english1", values, f);
+      if (t >= targetT) {
+        foundF = f;
+        break;
+      }
+    }
+    return clamp(foundF);
+  }
+  if (subjKey === "statistics1") {
+    // bonus must already be clamped
+    let foundF = 100;
+    for (let f = 0; f <= 100; f++) {
+      let t = calculateFoundationMarks("statistics1", values, f);
+      if (t >= targetT) {
+        foundF = f;
+        break;
+      }
+    }
+    return clamp(foundF);
+  }
+  if (subjKey === "python") {
+    const { GAA, GAAP, Qz1, OPPE1, OPPE2 } = values;
+    const needed = (targetT - 0.05 * GAA - 0.1 * GAAP - 0.15 * Qz1 - 0.2 * OPPE1 - 0.2 * OPPE2) / 0.3;
+    return clamp(needed);
+  }
+  // default subjects
+  const { GAA, Qz1, Qz2 } = values;
+  const needed = (targetT - 0.1 * GAA - 0.25 * Qz1 - 0.25 * Qz2) / 0.4;
+  return clamp(needed);
+}
 
 const IITMToolsTab = () => {
   const [activeTool, setActiveTool] = useState("cgpa");
@@ -30,6 +211,22 @@ const IITMToolsTab = () => {
   const [currentCGPA, setCurrentCGPA] = useState(8.5);
   const [targetGrade, setTargetGrade] = useState("A");
   const [predictedMarks, setPredictedMarks] = useState(0);
+
+  // Data Science - Foundation Marks Predictor (new subject filter state)
+  const [foundationSubject, setFoundationSubject] = useState("maths1");
+  const [foundationInputs, setFoundationInputs] = useState<Record<string, number>>({
+    GAA: 80,
+    Qz1: 85,
+    Qz2: 80,
+    Bonus: 0,
+    GAAP: 85,
+    OPPE1: 80,
+    OPPE2: 80,
+    // F is not directly input here
+  });
+  const [targetFinalScore, setTargetFinalScore] = useState(40);
+  const [predictedF, setPredictedF] = useState<number|null>(null);
+  const [predictedT, setPredictedT] = useState<number|null>(null);
 
   const handleNameChange = (index: number, value: string) => {
     const updatedCourses = [...courses];
@@ -359,50 +556,175 @@ const IITMToolsTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="currentCGPA">Current CGPA</Label>
-                  <Input
-                    id="currentCGPA"
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="10"
-                    value={currentCGPA}
-                    onChange={(e) => setCurrentCGPA(Number(e.target.value))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="targetGrade">Target Grade</Label>
-                  <Select value={targetGrade} onValueChange={setTargetGrade}>
+            {/* Data Science + Foundation only: show subject selector and dynamic inputs */}
+            {branch === "data-science" && level === "foundation" && (
+              <div className="space-y-6">
+                <div className="mb-2">
+                  <Label htmlFor="subject" className="block mb-1">Foundation Subject</Label>
+                  <Select
+                    value={foundationSubject}
+                    onValueChange={(val) => {
+                      setFoundationSubject(val);
+                      // Reset inputs to defaults for that subject
+                      const subjDef = getFoundationSubject(val);
+                      const preset: Record<string, number> = {};
+                      subjDef?.inputFields.forEach(f => {
+                        preset[f.id] = f.id === "Bonus" ? 0 : 80;
+                      });
+                      setFoundationInputs({ ...foundationInputs, ...preset });
+                      setPredictedT(null);
+                      setPredictedF(null);
+                    }}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="A+">A+ (90-100%)</SelectItem>
-                      <SelectItem value="A">A (80-89%)</SelectItem>
-                      <SelectItem value="B+">B+ (70-79%)</SelectItem>
-                      <SelectItem value="B">B (60-69%)</SelectItem>
-                      <SelectItem value="C+">C+ (50-59%)</SelectItem>
-                      <SelectItem value="C">C (40-49%)</SelectItem>
+                      {FOUNDATION_SUBJECTS.map(subj =>
+                        <SelectItem key={subj.key} value={subj.key}>
+                          {subj.label}
+                        </SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
+                {/* Dynamic input fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {getFoundationSubject(foundationSubject)?.inputFields.map(field => (
+                    <div key={field.id} className="space-y-2">
+                      <Label htmlFor={field.id}>{field.name}</Label>
+                      <Input
+                        id={field.id}
+                        type={field.type}
+                        min={field.min}
+                        max={field.max}
+                        value={foundationInputs[field.id] ?? ""}
+                        onChange={e => {
+                          let v = e.target.value === "" ? "" : Number(e.target.value);
+                          if (v === "" || (typeof v === "number" && !isNaN(v))) {
+                            setFoundationInputs(inputs => ({ ...inputs, [field.id]: v }));
+                          }
+                        }}
+                      />
+                    </div>
+                  ))}
+                  <div className="space-y-2">
+                    <Label htmlFor="targetFinalScore">Target Final Course Score (T)</Label>
+                    <Input
+                      id="targetFinalScore"
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={targetFinalScore}
+                      onChange={e => setTargetFinalScore(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+                <Button
+                  className="w-full bg-purple-600 hover:bg-purple-700 mt-4"
+                  onClick={() => {
+                    // Predict F needed, clamp all inputs
+                    const subjDef = getFoundationSubject(foundationSubject);
+                    const formatted: Record<string, number> = {};
+                    subjDef?.inputFields.forEach(f => {
+                      let v = Number(foundationInputs[f.id]) || 0;
+                      if (f.id === "Bonus") v = Math.max(0, Math.min(5, v));
+                      else v = Math.max(f.min, Math.min(f.max, v));
+                      formatted[f.id] = v;
+                    });
+                    setFoundationInputs(inputs => ({ ...inputs, ...formatted }));
+                    // Predict required F and current possible T at F=0
+                    const predF = predictRequiredF(foundationSubject, formatted, targetFinalScore);
+                    setPredictedF(predF);
+                    const T = calculateFoundationMarks(foundationSubject, formatted, null);
+                    setPredictedT(T);
+                  }}
+                >
+                  Predict Required Final Exam Score
+                </Button>
+                {predictedF !== null && (
+                  <div className="bg-purple-50 p-4 rounded-md text-center mt-4">
+                    <h3 className="text-lg font-bold mb-2">Results for {getFoundationSubject(foundationSubject)?.label}</h3>
+                    <div className="text-sm mb-2">
+                      <strong>Current Course Score (T): </strong>
+                      {typeof predictedT === "number" ? predictedT.toFixed(2) : "--"} / 100
+                    </div>
+                    <div className="text-xl font-bold text-purple-600 mb-1">
+                      Required Final Exam Score (F): {predictedF.toFixed(2)} / 100
+                    </div>
+                    <div className="text-xs text-gray-600 mt-2">
+                      Formula: {getFoundationSubject(foundationSubject)?.formula}
+                    </div>
+                  </div>
+                )}
+                <div className="mt-2 text-xs text-gray-500">
+                  Enter your assignment, quizzes, and any bonus marks as per latest info. <br/>
+                  <b>Passing threshold is usually T ≥ 40/100.</b> Predicted F is always between 0 and 100.
+                </div>
               </div>
+            )}
 
-              <Button onClick={predictMarks} className="w-full bg-purple-600 hover:bg-purple-700">
-                Predict Required Marks
-              </Button>
+            {/* Non-data science or non-foundation: fallback to previous generic logic */}
+            {!(branch === "data-science" && level === "foundation") && (
+              <div className="space-y-6">
+                {/* ... keep existing code (original predictor input fields) ... */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentCGPA">Current CGPA</Label>
+                    <Input
+                      id="currentCGPA"
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="10"
+                      value={currentCGPA}
+                      onChange={(e) => setCurrentCGPA(Number(e.target.value))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="targetGrade">Target Grade</Label>
+                    <Select value={targetGrade} onValueChange={setTargetGrade}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="A+">A+ (90-100%)</SelectItem>
+                        <SelectItem value="A">A (80-89%)</SelectItem>
+                        <SelectItem value="B+">B+ (70-79%)</SelectItem>
+                        <SelectItem value="B">B (60-69%)</SelectItem>
+                        <SelectItem value="C+">C+ (50-59%)</SelectItem>
+                        <SelectItem value="C">C (40-49%)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-              <div className="bg-purple-50 p-4 rounded-md text-center">
-                <h3 className="text-lg font-bold mb-2">Predicted Marks Required</h3>
-                <div className="text-4xl font-bold text-purple-600">{predictedMarks}%</div>
-                <p className="text-sm text-gray-600 mt-2">
-                  Based on current CGPA: {currentCGPA} and target grade: {targetGrade}
-                </p>
+                <Button onClick={() => {
+                  const gradeToMarks = {
+                    "A+": 95,
+                    "A": 85,
+                    "B+": 75,
+                    "B": 65,
+                    "C+": 55,
+                    "C": 45
+                  };
+                  const baseMarks = gradeToMarks[targetGrade as keyof typeof gradeToMarks] || 75;
+                  const cgpaFactor = currentCGPA / 10;
+                  const predicted = Math.round(baseMarks * cgpaFactor);
+                  setPredictedMarks(predicted);
+                }} className="w-full bg-purple-600 hover:bg-purple-700">
+                  Predict Required Marks
+                </Button>
+
+                <div className="bg-purple-50 p-4 rounded-md text-center">
+                  <h3 className="text-lg font-bold mb-2">Predicted Marks Required</h3>
+                  <div className="text-4xl font-bold text-purple-600">{predictedMarks}%</div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Based on current CGPA: {currentCGPA} and target grade: {targetGrade}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}
