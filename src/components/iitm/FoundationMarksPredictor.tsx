@@ -243,12 +243,57 @@ export default function FoundationMarksPredictor() {
     eligibility = checkEligibility(subjectKey, numericInputs);
   }
 
-  // Required F for each grade (can always compute regardless of OPPE for Python)
+  // Calculate current score with F=0 (for all fields defined in subjectObj.inputFields, and F=0)
+  const calcCurrentScore = () => {
+    // For calculation, use F=0 explicitly
+    const numbers = { ...numericInputs, F: 0 };
+    switch (subjectKey) {
+      case "maths1": {
+        const { GAA = 0, Qz1 = 0, Qz2 = 0 } = numbers;
+        const p1 = 0.1 * GAA + 0.6 * 0 + 0.2 * Math.max(Qz1, Qz2);
+        const p2 = 0.1 * GAA + 0.4 * 0 + 0.2 * Qz1 + 0.3 * Qz2;
+        return Math.max(p1, p2);
+      }
+      case "english1": {
+        const { GAA = 0, Qz1 = 0, Qz2 = 0 } = numbers;
+        const p1 = 0.1 * GAA + 0.5 * 0 + 0.2 * Math.max(Qz1, Qz2);
+        const p2 = 0.1 * GAA + 0.4 * 0 + 0.2 * Qz1 + 0.3 * Qz2;
+        return Math.max(p1, p2);
+      }
+      case "statistics1": {
+        const { GAA = 0, Qz1 = 0, Qz2 = 0, Bonus = 0 } = numbers;
+        const p1 = 0.1 * GAA + 0.6 * 0 + 0.2 * Math.max(Qz1, Qz2) + Bonus;
+        const p2 = 0.1 * GAA + 0.4 * 0 + 0.2 * Qz1 + 0.3 * Qz2 + Bonus;
+        return Math.max(p1, p2);
+      }
+      case "python": {
+        const GAA = numbers.GAA ?? 0;
+        const Qz1 = numbers.Qz1 ?? 0;
+        const OPPE1 = numbers.OPPE1 ?? 0;
+        const OPPE2 = numbers.OPPE2 ?? 0;
+        // Current score with F=0
+        return 0.15 * GAA + 0.15 * Qz1 + 0.2 * OPPE1 + 0.2 * OPPE2;
+      }
+      default: {
+        const { GAA = 0, Qz1 = 0, Qz2 = 0 } = numbers;
+        return 0.1 * GAA + 0.25 * Qz1 + 0.25 * Qz2;
+      }
+    }
+  };
+
+  const currentScore = calcCurrentScore();
+
+  // Update requiredFs to include "Already scored"
   const requiredFs = useMemo(() => {
     if (GAA_val < 40) return null;
     if (checkEligibility(subjectKey, numericInputs)) return null;
-    const out: { grade: string; mark: number | null }[] = [];
+    const out: { grade: string; mark: number | null; already: boolean }[] = [];
     for (const [grade, threshold] of GRADES) {
+      // Has already scored this grade?
+      if (currentScore >= threshold) {
+        out.push({ grade, mark: null, already: true });
+        continue;
+      }
       const val = calcRequiredF(subjectKey, numericInputs, threshold);
       out.push({
         grade,
@@ -256,10 +301,11 @@ export default function FoundationMarksPredictor() {
           val === null || val > 100
             ? null
             : Math.ceil(val * 100) / 100,
+        already: false,
       });
     }
     return out;
-  }, [subjectKey, numericInputs, GAA_val]);
+  }, [subjectKey, numericInputs, GAA_val, currentScore]);
 
   // Special warning if can appear but not eligible to pass for Python (both OPPE<40)
   let pythonOPPEWarning: string | null = null;
@@ -360,15 +406,17 @@ export default function FoundationMarksPredictor() {
                 </tr>
               </thead>
               <tbody>
-                {requiredFs.map(({ grade, mark }) => (
+                {requiredFs.map(({ grade, mark, already }) => (
                   <tr key={grade}>
                     <td className="py-1 px-2">{grade}</td>
                     <td className="py-1 px-2">
-                      {mark === null ? (
-                        <span className="text-gray-400">Not attainable</span>
-                      ) : (
-                        <span className="font-semibold">{mark}</span>
-                      )}
+                      {already
+                        ? <span className="text-green-700 font-semibold">Already scored</span>
+                        : mark === null ? (
+                          <span className="text-gray-400">Not attainable</span>
+                        ) : (
+                          <span className="font-semibold">{mark}</span>
+                        )}
                     </td>
                   </tr>
                 ))}
