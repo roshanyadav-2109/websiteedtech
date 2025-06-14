@@ -1,8 +1,7 @@
-
 import React from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { Star, Quote, Users, GraduationCap } from "lucide-react";
+import { Star, Quote, Users, GraduationCap, Network } from "lucide-react";
 
 type Testimonial = {
   content: string;
@@ -96,8 +95,9 @@ const TestimonialsSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-royal/10 rounded-full mb-6">
-            <Users className="w-8 h-8 text-royal" />
+            <Network className="w-8 h-8 text-royal" />
           </div>
+          <p className="text-lg font-semibold text-royal mb-2">20k+ Student Network</p>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Student Voices</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Hear from students who transformed their academic journey with us and achieved their dreams
@@ -116,8 +116,8 @@ const TestimonialsSection = () => {
         >
           <CarouselContent>
             {testimonials.map((testimonial, index) => (
-              <CarouselItem key={index} className="px-4">
-                <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden h-full">
+              <CarouselItem key={index} className="px-4 md:basis-1/2 lg:basis-1/3">
+                <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden h-full flex flex-col">
                   {/* Background decoration */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-royal/5 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
                   
@@ -134,11 +134,11 @@ const TestimonialsSection = () => {
                   </div>
 
                   {/* Content */}
-                  <blockquote className="text-lg text-gray-700 leading-relaxed mb-8 relative">
+                  <blockquote className="text-lg text-gray-700 leading-relaxed mb-8 relative flex-grow">
                     "{testimonial.content}"
                   </blockquote>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mt-auto">
                     <div>
                       <h4 className="font-bold text-xl text-gray-900 mb-1">{testimonial.name}</h4>
                       <div className="flex items-center space-x-2 text-royal">
@@ -158,11 +158,6 @@ const TestimonialsSection = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          
-          <div className="flex justify-center gap-2 mt-12">
-            <CarouselPrevious className="relative transform-none translate-y-0 left-0 bg-white hover:bg-royal hover:text-white border-2 border-royal/20 hover:border-royal transition-all duration-300" />
-            <CarouselNext className="relative transform-none translate-y-0 right-0 bg-white hover:bg-royal hover:text-white border-2 border-royal/20 hover:border-royal transition-all duration-300" />
-          </div>
         </Carousel>
       </div>
     </section>
