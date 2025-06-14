@@ -245,37 +245,42 @@ export default function FoundationMarksPredictor() {
 
   // Calculate current score with F=0 (for all fields defined in subjectObj.inputFields, and F=0)
   const calcCurrentScore = () => {
-    // For calculation, use F=0 explicitly
-    const numbers = { ...numericInputs, F: 0 };
+    // Create a numbers object with all possible needed fields, defaulting to 0, and F=0
+    const numbers = {
+      GAA: numericInputs.GAA ?? 0,
+      Qz1: numericInputs.Qz1 ?? 0,
+      Qz2: numericInputs.Qz2 ?? 0,
+      Bonus: numericInputs.Bonus ?? 0,
+      OPPE1: numericInputs.OPPE1 ?? 0,
+      OPPE2: numericInputs.OPPE2 ?? 0,
+      F: 0,
+    };
     switch (subjectKey) {
       case "maths1": {
-        const { GAA = 0, Qz1 = 0, Qz2 = 0 } = numbers;
+        const { GAA, Qz1, Qz2 } = numbers;
         const p1 = 0.1 * GAA + 0.6 * 0 + 0.2 * Math.max(Qz1, Qz2);
         const p2 = 0.1 * GAA + 0.4 * 0 + 0.2 * Qz1 + 0.3 * Qz2;
         return Math.max(p1, p2);
       }
       case "english1": {
-        const { GAA = 0, Qz1 = 0, Qz2 = 0 } = numbers;
+        const { GAA, Qz1, Qz2 } = numbers;
         const p1 = 0.1 * GAA + 0.5 * 0 + 0.2 * Math.max(Qz1, Qz2);
         const p2 = 0.1 * GAA + 0.4 * 0 + 0.2 * Qz1 + 0.3 * Qz2;
         return Math.max(p1, p2);
       }
       case "statistics1": {
-        const { GAA = 0, Qz1 = 0, Qz2 = 0, Bonus = 0 } = numbers;
+        const { GAA, Qz1, Qz2, Bonus } = numbers;
         const p1 = 0.1 * GAA + 0.6 * 0 + 0.2 * Math.max(Qz1, Qz2) + Bonus;
         const p2 = 0.1 * GAA + 0.4 * 0 + 0.2 * Qz1 + 0.3 * Qz2 + Bonus;
         return Math.max(p1, p2);
       }
       case "python": {
-        const GAA = numbers.GAA ?? 0;
-        const Qz1 = numbers.Qz1 ?? 0;
-        const OPPE1 = numbers.OPPE1 ?? 0;
-        const OPPE2 = numbers.OPPE2 ?? 0;
+        const { GAA, Qz1, OPPE1, OPPE2 } = numbers;
         // Current score with F=0
         return 0.15 * GAA + 0.15 * Qz1 + 0.2 * OPPE1 + 0.2 * OPPE2;
       }
       default: {
-        const { GAA = 0, Qz1 = 0, Qz2 = 0 } = numbers;
+        const { GAA, Qz1, Qz2 } = numbers;
         return 0.1 * GAA + 0.25 * Qz1 + 0.25 * Qz2;
       }
     }
