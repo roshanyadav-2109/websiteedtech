@@ -1,9 +1,10 @@
-
 import React from "react";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import MarksSubjectSelector from "./components/MarksSubjectSelector";
+import MarksInputFields from "./components/MarksInputFields";
+import EligibilityChecker from "./components/EligibilityChecker";
+import GradeRequirementsTable from "./components/GradeRequirementsTable";
+import { gradeThresholds, parseNumOrZero, hasMarksEntered } from "./utils/marksCalculations";
 
 const DEGREE_COURSES = [
   {
@@ -337,15 +338,6 @@ function parseNumOrZero(v: string | number | undefined) {
   return isNaN(n) ? 0 : n;
 }
 
-const gradeThresholds = [
-  { letter: "S", min: 90 },
-  { letter: "A", min: 80 },
-  { letter: "B", min: 70 },
-  { letter: "C", min: 60 },
-  { letter: "D", min: 50 },
-  { letter: "Pass", min: 40 }
-];
-
 // Per course, calculate T given values and F
 function calcScore(courseKey: string, values: Record<string, number>, F: number) {
   switch (courseKey) {
@@ -509,6 +501,10 @@ const getEligibility = (courseKey: string, values: Record<string, number>): [boo
   return [true, "Eligible for Final Exam"];
 };
 
+const hasMarksEntered = (form: Record<string, string>): boolean => {
+  return Object.values(form).some((v) => v && `${v}` !== "" && !isNaN(Number(v)));
+};
+
 export default function DegreeMarksPredictor() {
   const [course, setCourse] = React.useState(DEGREE_COURSES[0].key);
   const [form, setForm] = React.useState<Record<string, string>>({});
@@ -522,7 +518,7 @@ export default function DegreeMarksPredictor() {
   });
 
   // Only show table if a mark is entered
-  const markEntered = Object.values(form).some((v) => v && `${v}` !== "" && !isNaN(Number(v)));
+  const markEntered = hasMarksEntered(form);
 
   // Eligibility
   const [eligible, eligMsg] = getEligibility(course, values);
@@ -534,6 +530,8 @@ export default function DegreeMarksPredictor() {
     requiredF: requiredF(course, values, g.min)
   }));
 
+  const resetForm = () => setForm({});
+
   return (
     <Card>
       <CardHeader>
@@ -542,66 +540,23 @@ export default function DegreeMarksPredictor() {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <Label>Subject</Label>
-            <Select value={course} onValueChange={v => { setCourse(v); setForm({}); }}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DEGREE_COURSES.map(c => (
-                  <SelectItem key={c.key} value={c.key}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {(subject?.fields ?? []).filter(f => f.id !== "F").map(f => (
-            <div key={f.id}>
-              <Label>{f.label}</Label>
-              <Input
-                type="number"
-                min={f.min}
-                max={f.max}
-                value={form[f.id] ?? ""}
-                placeholder="0"
-                onChange={e => setForm({ ...form, [f.id]: e.target.value })}
-                inputMode="numeric"
-              />
-            </div>
-          ))}
+          <MarksSubjectSelector
+            subjects={DEGREE_COURSES}
+            selectedSubject={course}
+            onSubjectChange={setCourse}
+            onFormReset={resetForm}
+          />
+          <MarksInputFields
+            fields={subject?.fields ?? []}
+            form={form}
+            onFormChange={setForm}
+          />
         </div>
-        <div className={`p-3 rounded mb-3 ${eligible ? "bg-green-50 text-green-800" : "bg-yellow-50 text-yellow-800"}`}>{eligMsg}</div>
+        
+        <EligibilityChecker eligible={eligible} message={eligMsg} />
 
         {markEntered && (
-          <div className="mb-3">
-            <div className="font-semibold mb-2">Minimum Final Exam (F) marks needed for each grade:</div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm border bg-white rounded shadow">
-                <thead>
-                  <tr className="bg-indigo-100">
-                    <th className="py-2 px-3 text-left">Grade</th>
-                    <th className="py-2 px-3 text-left">Total Score</th>
-                    <th className="py-2 px-3 text-left">Required F (out of 100)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {requiredTable.map(row => (
-                    <tr key={row.letter} className="border-t">
-                      <td className="py-2 px-3 font-bold">{row.letter}</td>
-                      <td className="py-2 px-3">{row.min}</td>
-                      <td className="py-2 px-3">
-                        {row.requiredF == null ? <span className="text-red-600 font-semibold">Impossible</span> : `${row.requiredF} /100`}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {/* Reduced explanation */}
-            <div className="text-xs mt-2 text-gray-500">
-              Enter your marks to see what you need in the final. "Impossible" means the grade can't be reached with current scores.
-            </div>
-          </div>
+          <GradeRequirementsTable requirements={requiredTable} />
         )}
       </CardContent>
     </Card>
