@@ -6,12 +6,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Filter } from 'lucide-react';
 import ContentManagementCard from './ContentManagementCard';
 import { useBackend } from '@/components/BackendIntegratedWrapper';
+import AdminContentDialog from './AdminContentDialog';
 
 const ContentManagementTab = () => {
   const { notes, pyqs, contentLoading } = useBackend();
   const [searchQuery, setSearchQuery] = useState('');
   const [subjectFilter, setSubjectFilter] = useState('');
   const [examTypeFilter, setExamTypeFilter] = useState('');
+
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [editingContentType, setEditingContentType] = useState<'notes' | 'pyqs' | null>(null);
+
+  const handleEdit = (item: any, type: 'notes' | 'pyqs') => {
+    setEditingItem(item);
+    setEditingContentType(type);
+  };
+
+  const handleCloseDialog = () => {
+    setEditingItem(null);
+    setEditingContentType(null);
+  };
 
   const filterContent = (items: any[]) => {
     return items.filter(item => {
@@ -98,6 +112,7 @@ const ContentManagementTab = () => {
                     key={note.id}
                     item={note}
                     contentType="notes"
+                    onEdit={(item) => handleEdit(item, 'notes')}
                   />
                 ))}
               </div>
@@ -116,6 +131,7 @@ const ContentManagementTab = () => {
                     key={pyq.id}
                     item={pyq}
                     contentType="pyqs"
+                    onEdit={(item) => handleEdit(item, 'pyqs')}
                   />
                 ))}
               </div>
@@ -123,6 +139,14 @@ const ContentManagementTab = () => {
           </TabsContent>
         </Tabs>
       </div>
+      {editingItem && editingContentType && (
+        <AdminContentDialog
+            isOpen={!!editingItem}
+            onClose={handleCloseDialog}
+            contentType={editingContentType}
+            contentToEdit={editingItem}
+        />
+    )}
     </div>
   );
 };

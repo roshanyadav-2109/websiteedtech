@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +17,7 @@ interface AdminContentDialogProps {
   branch?: string;
   level?: string;
   classLevel?: string;
+  contentToEdit?: any;
 }
 
 const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
@@ -28,12 +28,15 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
   prefilledSubject,
   branch,
   level,
-  classLevel
+  classLevel,
+  contentToEdit
 }) => {
-  const { addNote, addPyq } = useBackend();
+  const { addNote, addPyq, updateNote, updatePyq } = useBackend();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const isEditMode = !!contentToEdit;
+
+  const initialFormData = {
     title: '',
     description: '',
     subject: prefilledSubject || '',
@@ -49,7 +52,33 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
     category: '',
     features: '',
     image_url: ''
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+  
+  useEffect(() => {
+    if (isEditMode && contentToEdit) {
+      setFormData({
+        title: contentToEdit.title || '',
+        description: contentToEdit.description || '',
+        subject: contentToEdit.subject || '',
+        file_link: contentToEdit.file_link || '',
+        content_url: contentToEdit.content_url || '',
+        year: contentToEdit.year?.toString() || '',
+        exam_type: contentToEdit.exam_type || '',
+        class_level: contentToEdit.class_level || '',
+        branch: contentToEdit.branch || '',
+        level: contentToEdit.level || '',
+        price: contentToEdit.price?.toString() || '',
+        duration: contentToEdit.duration || '',
+        category: contentToEdit.category || '',
+        features: Array.isArray(contentToEdit.features) ? contentToEdit.features.join(', ') : '',
+        image_url: contentToEdit.image_url || ''
+      });
+    } else {
+      setFormData(initialFormData);
+    }
+  }, [isOpen, isEditMode, contentToEdit, prefilledSubject, examType, classLevel, branch, level]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,9 +86,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
 
     try {
       let success = false;
-      
-      if (contentType === 'notes') {
-        success = await addNote({
+      const noteData = {
           title: formData.title,
           description: formData.description,
           subject: formData.subject,
@@ -69,9 +96,8 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
           class_level: formData.class_level,
           branch: formData.branch,
           level: formData.level
-        });
-      } else if (contentType === 'pyqs') {
-        success = await addPyq({
+      };
+      const pyqData = {
           title: formData.title,
           description: formData.description,
           subject: formData.subject,
@@ -82,34 +108,30 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
           level: formData.level,
           file_link: formData.file_link,
           content_url: formData.content_url
-        });
-      } else if (contentType === 'courses') {
-        // For courses, we'll show a placeholder form for now
-        toast({
-          title: "Course Creation",
-          description: "Course creation functionality will be implemented soon",
-        });
-        success = true;
+      };
+
+      if (isEditMode) {
+        if (contentType === 'notes') {
+          success = await updateNote(contentToEdit.id, noteData);
+        } else if (contentType === 'pyqs') {
+          success = await updatePyq(contentToEdit.id, pyqData);
+        }
+      } else {
+        if (contentType === 'notes') {
+          success = await addNote(noteData);
+        } else if (contentType === 'pyqs') {
+          success = await addPyq(pyqData);
+        } else if (contentType === 'courses') {
+          toast({
+            title: "Course Creation",
+            description: "Course creation functionality will be implemented soon",
+          });
+          success = true;
+        }
       }
 
       if (success) {
-        setFormData({
-          title: '',
-          description: '',
-          subject: prefilledSubject || '',
-          file_link: '',
-          content_url: '',
-          year: '',
-          exam_type: examType || '',
-          class_level: classLevel || '',
-          branch: branch || '',
-          level: level || '',
-          price: '',
-          duration: '',
-          category: '',
-          features: '',
-          image_url: ''
-        });
+        setFormData(initialFormData);
         onClose();
       }
     } catch (error) {
@@ -229,7 +251,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
 
           <div className="flex gap-2">
             <Button type="submit" disabled={isSubmitting} className="flex-1">
-              {isSubmitting ? 'Adding...' : 'Add Note'}
+              {isSubmitting ? 'Saving...' : isEditMode ? 'Save Changes' : 'Add Note'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
@@ -354,7 +376,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
 
           <div className="flex gap-2">
             <Button type="submit" disabled={isSubmitting} className="flex-1">
-              {isSubmitting ? 'Adding...' : 'Add PYQ'}
+              {isSubmitting ? 'Saving...' : isEditMode ? 'Save Changes' : 'Add PYQ'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
@@ -457,11 +479,11 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            Add {contentType === 'notes' ? 'Note' : contentType === 'pyqs' ? 'Previous Year Question' : contentType === 'courses' ? 'Course' : contentType}
+            {isEditMode ? 'Edit' : 'Add'} {contentType === 'notes' ? 'Note' : contentType === 'pyqs' ? 'Previous Year Question' : contentType === 'courses' ? 'Course' : contentType}
           </DialogTitle>
         </DialogHeader>
         {renderForm()}

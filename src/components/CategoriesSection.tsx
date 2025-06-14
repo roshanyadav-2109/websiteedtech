@@ -39,10 +39,10 @@ const CategoriesSection = () => {
           {categories.map((category, index) => (
             <Link to={category.link} key={index} className="block h-full">
               <div 
-                className={`${category.color} text-white rounded-2xl p-8 h-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl`}
+                className={`${category.color} text-white rounded-2xl p-8 h-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl flex flex-col`}
               >
                 <h3 className="text-3xl font-bold mb-4">{category.title}</h3>
-                <p className="text-white/90 text-lg mb-6">{category.description}</p>
+                <p className="text-white/90 text-lg mb-6 flex-grow">{category.description}</p>
                 <div className="flex items-center text-white font-medium mt-auto">
                   <span>Explore Resources</span>
                   <ArrowRight className="ml-2 h-5 w-5" />
