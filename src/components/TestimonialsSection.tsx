@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -98,22 +97,6 @@ const TestimonialsSection = () => {
             <CarouselNext className="relative transform-none translate-y-0 right-0 bg-white hover:bg-royal hover:text-white border-2 border-royal/20 hover:border-royal transition-all duration-300" />
           </div>
         </Carousel>
-
-        {/* Stats section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-4xl mx-auto">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-royal mb-2">500+</div>
-            <div className="text-gray-600">Success Stories</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-royal mb-2">4.8/5</div>
-            <div className="text-gray-600">Average Rating</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-royal mb-2">98%</div>
-            <div className="text-gray-600">Satisfaction Rate</div>
-          </div>
-        </div>
       </div>
     </section>
   );
