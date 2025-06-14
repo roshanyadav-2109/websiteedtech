@@ -70,7 +70,6 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
 
   const examTypes = ['IITM_BS', 'JEE', 'NEET'];
   const classLevels = ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
-  const branches = ['CSE', 'Physics', 'Mathematics', 'Data Science', 'Economics', 'Electronic Systems'];
   const groupTypes = ['Telegram', 'WhatsApp', 'Discord', 'Facebook'];
 
   // Electronic Systems subjects by level
@@ -111,7 +110,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
       'Control Engineering',
       'Electronics System Project'
     ],
-    'Degree Level': [
+    'BS Degree Level': [
       'Embedded Linux and FPGAs',
       'Embedded Linux and FPGAs Lab',
       'Electromagnetic Fields and Transmission Lines',
@@ -187,7 +186,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
       'Business Analytics',
       'Tools in Data Science'
     ],
-    'Degree Level': [
+    'BSc Degree Level': [
       'Software Engineering',
       'Software Testing',
       'AI: Search Methods for Problem Solving',
@@ -239,8 +238,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
         if (branch === 'Data Science' && level) {
           return dataScienceSubjects[level as keyof typeof dataScienceSubjects] || [];
         }
-        // Default IITM BS subjects for other branches
-        return ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals', 'Programming'];
+        return [];
       default:
         return ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Botany', 'Zoology', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Programming', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals'];
     }
@@ -253,15 +251,15 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
       case 'JEE':
         return ['11th', '12th'];
       case 'IITM_BS':
-        return ['Qualifier Level', 'Foundation Level', 'Diploma Level', 'Degree Level'];
+        return ['Qualifier Level', 'Foundation Level', 'Diploma Level', 'BS Degree Level', 'BSc Degree Level'];
       default:
         return ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
     }
   };
 
-  // Dynamic branches for IITM BS
+  // Only Electronic Systems and Data Science for IITM BS
   const getIITMBranches = () => {
-    return ['CSE', 'Physics', 'Mathematics', 'Data Science', 'Economics', 'Electronic Systems'];
+    return ['Electronic Systems', 'Data Science'];
   };
 
   // Dynamic course categories

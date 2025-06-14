@@ -17,6 +17,8 @@ interface BackendContextType {
   addPyq: (pyqData: any) => Promise<boolean>;
   deleteNote: (noteId: string) => Promise<boolean>;
   deletePyq: (pyqId: string) => Promise<boolean>;
+  updateNote: (noteId: string, updateData: any) => Promise<boolean>;
+  updatePyq: (pyqId: string, updateData: any) => Promise<boolean>;
   refreshNotes: () => Promise<void>;
   refreshPyqs: () => Promise<void>;
 }
@@ -46,6 +48,8 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     addPyq,
     deleteNote,
     deletePyq,
+    updateNote,
+    updatePyq,
     refreshNotes,
     refreshPyqs
   } = useContentManagement();
@@ -63,6 +67,8 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     addPyq,
     deleteNote,
     deletePyq,
+    updateNote,
+    updatePyq,
     refreshNotes,
     refreshPyqs
   };

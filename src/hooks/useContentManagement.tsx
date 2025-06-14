@@ -13,6 +13,13 @@ interface Note {
   upload_date: string;
   created_by: string | null;
   is_active: boolean;
+  content_url: string | null;
+  description: string | null;
+  class_level: string | null;
+  exam_type: string | null;
+  branch: string | null;
+  level: string | null;
+  created_at: string;
 }
 
 interface PYQ {
@@ -26,6 +33,12 @@ interface PYQ {
   upload_date: string;
   created_by: string | null;
   is_active: boolean;
+  content_url: string | null;
+  description: string | null;
+  class_level: string | null;
+  branch: string | null;
+  level: string | null;
+  created_at: string;
 }
 
 export const useContentManagement = () => {
@@ -81,7 +94,7 @@ export const useContentManagement = () => {
     }
   };
 
-  const addNote = async (noteData: Omit<Note, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active'>) => {
+  const addNote = async (noteData: Omit<Note, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>) => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -123,7 +136,7 @@ export const useContentManagement = () => {
     }
   };
 
-  const addPyq = async (pyqData: Omit<PYQ, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active'>) => {
+  const addPyq = async (pyqData: Omit<PYQ, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>) => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -223,6 +236,64 @@ export const useContentManagement = () => {
     }
   };
 
+  const updateNote = async (noteId: string, updateData: Partial<Note>) => {
+    try {
+      const { error } = await supabase
+        .from('notes')
+        .update(updateData)
+        .eq('id', noteId);
+
+      if (error) {
+        console.error('Error updating note:', error);
+        toast({
+          title: "Update Error",
+          description: "Failed to update note",
+          variant: "destructive"
+        });
+        return false;
+      } else {
+        toast({
+          title: "Success",
+          description: "Note updated successfully",
+        });
+        await loadNotes(); // Refresh the list
+        return true;
+      }
+    } catch (error) {
+      console.error('Error updating note:', error);
+      return false;
+    }
+  };
+
+  const updatePyq = async (pyqId: string, updateData: Partial<PYQ>) => {
+    try {
+      const { error } = await supabase
+        .from('pyqs')
+        .update(updateData)
+        .eq('id', pyqId);
+
+      if (error) {
+        console.error('Error updating pyq:', error);
+        toast({
+          title: "Update Error",
+          description: "Failed to update previous year question",
+          variant: "destructive"
+        });
+        return false;
+      } else {
+        toast({
+          title: "Success",
+          description: "Previous year question updated successfully",
+        });
+        await loadPyqs(); // Refresh the list
+        return true;
+      }
+    } catch (error) {
+      console.error('Error updating pyq:', error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -241,6 +312,8 @@ export const useContentManagement = () => {
     addPyq,
     deleteNote,
     deletePyq,
+    updateNote,
+    updatePyq,
     refreshNotes: loadNotes,
     refreshPyqs: loadPyqs
   };
