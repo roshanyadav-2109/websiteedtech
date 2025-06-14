@@ -89,8 +89,42 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
   ],
   diploma: [
     {
+      key: "programming_python",
+      name: "Programming, Data Structures and Algorithms using Python",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "GAAP", label: "Programming Assign. Avg (Best 7/8, GAAP)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "OPPE1", label: "OPPE1", min: 0, max: 100 },
+        { id: "OPPE2", label: "OPPE2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
       key: "databasems",
       name: "Database Management Systems",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "java_programming",
+      name: "Java Programming",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "GAAP", label: "Programming Assign. Avg (Best 7/8, GAAP)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "OPPE1", label: "OPPE1", min: 0, max: 100 },
+        { id: "OPPE2", label: "OPPE2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "systemcommands",
+      name: "System Commands",
       fields: [
         { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
         { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
@@ -111,8 +145,20 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
       ]
     },
     {
-      key: "maths3",
-      name: "Mathematics 3",
+      key: "appdev2",
+      name: "Application Development-2",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "GAAP", label: "Programming Assign. Avg (Best 7/8, GAAP)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "OPPE1", label: "OPPE1", min: 0, max: 100 },
+        { id: "OPPE2", label: "OPPE2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "machinelearning",
+      name: "Machine Learning Foundations",
       fields: [
         { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
         { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
@@ -121,8 +167,8 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
       ]
     },
     {
-      key: "machinelearning",
-      name: "Machine Learning Foundations",
+      key: "ml_techniques",
+      name: "Machine Learning Techniques",
       fields: [
         { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
         { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
@@ -140,49 +186,12 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
         { id: "Qz3", label: "Quiz 3", min: 0, max: 100 },
         { id: "NPPE1", label: "NPPE 1", min: 0, max: 100 },
         { id: "NPPE2", label: "NPPE 2", min: 0, max: 100 },
-        { id: "NPPE3", label: "NPPE 3", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+        { id: "NPPE3", label: "NPPE 3", min: 0, max: 100 }
       ]
     },
     {
-      key: "statistics3",
-      name: "Statistics 3",
-      fields: [
-        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "appdev2",
-      name: "Application Development-2",
-      fields: [
-        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-        { id: "GAAP", label: "Programming Assign. Avg (Best 7/8, GAAP)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-        { id: "OPPE1", label: "OPPE1", min: 0, max: 100 },
-        { id: "OPPE2", label: "OPPE2", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "mlf_practice",
-      name: "Machine Learning Foundations Practice",
-      fields: [
-        { id: "GA", label: "Assignment Avg (Best 5/7, GA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-        { id: "Qz3", label: "Quiz 3", min: 0, max: 100 },
-        { id: "NPPE1", label: "NPPE 1", min: 0, max: 100 },
-        { id: "NPPE2", label: "NPPE 2", min: 0, max: 100 },
-        { id: "NPPE3", label: "NPPE 3", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "systemcommands",
-      name: "System Commands",
+      key: "business_data_management",
+      name: "Business Data Management",
       fields: [
         { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
         { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
@@ -201,8 +210,8 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
       ]
     },
     {
-      key: "tools_techniques",
-      name: "Tools and Techniques for Data Science",
+      key: "tools_data_science",
+      name: "Tools in Data Science",
       fields: [
         { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
         { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
@@ -286,6 +295,159 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
         { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
         { id: "OPPE1", label: "OPPE1", min: 0, max: 100 },
         { id: "OPPE2", label: "OPPE2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "deep_learning_cv",
+      name: "Deep Learning for Computer Vision (CV)",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "managerial_economics",
+      name: "Managerial Economics",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "algo_thinking_bio",
+      name: "Algorithmic Thinking in Bioinformatics",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "large_language_models",
+      name: "Large Language Models",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "speech_technology",
+      name: "Speech Technology",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "design_thinking_app",
+      name: "Design Thinking for Data-Driven App Development",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "market_research",
+      name: "Market Research",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "statistical_computing",
+      name: "Statistical Computing",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "advanced_algorithms",
+      name: "Advanced Algorithms",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "game_theory_strategy",
+      name: "Game Theory and Strategy",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "computer_system_design",
+      name: "Computer System Design",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "deep_learning_practice",
+      name: "Deep Learning Practice",
+      fields: [
+        { id: "GA", label: "Assignment Avg (Best 5/7, GA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "Qz3", label: "Quiz 3", min: 0, max: 100 },
+        { id: "NPPE1", label: "NPPE 1", min: 0, max: 100 },
+        { id: "NPPE2", label: "NPPE 2", min: 0, max: 100 },
+        { id: "NPPE3", label: "NPPE 3", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "math_foundations_genai",
+      name: "Mathematical Foundations of Generative AI",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "algorithms_data_science",
+      name: "Algorithms for Data Science (ADS)",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "mlops",
+      name: "MLOPS",
+      fields: [
+        { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
         { id: "F", label: "Final Exam Score", min: 0, max: 100 }
       ]
     }

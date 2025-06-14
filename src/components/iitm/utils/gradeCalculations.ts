@@ -31,11 +31,12 @@ export function calculateDiplomaGrade(subjectKey: string, values: Record<string,
   const { GAA = 0, GA = 0, Qz1 = 0, Qz2 = 0, Qz3 = 0, F = 0, GAAP = 0, OPPE1 = 0, OPPE2 = 0, NPPE1 = 0, NPPE2 = 0, NPPE3 = 0 } = values;
   
   switch (subjectKey) {
+    case "programming_python":
+    case "java_programming":
     case "appdev1":
     case "appdev2":
       return 0.05 * GAA + 0.1 * GAAP + 0.15 * Qz1 + 0.2 * OPPE1 + 0.2 * OPPE2 + 0.3 * F;
-    case "machinelearning_practice":
-    case "mlf_practice": {
+    case "machinelearning_practice": {
       const nppeScores = [NPPE1, NPPE2, NPPE3].sort((a, b) => b - a);
       return 0.2 * GA + 0.15 * Qz1 + 0.15 * Qz2 + 0.15 * Qz3 + 0.15 * nppeScores[0] + 0.1 * nppeScores[1] + 0.1 * nppeScores[2];
     }
@@ -45,7 +46,7 @@ export function calculateDiplomaGrade(subjectKey: string, values: Record<string,
 }
 
 export function calculateDegreeGrade(subjectKey: string, values: Record<string, number>): number {
-  const { GAA = 0, Qz1 = 0, Qz2 = 0, F = 0, Bonus = 0, GP1 = 0, GP2 = 0, PP = 0, CP = 0, GP = 0, OPPE1 = 0, OPPE2 = 0, GAAP = 0 } = values;
+  const { GAA = 0, GA = 0, Qz1 = 0, Qz2 = 0, Qz3 = 0, F = 0, Bonus = 0, GP1 = 0, GP2 = 0, PP = 0, CP = 0, GP = 0, OPPE1 = 0, OPPE2 = 0, GAAP = 0, NPPE1 = 0, NPPE2 = 0, NPPE3 = 0 } = values;
   
   switch (subjectKey) {
     case "software_engineering":
@@ -59,6 +60,10 @@ export function calculateDegreeGrade(subjectKey: string, values: Record<string, 
       return 0.1 * GAA + 0.3 * F + 0.2 * OPPE1 + 0.4 * OPPE2;
     case "c_prog":
       return 0.05 * GAA + 0.1 * GAAP + 0.15 * Qz1 + 0.2 * OPPE1 + 0.2 * OPPE2 + 0.3 * F;
+    case "deep_learning_practice": {
+      const nppeScores = [NPPE1, NPPE2, NPPE3].sort((a, b) => b - a);
+      return 0.2 * GA + 0.15 * Qz1 + 0.15 * Qz2 + 0.15 * Qz3 + 0.15 * nppeScores[0] + 0.1 * nppeScores[1] + 0.1 * nppeScores[2];
+    }
     default:
       return 0.1 * GAA + 0.4 * F + 0.25 * Qz1 + 0.25 * Qz2;
   }
