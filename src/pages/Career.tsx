@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -232,8 +231,7 @@ const Career = () => {
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="pt-4 border-t flex justify-between">
-                      <Button variant="outline">View Details</Button>
+                    <CardFooter className="pt-4 border-t flex justify-end">
                       <Button className="bg-royal hover:bg-royal-dark text-white">Apply Now</Button>
                     </CardFooter>
                   </Card>
