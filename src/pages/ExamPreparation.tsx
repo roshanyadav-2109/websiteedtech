@@ -13,7 +13,7 @@ const ExamPreparation = () => {
   const examTypes = [
     {
       title: "NEET - Medical MBBS",
-      path: "/neet-prep",
+      path: "/exam-preparation/neet",
       description: "Comprehensive resources for medical entrance exams",
       icon: BookOpen,
       color: "from-blue-500 to-purple-600",
@@ -21,7 +21,7 @@ const ExamPreparation = () => {
     },
     {
       title: "IIT Madras BS Degree - UG",
-      path: "/iitm-bs-prep",
+      path: "/exam-preparation/iitm-bs",
       description: "Resources for IIT Madras Bachelor of Science programs",
       icon: GraduationCap,
       color: "from-green-500 to-teal-600",
@@ -29,7 +29,7 @@ const ExamPreparation = () => {
     },
     {
       title: "JEE Mains - Engineering",
-      path: "/jee-prep",
+      path: "/exam-preparation/jee",
       description: "Study materials for engineering entrance exams",
       icon: FileText,
       color: "from-orange-500 to-pink-600",
