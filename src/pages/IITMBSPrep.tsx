@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -108,10 +107,10 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Branch Notes</h2>
                   <AdminAddButton 
-                    contentType="Notes" 
-                    examType="IITM-BS"
-                    onAdd={() => handleAddContent("notes")} 
-                  />
+                    onAdd={() => handleAddContent("notes")}
+                  >
+                    Add Notes
+                  </AdminAddButton>
                 </div>
                 {renderTabContent("branch-notes", <BranchNotesTab />)}
               </TabsContent>
@@ -120,10 +119,10 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
                   <AdminAddButton 
-                    contentType="PYQs" 
-                    examType="IITM-BS"
-                    onAdd={() => handleAddContent("pyqs")} 
-                  />
+                    onAdd={() => handleAddContent("pyqs")}
+                  >
+                    Add PYQs
+                  </AdminAddButton>
                 </div>
                 {renderTabContent("pyqs", <PYQsTab />)}
               </TabsContent>
@@ -139,10 +138,10 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Communities</h2>
                   <AdminAddButton 
-                    contentType="Community" 
-                    examType="IITM-BS"
-                    onAdd={() => handleAddContent("communities")} 
-                  />
+                    onAdd={() => handleAddContent("communities")}
+                  >
+                    Add Community
+                  </AdminAddButton>
                 </div>
                 {renderTabContent("communities", <CommunitiesTab />)}
               </TabsContent>
@@ -151,10 +150,10 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Premium Courses</h2>
                   <AdminAddButton 
-                    contentType="Course" 
-                    examType="IITM-BS"
-                    onAdd={() => handleAddContent("courses")} 
-                  />
+                    onAdd={() => handleAddContent("courses")}
+                  >
+                    Add Course
+                  </AdminAddButton>
                 </div>
                 <PaidCoursesTab />
               </TabsContent>
@@ -163,10 +162,10 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Syllabus</h2>
                   <AdminAddButton 
-                    contentType="Syllabus" 
-                    examType="IITM-BS"
-                    onAdd={() => handleAddContent("syllabus")} 
-                  />
+                    onAdd={() => handleAddContent("syllabus")}
+                  >
+                    Add Syllabus
+                  </AdminAddButton>
                 </div>
                 <SyllabusTab />
               </TabsContent>
@@ -175,10 +174,10 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">News & Updates</h2>
                   <AdminAddButton 
-                    contentType="News" 
-                    examType="IITM-BS"
-                    onAdd={() => handleAddContent("news")} 
-                  />
+                    onAdd={() => handleAddContent("news")}
+                  >
+                    Add News
+                  </AdminAddButton>
                 </div>
                 <NewsTab />
               </TabsContent>
@@ -187,10 +186,10 @@ const IITMBSPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Important Dates</h2>
                   <AdminAddButton 
-                    contentType="Important Date" 
-                    examType="IITM-BS"
-                    onAdd={() => handleAddContent("dates")} 
-                  />
+                    onAdd={() => handleAddContent("dates")}
+                  >
+                    Add Date
+                  </AdminAddButton>
                 </div>
                 <ImportantDatesTab />
               </TabsContent>

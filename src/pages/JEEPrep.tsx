@@ -111,10 +111,10 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
                   <AdminAddButton 
-                    contentType="Notes" 
-                    examType="JEE"
-                    onAdd={() => handleAddContent("notes")} 
-                  />
+                    onAdd={() => handleAddContent("notes")}
+                  >
+                    Add Notes
+                  </AdminAddButton>
                 </div>
                 
                 {/* Subject Filter Tabs */}
@@ -161,10 +161,10 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
                   <AdminAddButton 
-                    contentType="PYQs" 
-                    examType="JEE"
-                    onAdd={() => handleAddContent("pyqs")} 
-                  />
+                    onAdd={() => handleAddContent("pyqs")}
+                  >
+                    Add PYQs
+                  </AdminAddButton>
                 </div>
                 {renderTabContent("pyqs", <JEEPYQTab downloads={downloads} onDownload={handleDownload} />)}
               </TabsContent>
@@ -173,10 +173,10 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Study Groups</h2>
                   <AdminAddButton 
-                    contentType="Study Group" 
-                    examType="JEE"
-                    onAdd={() => handleAddContent("study-groups")} 
-                  />
+                    onAdd={() => handleAddContent("study-groups")}
+                  >
+                    Add Study Group
+                  </AdminAddButton>
                 </div>
                 {renderTabContent("study-groups", 
                   <div className="text-center py-8">
@@ -189,10 +189,10 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">News Updates</h2>
                   <AdminAddButton 
-                    contentType="News" 
-                    examType="JEE"
-                    onAdd={() => handleAddContent("news-updates")} 
-                  />
+                    onAdd={() => handleAddContent("news-updates")}
+                  >
+                    Add News
+                  </AdminAddButton>
                 </div>
                 {renderTabContent("news-updates", 
                   <div className="text-center py-8">
@@ -205,10 +205,10 @@ const JEEPrep = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Important Dates</h2>
                   <AdminAddButton 
-                    contentType="Important Date" 
-                    examType="JEE"
-                    onAdd={() => handleAddContent("important-dates")} 
-                  />
+                    onAdd={() => handleAddContent("important-dates")}
+                  >
+                    Add Date
+                  </AdminAddButton>
                 </div>
                 {renderTabContent("important-dates", 
                   <div className="text-center py-8">

@@ -4,24 +4,35 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 
 interface AdminAddButtonProps {
-  onClick: () => void;
-  children: React.ReactNode;
+  onClick?: () => void;
+  onAdd?: () => void;
+  children?: React.ReactNode;
   disabled?: boolean;
+  contentType?: string;
+  examType?: string;
 }
 
 const AdminAddButton: React.FC<AdminAddButtonProps> = ({ 
   onClick, 
+  onAdd,
   children, 
-  disabled = false 
+  disabled = false,
+  contentType,
+  examType
 }) => {
+  const handleClick = () => {
+    if (onClick) onClick();
+    if (onAdd) onAdd();
+  };
+
   return (
     <Button 
-      onClick={onClick} 
+      onClick={handleClick} 
       disabled={disabled}
       className="bg-royal hover:bg-royal-dark"
     >
       <Plus className="mr-2 h-4 w-4" />
-      {children}
+      {children || `Add ${contentType || 'Item'}`}
     </Button>
   );
 };
