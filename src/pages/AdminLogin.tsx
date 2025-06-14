@@ -16,15 +16,15 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
-    console.log('AdminLogin: checking auth state', { user: user?.email, isAdmin });
-    if (user && isAdmin) {
+    console.log('AdminLogin: checking auth state', { user: user?.email, isAdmin, authLoading });
+    if (!authLoading && user && isAdmin) {
       console.log('User is already authenticated and admin, redirecting to dashboard');
       navigate('/admin/dashboard');
     }
-  }, [user, isAdmin, navigate]);
+  }, [user, isAdmin, authLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +53,7 @@ const AdminLogin = () => {
       // Small delay to allow auth state to update
       setTimeout(() => {
         navigate('/admin/dashboard');
-      }, 500);
+      }, 1000);
 
     } catch (error: any) {
       console.error('Login failed:', error);
@@ -66,6 +66,17 @@ const AdminLogin = () => {
       setIsLoading(false);
     }
   };
+
+  // Don't render the login form if user is already authenticated
+  if (!authLoading && user && isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div className="text-center">
+          <p className="text-lg">Redirecting to admin dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -86,7 +97,7 @@ const AdminLogin = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@example.com"
+                placeholder="uiwebsite638@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('admin_users')
         .select('is_super_admin')
         .eq('email', user.email)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') {
         console.error('useAuth: Error checking admin_users:', error);
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('profiles')
         .select('role')
         .eq('email', user.email)
-        .single();
+        .maybeSingle();
       
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('useAuth: Error checking profiles:', profileError);
