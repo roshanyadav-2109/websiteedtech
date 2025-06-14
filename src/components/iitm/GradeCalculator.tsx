@@ -1,13 +1,10 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ALL_SUBJECTS } from "./data/subjectsData";
 import { calculateGradeByLevel, getGradeLetter, getGradePoints } from "./utils/gradeCalculations";
 import { Level } from "./types/gradeTypes";
+import SubjectSelector from "./components/SubjectSelector";
+import ScoreInputForm from "./components/ScoreInputForm";
 import GradeResult from "./components/GradeResult";
 
 interface GradeCalculatorProps {
@@ -58,55 +55,20 @@ export default function GradeCalculator({ level }: GradeCalculatorProps) {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="subject-select">Select Subject</Label>
-          <Select value={selectedSubject} onValueChange={handleSubjectChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Choose a subject" />
-            </SelectTrigger>
-            <SelectContent>
-              {subjects.map((subject) => (
-                <SelectItem key={subject.key} value={subject.key}>
-                  {subject.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <SubjectSelector
+          subjects={subjects}
+          selectedSubject={selectedSubject}
+          onSubjectChange={handleSubjectChange}
+        />
 
         {currentSubject && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">{currentSubject.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {currentSubject.fields.map((field) => (
-                  <div key={field.id} className="space-y-2">
-                    <Label htmlFor={field.id}>{field.label}</Label>
-                    <Input
-                      id={field.id}
-                      type="number"
-                      min={field.min}
-                      max={field.max}
-                      value={inputValues[field.id] || ""}
-                      onChange={(e) => handleInputChange(field.id, e.target.value)}
-                      placeholder={`Enter ${field.label.toLowerCase()}`}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex gap-2">
-                <Button onClick={calculateGrade} className="bg-royal hover:bg-royal-dark">
-                  Calculate Grade
-                </Button>
-                <Button variant="outline" onClick={resetCalculator}>
-                  Reset
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <ScoreInputForm
+            subject={currentSubject}
+            inputValues={inputValues}
+            onInputChange={handleInputChange}
+            onCalculate={calculateGrade}
+            onReset={resetCalculator}
+          />
         )}
 
         {result && <GradeResult result={result} />}
