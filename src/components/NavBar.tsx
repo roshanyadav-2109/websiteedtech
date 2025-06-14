@@ -60,13 +60,13 @@ const NavBar = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/jee-prep">JEE Preparation</Link>
+                  <Link to="/exam-preparation/jee">JEE Preparation</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/neet-prep">NEET Preparation</Link>
+                  <Link to="/exam-preparation/neet">NEET Preparation</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/iitm-bs-prep">IITM BS Preparation</Link>
+                  <Link to="/exam-preparation/iitm-bs">IITM BS Preparation</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -147,13 +147,13 @@ const NavBar = () => {
               <Link to="/exam-preparation" className="block px-3 py-2 text-gray-700 hover:text-royal">
                 Exam Preparation
               </Link>
-              <Link to="/jee-prep" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link to="/exam-preparation/jee" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
                 JEE Prep
               </Link>
-              <Link to="/neet-prep" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link to="/exam-preparation/neet" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
                 NEET Prep
               </Link>
-              <Link to="/iitm-bs-prep" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link to="/exam-preparation/iitm-bs" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
                 IITM BS Prep
               </Link>
               <Link to="/career" className="block px-3 py-2 text-gray-700 hover:text-royal">
