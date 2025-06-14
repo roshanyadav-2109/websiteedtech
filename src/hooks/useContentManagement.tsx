@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -127,7 +126,7 @@ export const useContentManagement = () => {
           title: "Success",
           description: "Note added successfully",
         });
-        await loadNotes(); // Refresh the list
+        await loadNotes(); // Refresh the list immediately
         return true;
       }
     } catch (error) {
@@ -169,7 +168,7 @@ export const useContentManagement = () => {
           title: "Success",
           description: "Previous year question added successfully",
         });
-        await loadPyqs(); // Refresh the list
+        await loadPyqs(); // Refresh the list immediately
         return true;
       }
     } catch (error) {

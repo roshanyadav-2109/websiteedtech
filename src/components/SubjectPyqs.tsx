@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download } from "lucide-react";
-import AdminAddButton from "@/components/admin/AdminAddButton";
 
 interface PyqSet {
   id: string;
@@ -79,14 +78,6 @@ const SubjectPyqs = ({
             </SelectContent>
           </Select>
         </div>
-        
-        <AdminAddButton 
-          contentType="pyqs"
-          examType={examType}
-          prefilledSubject={subject}
-        >
-          Add {subject} PYQs
-        </AdminAddButton>
       </div>
 
       <div className="mb-4">
