@@ -69,19 +69,177 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
   }, [prefilledSubject, examType, branch, level, classLevel]);
 
   const examTypes = ['IITM_BS', 'JEE', 'NEET'];
-  const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Botany', 'Zoology', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Programming', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals'];
   const classLevels = ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
   const branches = ['CSE', 'Physics', 'Mathematics', 'Data Science', 'Economics', 'Electronic Systems'];
   const groupTypes = ['Telegram', 'WhatsApp', 'Discord', 'Facebook'];
 
-  // Dynamic subject selection based on exam type
-  const getSubjectsForExamType = (examType: string) => {
+  // Electronic Systems subjects by level
+  const electronicSystemsSubjects = {
+    'Qualifier Level': [
+      'English I',
+      'Math for Electronics I', 
+      'Electronic Systems Thinking and Circuits',
+      'Introduction to C Programming'
+    ],
+    'Foundation Level': [
+      'English I',
+      'Math for Electronics I',
+      'English II',
+      'Electronic Systems Thinking and Circuits',
+      'Electronic Systems Thinking and Circuits Lab',
+      'Introduction to C Programming',
+      'C Programming Laboratory',
+      'Introduction to Linux and Programming',
+      'Linux Systems Laboratory',
+      'Digital Systems',
+      'Electrical and Electronic Circuits',
+      'Electronics Laboratory',
+      'Embedded C Programming',
+      'Embedded C Programming Laboratory'
+    ],
+    'Diploma Level': [
+      'Math for Electronics II',
+      'Signals and Systems',
+      'Analog Electronic Systems',
+      'Analog Electronics Laboratory',
+      'Python Programming',
+      'Digital System Design',
+      'Digital System Design Laboratory',
+      'Digital Signal Processing',
+      'Sensors and Applications',
+      'Sensors Laboratory',
+      'Control Engineering',
+      'Electronics System Project'
+    ],
+    'Degree Level': [
+      'Embedded Linux and FPGAs',
+      'Embedded Linux and FPGAs Lab',
+      'Electromagnetic Fields and Transmission Lines',
+      'Electronic Product Design',
+      'Computer Organisation',
+      'Strategies for Professional Growth',
+      'Probability and Statistics',
+      'Communication Systems',
+      'Internet of Things (IoT)',
+      'Semiconductor Devices and VLSI Technology',
+      'Analog Circuits',
+      'Digital IC Design',
+      'Power Management for Electronic Systems',
+      'Biomedical Electronic Systems',
+      'Operating Systems',
+      'Database Management Systems',
+      'Programming Data Structures and Algorithms using Python',
+      'Modern Application Development I',
+      'Machine Learning Foundation',
+      'Programming Concepts using Java',
+      'Modern Application Development II',
+      'Machine Learning Techniques',
+      'Machine Learning Practice',
+      'Deep Learning',
+      'Deep Learning for Computer Vision',
+      'Speech Technology',
+      'Deep Learning Practice',
+      'Industry 4.0',
+      'Design Thinking for Data-Driven App Development',
+      'Financial Forensics',
+      'Market Research',
+      'Game Theory and Strategy',
+      'Managerial Economics',
+      'Corporate Finance',
+      'Apprenticeship in Electronics Systems 1',
+      'Apprenticeship in Electronics Systems 2'
+    ]
+  };
+
+  // Data Science subjects by level
+  const dataScienceSubjects = {
+    'Qualifier Level': [
+      'English I',
+      'Mathematics for Data Science I',
+      'Statistics for Data Science I',
+      'Computational Thinking'
+    ],
+    'Foundation Level': [
+      'Mathematics for Data Science I',
+      'Statistics for Data Science I',
+      'Computational Thinking',
+      'English I',
+      'Mathematics for Data Science II',
+      'Statistics for Data Science II',
+      'Programming in Python',
+      'English II'
+    ],
+    'Diploma Level': [
+      'Database Management Systems',
+      'Programming, Data Structures and Algorithms using Python',
+      'Modern Application Development I',
+      'Modern Application Development I - Project',
+      'Programming Concepts using Java',
+      'Modern Application Development II',
+      'Modern Application Development II - Project',
+      'System Commands',
+      'Machine Learning Foundations',
+      'Business Data Management',
+      'Business Data Management - Project',
+      'Machine Learning Techniques',
+      'Machine Learning Practice',
+      'Machine Learning Practice - Project',
+      'Business Analytics',
+      'Tools in Data Science'
+    ],
+    'Degree Level': [
+      'Software Engineering',
+      'Software Testing',
+      'AI: Search Methods for Problem Solving',
+      'Deep Learning',
+      'Strategies for Professional Growth',
+      'Algorithmic Thinking in Bioinformatics',
+      'Big Data and Biological Networks',
+      'Data Visualization Design',
+      'Special topics in Machine Learning (Reinforcement Learning)',
+      'Speech Technology',
+      'Design Thinking for Data-Driven App Development',
+      'Industry 4.0',
+      'Sequential Decision Making',
+      'Market Research',
+      'Privacy & Security in Online Social Media',
+      'Introduction to Big Data',
+      'Financial Forensics',
+      'Linear Statistical Models',
+      'Advanced Algorithms',
+      'Statistical Computing',
+      'Computer Systems Design',
+      'Programming in C',
+      'Mathematical Thinking',
+      'Large Language Models',
+      'Introduction to Natural Language Processing (i-NLP)',
+      'Deep Learning for Computer Vision',
+      'Managerial Economics',
+      'Game Theory and Strategy',
+      'Corporate Finance',
+      'Deep Learning Practice',
+      'Operating Systems',
+      'Mathematical Foundations of Generative AI',
+      'Algorithms for Data Science (ADS)',
+      'Machine Learning Operations (MLOps)'
+    ]
+  };
+
+  // Dynamic subject selection based on exam type, branch, and level
+  const getSubjectsForExamType = (examType: string, branch?: string, level?: string) => {
     switch (examType) {
       case 'NEET':
         return ['Zoology', 'Botany', 'Inorganic Chemistry', 'Organic Chemistry', 'Physical Chemistry', 'Physics'];
       case 'JEE':
         return ['Mathematics', 'Inorganic Chemistry', 'Organic Chemistry', 'Physical Chemistry', 'Physics'];
       case 'IITM_BS':
+        if (branch === 'Electronic Systems' && level) {
+          return electronicSystemsSubjects[level as keyof typeof electronicSystemsSubjects] || [];
+        }
+        if (branch === 'Data Science' && level) {
+          return dataScienceSubjects[level as keyof typeof dataScienceSubjects] || [];
+        }
+        // Default IITM BS subjects for other branches
         return ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals', 'Programming'];
       default:
         return ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English', 'Botany', 'Zoology', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Programming', 'Linear Algebra', 'Machine Learning', 'Data Visualization', 'Circuit Analysis', 'Digital Electronics', 'Signals'];
@@ -95,7 +253,7 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
       case 'JEE':
         return ['11th', '12th'];
       case 'IITM_BS':
-        return ['Foundation Level', 'Diploma Level', 'Degree Level'];
+        return ['Qualifier Level', 'Foundation Level', 'Diploma Level', 'Degree Level'];
       default:
         return ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
     }
@@ -276,18 +434,69 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
                 </Select>
               </div>
               <div>
-                <Label htmlFor="subject">Subject</Label>
-                <Select value={formData.subject} onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}>
+                <Label htmlFor="class_level">Class Level</Label>
+                <Select 
+                  value={formData.class_level} 
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      class_level: value,
+                      subject: '' // Reset subject when class level changes for IITM_BS
+                    }));
+                  }}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select subject" />
+                    <SelectValue placeholder="Select class level" />
                   </SelectTrigger>
                   <SelectContent>
-                    {getSubjectsForExamType(formData.exam_type).map((subject) => (
-                      <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                    {getClassLevelsForExamType(formData.exam_type).map((level) => (
+                      <SelectItem key={level} value={level}>{level}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {formData.exam_type === 'IITM_BS' && (
+              <div>
+                <Label htmlFor="branch">Branch</Label>
+                <Select 
+                  value={formData.branch} 
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      branch: value,
+                      subject: '' // Reset subject when branch changes
+                    }));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select branch" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getIITMBranches().map((branch) => (
+                      <SelectItem key={branch} value={branch}>{branch}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="subject">Subject</Label>
+              <Select 
+                value={formData.subject} 
+                onValueChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  {getSubjectsForExamType(formData.exam_type, formData.branch, formData.class_level).map((subject) => (
+                    <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {contentType === 'pyqs' && (
@@ -304,37 +513,6 @@ const AdminContentDialog: React.FC<AdminContentDialogProps> = ({
                 />
               </div>
             )}
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="class_level">Class Level</Label>
-                <Select value={formData.class_level} onValueChange={(value) => setFormData(prev => ({ ...prev, class_level: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select class level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getClassLevelsForExamType(formData.exam_type).map((level) => (
-                      <SelectItem key={level} value={level}>{level}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {formData.exam_type === 'IITM_BS' && (
-                <div>
-                  <Label htmlFor="branch">Branch</Label>
-                  <Select value={formData.branch} onValueChange={(value) => setFormData(prev => ({ ...prev, branch: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select branch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getIITMBranches().map((branch) => (
-                        <SelectItem key={branch} value={branch}>{branch}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </div>
 
             {formData.exam_type === 'IITM_BS' && (
               <div>
