@@ -18,6 +18,7 @@ interface PYQ {
 
 const PYQsTab = () => {
   const [branch, setBranch] = useState("data-science");
+  // Add "qualifier" to default options
   const [level, setLevel] = useState("foundation");
   const [examType, setExamType] = useState("quiz1");
   const [year, setYear] = useState("2023");
@@ -30,14 +31,15 @@ const PYQsTab = () => {
     // ... keep existing code (download counts)
   });
   
+  // Add "qualifier" as a level. Add some sample PYQ for display if needed.
   const pyqs: PYQ[] = [
     // Data Science Foundation
     { id: "ds-f-q1-2023-prog1", title: "Quiz 1 Set A", description: "Python basics and algorithms", branch: "data-science", level: "foundation", examType: "quiz1", year: "2023" },
     { id: "ds-f-q1-2023-prog2", title: "Quiz 1 Set B", description: "Data structures in Python", branch: "data-science", level: "foundation", examType: "quiz1", year: "2023" },
-    
     { id: "ds-f-q2-2023-stats1", title: "Quiz 2 Set A", description: "Descriptive statistics", branch: "data-science", level: "foundation", examType: "quiz2", year: "2023" },
-    
-    { id: "es-f-q1-2023-circuit1", title: "Circuit Analysis Quiz 1", description: "Basic circuit laws", branch: "electronic-systems", level: "foundation", examType: "quiz1", year: "2023" }
+    { id: "es-f-q1-2023-circuit1", title: "Circuit Analysis Quiz 1", description: "Basic circuit laws", branch: "electronic-systems", level: "foundation", examType: "quiz1", year: "2023" },
+    // Example qualifier PYQ (update this as needed)
+    { id: "ds-q-2024-set1", title: "Qualifier 2024 Set 1", description: "Qualifier entrance paper", branch: "data-science", level: "qualifier", examType: "", year: "2024" }
   ];
   
   const handleDownload = (id: string) => {
@@ -47,18 +49,19 @@ const PYQsTab = () => {
     }));
   };
   
+  // Filtering: For qualifier, ignore examType
   const availableYears = [...new Set(pyqs
-    .filter(pyq => 
-      pyq.branch === branch && 
-      pyq.level === level && 
-      pyq.examType === examType
+    .filter(pyq =>
+      pyq.branch === branch &&
+      pyq.level === level &&
+      (level === "qualifier" ? true : pyq.examType === examType)
     )
     .map(pyq => pyq.year))];
-  
-  const filteredPYQs = pyqs.filter(pyq => 
-    pyq.branch === branch && 
-    pyq.level === level && 
-    pyq.examType === examType &&
+
+  const filteredPYQs = pyqs.filter(pyq =>
+    pyq.branch === branch &&
+    pyq.level === level &&
+    (level === "qualifier" ? true : pyq.examType === examType) &&
     pyq.year === year
   );
 
@@ -79,29 +82,32 @@ const PYQsTab = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
           <Tabs value={level} onValueChange={setLevel}>
-            <TabsList className="w-full grid grid-cols-3">
+            <TabsList className="w-full grid grid-cols-4">
               <TabsTrigger value="foundation">Foundation</TabsTrigger>
               <TabsTrigger value="diploma">Diploma</TabsTrigger>
               <TabsTrigger value="degree">Degree</TabsTrigger>
+              <TabsTrigger value="qualifier">Qualifier</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
       </div>
 
-      {/* Exam Type, Year and Add Button */}
+      {/* Exam Type (hidden for "qualifier"), Year selector and Add Button */}
       <div className="flex justify-between items-end mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Exam Type</label>
-            <Tabs value={examType} onValueChange={setExamType}>
-              <TabsList className="w-full grid grid-cols-3">
-                <TabsTrigger value="quiz1">Quiz 1</TabsTrigger>
-                <TabsTrigger value="quiz2">Quiz 2</TabsTrigger>
-                <TabsTrigger value="endterm">End Term</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          
+          {/* Hide EXAM TYPE selection if level is "qualifier" */}
+          {level !== "qualifier" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Exam Type</label>
+              <Tabs value={examType} onValueChange={setExamType}>
+                <TabsList className="w-full grid grid-cols-3">
+                  <TabsTrigger value="quiz1">Quiz 1</TabsTrigger>
+                  <TabsTrigger value="quiz2">Quiz 2</TabsTrigger>
+                  <TabsTrigger value="endterm">End Term</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
             <Select value={year} onValueChange={setYear} disabled={availableYears.length === 0}>

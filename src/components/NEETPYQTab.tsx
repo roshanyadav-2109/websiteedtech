@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,16 +60,6 @@ const NEETPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: NE
   return (
     <AuthWrapper>
       <div className="space-y-6">
-        {isAdmin && (
-          <div className="admin-only flex justify-between items-center p-4 bg-blue-50 rounded-lg">
-            <span className="text-blue-800 font-medium">Admin Mode: Manage NEET PYQs</span>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Add PYQ
-            </Button>
-          </div>
-        )}
-
         <div className="grid grid-cols-1 gap-4 max-w-xs">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
