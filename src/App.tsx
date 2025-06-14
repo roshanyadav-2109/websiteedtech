@@ -23,6 +23,7 @@ import Career from "./pages/Career";
 import NotFound from "./pages/NotFound";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import FAQ from "./pages/FAQ";
 import EmployeeVerification from "./pages/EmployeeVerification";
 import InternVerification from "./pages/InternVerification";
 
@@ -59,8 +60,9 @@ const App = () => (
               <Route path="/iitm-bs-prep" element={<IITMBSPrep />} />
               
               <Route path="/career" element={<Career />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/faq" element={<FAQ />} />
               <Route path="/employee-verification" element={<EmployeeVerification />} />
               <Route path="/intern-verification" element={<InternVerification />} />
               
