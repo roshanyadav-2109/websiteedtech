@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, Award, RefreshCw } from "lucide-react";
 import FoundationMarksPredictor from "./FoundationMarksPredictor";
 import DiplomaMarksPredictor from "./DiplomaMarksPredictor";
+import DegreeMarksPredictor from "./DegreeMarksPredictor";
 
 const FOUNDATION_SUBJECTS = [
   {
@@ -335,8 +336,15 @@ const IITMToolsTab = () => {
       id: "predictor",
       name: "Marks Predictor",
       icon: TrendingUp,
-      description: "Predict required marks based on CGPA",
+      description: "Predict required marks based on CGPA or for Foundation/Diploma subjects",
       needsFiltering: true
+    },
+    {
+      id: "degree-predictor",
+      name: "Degree Final Exam Predictor",
+      icon: Award,
+      description: "Find required final marks for Data Science Degree subjects",
+      needsFiltering: false
     }
   ];
 
@@ -572,6 +580,22 @@ const IITMToolsTab = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* DEGREE MARKS PREDICTOR */}
+      {activeTool === "degree-predictor" && (
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-indigo-600/10 to-royal/10">
+            <CardTitle className="flex items-center">
+              <Award className="mr-2 h-5 w-5 text-indigo-600" />
+              Degree Final Exam Marks Predictor
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="py-4">
+            <DegreeMarksPredictor />
+          </CardContent>
+        </Card>
+      )}
+
     </div>
   );
 };
