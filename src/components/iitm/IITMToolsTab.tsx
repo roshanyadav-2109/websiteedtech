@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, Award, RefreshCw } from "lucide-react";
 import FoundationMarksPredictor from "./FoundationMarksPredictor";
 import DiplomaMarksPredictor from "./DiplomaMarksPredictor";
+import DegreeMarksPredictor from "./DegreeMarksPredictor";
 
 const FOUNDATION_SUBJECTS = [
   {
@@ -396,7 +397,6 @@ const IITMToolsTab = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Levels</SelectItem>
-                    {/* Removed Qualifier level */}
                     <SelectItem value="foundation">Foundation</SelectItem>
                     <SelectItem value="diploma">Diploma</SelectItem>
                     <SelectItem value="degree">Degree</SelectItem>
@@ -562,11 +562,12 @@ const IITMToolsTab = () => {
             {branch === "data-science" && level === "foundation" ? (
               <FoundationMarksPredictor />
             ) : branch === "data-science" && level === "diploma" ? (
-              // NEW: Show diploma marks predictor
               <DiplomaMarksPredictor />
+            ) : branch === "data-science" && level === "degree" ? (
+              <DegreeMarksPredictor />
             ) : (
               <div className="text-center text-gray-600 text-lg pt-12 pb-16">
-                Marks predictor is only available for <span className="font-semibold">Foundation or Diploma subjects</span> of <span className="font-semibold">BS Data Science branch</span>.
+                Marks predictor is only available for <span className="font-semibold">Foundation, Diploma, or Degree subjects</span> of <span className="font-semibold">BS Data Science branch</span>.
               </div>
             )}
           </CardContent>
