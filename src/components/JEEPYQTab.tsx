@@ -59,7 +59,7 @@ const JEEPYQTab = ({ downloads, onDownload }: JEEPYQTabProps) => {
       .filter(pyq => pyq.year === year && pyq.subject === activeSubject)
       .map(pyq => pyq.session))];
     
-    setAvailableSessions(sessionsForYearAndSubject.length > 0 ? sessionsForYearAndSubject : ["January", "April"]);
+    setAvailableSessions(sessionsForYearAndSubject);
     
     if (!sessionsForYearAndSubject.includes(session) && sessionsForYearAndSubject.length > 0) {
       setSession(sessionsForYearAndSubject[0]);
@@ -88,7 +88,7 @@ const JEEPYQTab = ({ downloads, onDownload }: JEEPYQTabProps) => {
           </Tabs>
         </div>
 
-        {/* Filters and Add Button */}
+        {/* Filters and Subject-Specific Add Button */}
         <div className="flex justify-between items-end mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg">
             <div>
@@ -109,13 +109,16 @@ const JEEPYQTab = ({ downloads, onDownload }: JEEPYQTabProps) => {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
-              <Select value={session} onValueChange={setSession}>
+              <Select value={session} onValueChange={setSession} disabled={availableSessions.length === 0}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Session" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="January">January</SelectItem>
-                  <SelectItem value="April">April</SelectItem>
+                  {availableSessions.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

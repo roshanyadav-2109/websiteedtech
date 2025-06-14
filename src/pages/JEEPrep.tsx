@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -106,6 +105,12 @@ const JEEPrep = () => {
               <TabsContent value="notes">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
+                  <AdminAddButton 
+                    contentType="notes"
+                    examType="JEE"
+                  >
+                    Add Notes
+                  </AdminAddButton>
                 </div>
                 
                 {/* Subject Filter Tabs */}
@@ -151,6 +156,12 @@ const JEEPrep = () => {
               <TabsContent value="pyqs">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
+                  <AdminAddButton 
+                    contentType="pyqs"
+                    examType="JEE"
+                  >
+                    Add PYQs
+                  </AdminAddButton>
                 </div>
                 {renderTabContent("pyqs", <JEEPYQTab downloads={downloads} onDownload={handleDownload} />)}
               </TabsContent>
