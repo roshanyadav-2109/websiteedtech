@@ -232,7 +232,6 @@ const getEligibility = (courseKey: string, values: Record<string, number>): [boo
 export default function DiplomaMarksPredictor() {
   const [course, setCourse] = React.useState(COURSES[0].key);
   const [form, setForm] = React.useState<Record<string, string>>({});
-  const [desiredGrade, setDesiredGrade] = React.useState("Pass"); // Letter: Pass/D/C/B/A/S
 
   const subjectInfo = COURSES.find(c => c.key === course);
 
@@ -245,15 +244,24 @@ export default function DiplomaMarksPredictor() {
   // Eligibility for final exam
   const [eligible, eligMsg] = getEligibility(course, values);
 
-  // Calculate required F to PASS and for DESIRED GRADE
-  const minScore = GRADE_LEVELS.find(g => g.letter === "Pass")!.min;
-  const targetScore = GRADE_LEVELS.find(g => g.letter === desiredGrade)!.min;
-
+  // For showing in table, calculate required F for each grade and pass
+  const allGrades = [
+    { letter: "S", min: 90 },
+    { letter: "A", min: 80 },
+    { letter: "B", min: 70 },
+    { letter: "C", min: 60 },
+    { letter: "D", min: 50 },
+    { letter: "Pass", min: 40 },
+  ];
   // Business Analytics subject: F out of 40
   const Fmax = course === "ba" ? 40 : 100;
 
-  const requiredFForPass = requiredF(course, values, minScore);
-  const requiredFForTarget = requiredF(course, values, targetScore);
+  // Compute required F for each grade, in a row: [{letter, requiredF}]
+  const requiredFTable = allGrades.map(g => ({
+    letter: g.letter,
+    min: g.min,
+    requiredF: requiredF(course, values, g.min),
+  }));
 
   // Extra course grade eligibility info (not Pass/Fail; for higher grade award)
   let courseGradeInfo = "";
@@ -266,9 +274,9 @@ export default function DiplomaMarksPredictor() {
     if (GA < 30) courseGradeInfo = "Best 3/4 GA average must be at least 30 for course grade.";
     else courseGradeInfo = "Eligible for course grade (if end semester attended).";
   } else if (course === "ba") {
-    // End term score in F required >= 10/40
-    if ((requiredFForTarget ?? 0) < 10) courseGradeInfo = "Need at least 10/40 in End term exam for course grade.";
-    else courseGradeInfo = "Eligible for course grade (if end semester attended).";
+    // End term score in F required >= 10/40, but we report required F for each grade as per the table
+    // Just a tip to the user
+    courseGradeInfo = "Note: Need at least 10/40 in End term exam for course grade.";
   } else {
     courseGradeInfo = "Eligible for course grade (if end semester attended).";
   }
@@ -295,20 +303,6 @@ export default function DiplomaMarksPredictor() {
               </SelectContent>
             </Select>
           </div>
-          {/* Desired grade selector */}
-          <div>
-            <Label>Target Grade</Label>
-            <Select value={desiredGrade} onValueChange={setDesiredGrade}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {GRADE_LEVELS.map(g => (
-                  <SelectItem key={g.letter} value={g.letter}>{g.letter}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
           {/* Inputs except F */}
           {(subjectInfo?.fields || [])
             .filter(f => f.id !== "F")
@@ -328,24 +322,36 @@ export default function DiplomaMarksPredictor() {
             ))}
         </div>
         <div className={`p-3 rounded mb-3 ${eligible ? "bg-green-50 text-green-800" : "bg-yellow-50 text-yellow-800"}`}>{eligMsg}</div>
-        <div className="p-3 mb-3 rounded bg-amber-50 text-amber-900">
-          <div>Required <span className="font-bold">Final Exam (F)</span> score:</div>
-          <ul className="text-sm mt-1 ml-2 list-disc">
-            <li>
-              <span className="font-medium">To pass</span>: <span className={requiredFForPass == null ? "text-red-600 font-semibold" : ""}>
-                {requiredFForPass == null ? "Impossible" : `${requiredFForPass} /${Fmax}`}</span>
-            </li>
-            <li>
-              <span className="font-medium">To get grade '{desiredGrade}'</span>: <span className={requiredFForTarget == null ? "text-red-600 font-semibold" : ""}>
-                {requiredFForTarget == null ? "Impossible" : `${requiredFForTarget} /${Fmax}`}</span>
-            </li>
-          </ul>
-          <div className="text-xs mt-1 text-gray-500">
-            Shown scores are minimum F needed, assuming all other marks above are fixed.
+        <div className="mb-3">
+          <div className="font-semibold mb-2">Minimum Final Exam (F) score required for each grade (if eligible):</div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border bg-white rounded shadow">
+              <thead>
+                <tr className="bg-indigo-100">
+                  <th className="py-2 px-3 text-left">Grade</th>
+                  <th className="py-2 px-3 text-left">Minimum Total Score</th>
+                  <th className="py-2 px-3 text-left">Required F (out of {Fmax})</th>
+                </tr>
+              </thead>
+              <tbody>
+                {requiredFTable.map(row => (
+                  <tr key={row.letter} className="border-t">
+                    <td className="py-2 px-3 font-bold">{row.letter}</td>
+                    <td className="py-2 px-3">{row.min}</td>
+                    <td className="py-2 px-3">
+                      {row.requiredF == null ? <span className="text-red-600 font-semibold">Impossible</span> : `${row.requiredF} /${Fmax}`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="text-xs mt-2 text-gray-500">
+            Table shows the <b>minimum Final Exam (F) marks</b> needed to achieve each grade, according to current marks entered above. "Impossible" means it's not attainable.
           </div>
         </div>
         <div className="p-3 rounded bg-indigo-50 text-indigo-800 mb-3">{courseGradeInfo}</div>
-        <div className="text-xs text-gray-500">Enter your scores to see the predicted minimum F needed. Meets official IITM Diploma (DS) calculation rules (2025).</div>
+        <div className="text-xs text-gray-500">Enter your scores to see the predicted F needed for each grade. Meets official IITM Diploma (DS) calculation rules (2025).</div>
       </CardContent>
     </Card>
   );
