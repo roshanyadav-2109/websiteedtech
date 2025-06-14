@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -78,6 +79,44 @@ const JEEPrep = () => {
           </div>
         </section>
 
+        {/* Admin Controls Section */}
+        <section className="py-4 bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center gap-3">
+              <AdminAddButton 
+                contentType="notes"
+                examType="JEE"
+              >
+                Add Notes
+              </AdminAddButton>
+              <AdminAddButton 
+                contentType="pyqs"
+                examType="JEE"
+              >
+                Add PYQs
+              </AdminAddButton>
+              <AdminAddButton 
+                contentType="courses"
+                examType="JEE"
+              >
+                Add Course
+              </AdminAddButton>
+              <AdminAddButton 
+                contentType="news"
+                examType="JEE"
+              >
+                Add News
+              </AdminAddButton>
+              <AdminAddButton 
+                contentType="dates"
+                examType="JEE"
+              >
+                Add Important Date
+              </AdminAddButton>
+            </div>
+          </div>
+        </section>
+
         {/* Main Content */}
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,6 +128,9 @@ const JEEPrep = () => {
                   </TabsTrigger>
                   <TabsTrigger value="pyqs" className="rounded-md flex-shrink-0">
                     Previous Year Papers
+                  </TabsTrigger>
+                  <TabsTrigger value="courses" className="rounded-md flex-shrink-0">
+                    Courses
                   </TabsTrigger>
                   <TabsTrigger value="study-groups" className="rounded-md flex-shrink-0">
                     Study Groups
@@ -105,12 +147,6 @@ const JEEPrep = () => {
               <TabsContent value="notes">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
-                  <AdminAddButton 
-                    contentType="notes"
-                    examType="JEE"
-                  >
-                    Add Notes
-                  </AdminAddButton>
                 </div>
                 
                 {/* Subject Filter Tabs */}
@@ -156,25 +192,24 @@ const JEEPrep = () => {
               <TabsContent value="pyqs">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
-                  <AdminAddButton 
-                    contentType="pyqs"
-                    examType="JEE"
-                  >
-                    Add PYQs
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("pyqs", <JEEPYQTab downloads={downloads} onDownload={handleDownload} />)}
+              </TabsContent>
+
+              <TabsContent value="courses">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">JEE Courses</h2>
+                </div>
+                {renderTabContent("courses", 
+                  <div className="text-center py-8">
+                    <p className="text-gray-600">JEE courses feature coming soon...</p>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="study-groups">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Study Groups</h2>
-                  <AdminAddButton 
-                    contentType="communities"
-                    examType="JEE"
-                  >
-                    Add Study Group
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("study-groups", 
                   <div className="text-center py-8">
@@ -186,12 +221,6 @@ const JEEPrep = () => {
               <TabsContent value="news-updates">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">News Updates</h2>
-                  <AdminAddButton 
-                    contentType="news"
-                    examType="JEE"
-                  >
-                    Add News
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("news-updates", 
                   <div className="text-center py-8">
@@ -203,12 +232,6 @@ const JEEPrep = () => {
               <TabsContent value="important-dates">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Important Dates</h2>
-                  <AdminAddButton 
-                    contentType="dates"
-                    examType="JEE"
-                  >
-                    Add Date
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("important-dates", 
                   <div className="text-center py-8">
