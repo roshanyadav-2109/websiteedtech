@@ -600,9 +600,13 @@ const IITMToolsTab = () => {
                         max={field.max}
                         value={foundationInputs[field.id] ?? ""}
                         onChange={e => {
-                          let v = e.target.value === "" ? "" : Number(e.target.value);
-                          if (v === "" || (typeof v === "number" && !isNaN(v))) {
-                            setFoundationInputs(inputs => ({ ...inputs, [field.id]: v }));
+                          // Make sure v is always a number (default to 0 if empty or invalid)
+                          let v = e.target.value === "" ? 0 : Number(e.target.value);
+                          if (typeof v === "number" && !isNaN(v)) {
+                            setFoundationInputs(inputs => ({
+                              ...inputs,
+                              [field.id]: v
+                            }));
                           }
                         }}
                       />
@@ -627,12 +631,17 @@ const IITMToolsTab = () => {
                     const subjDef = getFoundationSubject(foundationSubject);
                     const formatted: Record<string, number> = {};
                     subjDef?.inputFields.forEach(f => {
-                      let v = Number(foundationInputs[f.id]) || 0;
+                      // Always produce a number (fallback 0) and clamp to min/max
+                      let vRaw = foundationInputs[f.id];
+                      let v = (typeof vRaw === "number" && !isNaN(vRaw)) ? vRaw : 0;
                       if (f.id === "Bonus") v = Math.max(0, Math.min(5, v));
                       else v = Math.max(f.min, Math.min(f.max, v));
                       formatted[f.id] = v;
                     });
-                    setFoundationInputs(inputs => ({ ...inputs, ...formatted }));
+                    setFoundationInputs((inputs) => ({
+                      ...inputs,
+                      ...formatted
+                    }));
                     // Predict required F and current possible T at F=0
                     const predF = predictRequiredF(foundationSubject, formatted, targetFinalScore);
                     setPredictedF(predF);
