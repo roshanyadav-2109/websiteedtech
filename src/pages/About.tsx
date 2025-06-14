@@ -1,36 +1,37 @@
+
 import React from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Building2, Users } from "lucide-react";
 
 const About = () => {
   const partners = [
     {
       name: "EduTech Solutions",
       description: "Educational technology for interactive learning",
-      image: "https://picsum.photos/100/100?random=1"
+      category: "EdTech"
     },
     {
       name: "CodeMentor",
       description: "Programming mentorship platform",
-      image: "https://picsum.photos/100/100?random=2"
+      category: "Mentorship"
     },
     {
       name: "MedPrep Institute",
       description: "Specialized medical entrance coaching",
-      image: "https://picsum.photos/100/100?random=3"
+      category: "Medical"
     },
     {
       name: "EngineeringHub",
       description: "Resources for engineering aspirants",
-      image: "https://picsum.photos/100/100?random=4"
+      category: "Engineering"
     },
     {
       name: "DataScience.ai",
       description: "Data science learning platform",
-      image: "https://picsum.photos/100/100?random=5"
+      category: "Technology"
     }
   ];
   
@@ -159,30 +160,49 @@ const About = () => {
           </div>
         </section>
 
-        {/* Our Partnerships */}
-        <section className="py-16 bg-gray-50">
+        {/* Our Partnerships - Enhanced Design */}
+        <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">Our Partnerships</h2>
-            <p className="text-center text-gray-600 max-w-2xl mx-auto mb-12">
-              Student-founded and partnered companies working to transform education
-            </p>
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-royal/10 rounded-full mb-6">
+                <Building2 className="w-8 h-8 text-royal" />
+              </div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Initiative Partners</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Student-founded and partnered companies working together to transform education and create opportunities
+              </p>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {partners.map((partner, index) => (
-                <Card key={index} className="border-none shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
-                  <div className="p-6 flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-full overflow-hidden mb-4 border-2 border-royal/20">
-                      <img 
-                        src={partner.image} 
-                        alt={partner.name} 
-                        className="w-full h-full object-cover"
-                      />
+                <Card key={index} className="group border-none shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden bg-white/80 backdrop-blur-sm hover:-translate-y-2">
+                  <CardContent className="p-8">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-royal to-royal-dark rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <Building2 className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-xs font-semibold px-3 py-1 bg-royal/10 text-royal rounded-full">
+                        {partner.category}
+                      </span>
                     </div>
-                    <h3 className="font-bold text-lg mb-2">{partner.name}</h3>
-                    <p className="text-gray-600 text-sm">{partner.description}</p>
-                  </div>
+                    <h3 className="font-bold text-xl mb-3 text-gray-900 group-hover:text-royal transition-colors duration-300">
+                      {partner.name}
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed mb-4">{partner.description}</p>
+                    <div className="flex items-center text-royal font-semibold text-sm group-hover:translate-x-2 transition-transform duration-300">
+                      Learn more
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </div>
+                  </CardContent>
                 </Card>
               ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <p className="text-gray-600 mb-6">Interested in partnering with us?</p>
+              <button className="bg-royal hover:bg-royal-dark text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300">
+                Become a Partner
+              </button>
             </div>
           </div>
         </section>
