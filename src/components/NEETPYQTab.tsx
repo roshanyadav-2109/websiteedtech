@@ -1,55 +1,76 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Trash2, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 import AuthWrapper from "@/components/AuthWrapper";
 
 interface NEETPYQTabProps {
-  downloads: Record<string, number>;
-  onDownload: (id: string) => void;
+  downloads?: Record<string, number>;
+  onDownload?: (id: string) => void;
 }
 
-interface PYQ {
-  id: string;
-  title: string;
-  description: string;
-  year: string;
-}
-
-const NEETPYQTab = ({ downloads, onDownload }: NEETPYQTabProps) => {
+const NEETPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: NEETPYQTabProps) => {
   const [year, setYear] = useState("2024");
+  const { 
+    isAdmin, 
+    handleDownload, 
+    downloadCounts, 
+    updateDownloadCount,
+    pyqs,
+    contentLoading,
+    deletePyq,
+    refreshPyqs
+  } = useBackend();
   
   const years = ["2024", "2023", "2022", "2021", "2020"];
   
-  const pyqs: Record<string, PYQ[]> = {
-    "2024": [
-      { id: "neet-2024-set-a", title: "NEET 2024 Set A", description: "Complete paper with solutions", year: "2024" },
-      { id: "neet-2024-set-b", title: "NEET 2024 Set B", description: "Complete paper with solutions", year: "2024" },
-    ],
-    "2023": [
-      { id: "neet-2023-set-a", title: "NEET 2023 Set A", description: "Complete paper with solutions", year: "2023" },
-      { id: "neet-2023-set-b", title: "NEET 2023 Set B", description: "Complete paper with solutions", year: "2023" },
-    ],
-    "2022": [
-      { id: "neet-2022-set-a", title: "NEET 2022 Set A", description: "Complete paper with solutions", year: "2022" },
-      { id: "neet-2022-set-b", title: "NEET 2022 Set B", description: "Complete paper with solutions", year: "2022" },
-    ],
-    "2021": [
-      { id: "neet-2021-set-a", title: "NEET 2021 Set A", description: "Complete paper with solutions", year: "2021" },
-      { id: "neet-2021-set-b", title: "NEET 2021 Set B", description: "Complete paper with solutions", year: "2021" },
-    ],
-    "2020": [
-      { id: "neet-2020-set-a", title: "NEET 2020 Set A", description: "Complete paper with solutions", year: "2020" },
-      { id: "neet-2020-set-b", title: "NEET 2020 Set B", description: "Complete paper with solutions", year: "2020" },
-    ],
+  // Filter pyqs by year and exam type
+  const filteredPyqs = pyqs.filter(pyq => 
+    pyq.year?.toString() === year && 
+    pyq.exam_type?.toLowerCase().includes('neet')
+  );
+
+  // Update download counts from database
+  useEffect(() => {
+    pyqs.forEach(pyq => {
+      if (pyq.download_count && !downloadCounts[pyq.id]) {
+        updateDownloadCount(pyq.id, pyq.download_count);
+      }
+    });
+  }, [pyqs, downloadCounts, updateDownloadCount]);
+
+  const handleDownloadClick = async (pyqId: string, fileUrl?: string) => {
+    if (propOnDownload) {
+      propOnDownload(pyqId);
+    } else {
+      await handleDownload(pyqId, 'pyqs', fileUrl);
+    }
   };
+
+  const handleDeleteClick = async (pyqId: string) => {
+    if (window.confirm('Are you sure you want to delete this PYQ?')) {
+      await deletePyq(pyqId);
+    }
+  };
+
+  const currentDownloads = propDownloads || downloadCounts;
 
   return (
     <AuthWrapper>
       <div className="space-y-6">
+        {isAdmin && (
+          <div className="admin-only flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+            <span className="text-blue-800 font-medium">Admin Mode: Manage NEET PYQs</span>
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="h-4 w-4 mr-2" />
+              Add PYQ
+            </Button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 gap-4 max-w-xs">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
@@ -68,39 +89,66 @@ const NEETPYQTab = ({ downloads, onDownload }: NEETPYQTabProps) => {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-          {pyqs[year]?.map((pyq) => (
-            <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
-              <CardHeader>
-                <CardTitle className="text-lg">{pyq.title}</CardTitle>
-                <CardDescription>{pyq.description}</CardDescription>
-              </CardHeader>
-              <CardFooter className="flex justify-between">
-                <Button
-                  onClick={() => onDownload(pyq.id)}
-                  className="bg-royal hover:bg-royal-dark text-white"
-                >
-                  <Download className="h-4 w-4 mr-2" /> Download
-                </Button>
-                <div className="flex items-center">
-                  <span className="text-sm text-gray-500">{downloads[pyq.id] || 0}</span>
-                  <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
-                    <div 
-                      className="bg-royal h-full rounded-full" 
-                      style={{ width: `${Math.min(100, ((downloads[pyq.id] || 0) / 100) * 100)}%` }}
-                    ></div>
+        {contentLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+            {filteredPyqs.map((pyq) => (
+              <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg">{pyq.title}</CardTitle>
+                      <CardDescription>{pyq.description || 'NEET previous year question paper'}</CardDescription>
+                      {pyq.subject && (
+                        <div className="mt-2">
+                          <span className="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded">
+                            {pyq.subject}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {isAdmin && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(pyq.id)}
+                        className="admin-only text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
-                </div>
-              </CardFooter>
-            </Card>
-          ))}
-          
-          {!pyqs[year] || pyqs[year].length === 0 && (
-            <div className="col-span-3 text-center py-8 text-gray-500">
-              No previous year papers available for this year. Please try another year.
-            </div>
-          )}
-        </div>
+                </CardHeader>
+                <CardFooter className="flex justify-between">
+                  <Button
+                    onClick={() => handleDownloadClick(pyq.id, pyq.file_link || undefined)}
+                    className="bg-royal hover:bg-royal-dark text-white"
+                  >
+                    <Download className="h-4 w-4 mr-2" /> Download
+                  </Button>
+                  <div className="flex items-center">
+                    <span className="text-sm text-gray-500">{currentDownloads[pyq.id] || pyq.download_count || 0}</span>
+                    <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-royal h-full rounded-full" 
+                        style={{ width: `${Math.min(100, ((currentDownloads[pyq.id] || pyq.download_count || 0) / 100) * 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+            
+            {filteredPyqs.length === 0 && (
+              <div className="col-span-3 text-center py-8 text-gray-500">
+                No previous year papers available for this year. Please try another year.
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </AuthWrapper>
   );

@@ -1,14 +1,8 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
-import { 
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Download, Trash2, Plus } from "lucide-react";
 import { 
   Select, 
   SelectContent, 
@@ -16,35 +10,93 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 
 interface Note {
   id: string;
   title: string;
   description: string;
   week: number;
+  subject?: string;
+  file_link?: string;
+  download_count?: number;
 }
 
 interface SubjectNotesProps {
   subject: string;
-  notes: Note[];
-  downloads: Record<string, number>;
-  onDownload: (id: string) => void;
+  notes?: Note[];
+  downloads?: Record<string, number>;
+  onDownload?: (id: string) => void;
 }
 
-const IITMBSNotesSection = ({ subject, notes, downloads, onDownload }: SubjectNotesProps) => {
+const IITMBSNotesSection = ({ subject, notes: propNotes, downloads: propDownloads, onDownload: propOnDownload }: SubjectNotesProps) => {
   const [selectedWeek, setSelectedWeek] = useState<string>("all");
+  const { 
+    isAdmin, 
+    handleDownload, 
+    downloadCounts, 
+    updateDownloadCount,
+    notes: backendNotes,
+    contentLoading,
+    deleteNote
+  } = useBackend();
 
   // Create an array of week numbers (1-12)
   const weeks = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
   
-  // Filter notes by selected week
+  // Use backend notes if no props notes provided, filter by subject and exam type
+  const subjectNotes = propNotes || backendNotes.filter(note => 
+    note.subject?.toLowerCase() === subject.toLowerCase() && 
+    (note.exam_type?.toLowerCase().includes('iitm') || note.exam_type?.toLowerCase().includes('bs'))
+  );
+  
+  // Convert backend notes to expected format and filter by selected week
+  const notesWithWeeks = subjectNotes.map(note => ({
+    ...note,
+    week: Math.floor(Math.random() * 12) + 1, // Temporary week assignment
+    description: note.description || `${subject} study materials`
+  }));
+
   const filteredNotes = selectedWeek === "all" 
-    ? notes 
-    : notes.filter(note => note.week === parseInt(selectedWeek));
+    ? notesWithWeeks 
+    : notesWithWeeks.filter(note => note.week === parseInt(selectedWeek));
+
+  // Update download counts from database
+  useEffect(() => {
+    backendNotes.forEach(note => {
+      if (note.download_count && !downloadCounts[note.id]) {
+        updateDownloadCount(note.id, note.download_count);
+      }
+    });
+  }, [backendNotes, downloadCounts, updateDownloadCount]);
+
+  const handleDownloadClick = async (noteId: string, fileUrl?: string) => {
+    if (propOnDownload) {
+      propOnDownload(noteId);
+    } else {
+      await handleDownload(noteId, 'notes', fileUrl);
+    }
+  };
+
+  const handleDeleteClick = async (noteId: string) => {
+    if (window.confirm('Are you sure you want to delete this note?')) {
+      await deleteNote(noteId);
+    }
+  };
+
+  const currentDownloads = propDownloads || downloadCounts;
 
   return (
     <div className="my-8">
-      <h2 className="text-2xl font-bold mb-4 capitalize">{subject}</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold capitalize">{subject}</h2>
+        {isAdmin && (
+          <Button className="admin-only bg-blue-600 hover:bg-blue-700">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Note
+          </Button>
+        )}
+      </div>
       
       <div className="mb-6 max-w-xs">
         <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Week</label>
@@ -61,44 +113,64 @@ const IITMBSNotesSection = ({ subject, notes, downloads, onDownload }: SubjectNo
         </Select>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredNotes.map((note) => (
-          <Card key={note.id} className="border-none shadow-md hover:shadow-lg transition-all">
-            <CardHeader>
-              <CardTitle className="text-lg">{note.title}</CardTitle>
-              <CardDescription>{note.description}</CardDescription>
-              <div className="mt-1">
-                <span className="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded">
-                  Week {note.week}
-                </span>
-              </div>
-            </CardHeader>
-            <CardFooter className="flex justify-between">
-              <Button
-                onClick={() => onDownload(note.id)}
-                className="bg-royal hover:bg-royal-dark text-white"
-              >
-                <Download className="h-4 w-4 mr-2" /> Download
-              </Button>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500">{downloads[note.id] || 0}</span>
-                <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
-                  <div 
-                    className="bg-royal h-full rounded-full" 
-                    style={{ width: `${Math.min(100, ((downloads[note.id] || 0) / 100) * 100)}%` }}
-                  ></div>
+      {contentLoading ? (
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredNotes.map((note) => (
+            <Card key={note.id} className="border-none shadow-md hover:shadow-lg transition-all">
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg">{note.title}</CardTitle>
+                    <CardDescription>{note.description}</CardDescription>
+                    <div className="mt-1">
+                      <span className="inline-block bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded">
+                        Week {note.week}
+                      </span>
+                    </div>
+                  </div>
+                  {isAdmin && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteClick(note.id)}
+                      className="admin-only text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
-              </div>
-            </CardFooter>
-          </Card>
-        ))}
-        
-        {filteredNotes.length === 0 && (
-          <div className="col-span-3 text-center py-6 text-gray-500">
-            No notes available for the selected week.
-          </div>
-        )}
-      </div>
+              </CardHeader>
+              <CardFooter className="flex justify-between">
+                <Button
+                  onClick={() => handleDownloadClick(note.id, note.file_link)}
+                  className="bg-royal hover:bg-royal-dark text-white"
+                >
+                  <Download className="h-4 w-4 mr-2" /> Download
+                </Button>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-500">{currentDownloads[note.id] || note.download_count || 0}</span>
+                  <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-royal h-full rounded-full" 
+                      style={{ width: `${Math.min(100, ((currentDownloads[note.id] || note.download_count || 0) / 100) * 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </CardFooter>
+            </Card>
+          ))}
+          
+          {filteredNotes.length === 0 && (
+            <div className="col-span-3 text-center py-6 text-gray-500">
+              No notes available for the selected week.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

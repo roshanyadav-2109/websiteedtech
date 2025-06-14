@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { BackendIntegratedWrapper } from "@/components/BackendIntegratedWrapper";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Courses from "./pages/Courses";
@@ -35,42 +36,44 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/auth/callback" element={<GoogleCallback />} />
-            <Route path="/student/login" element={<StudentLogin />} />
-            <Route path="/student/auth/callback" element={<StudentGoogleCallback />} />
-            <Route path="/profile/complete" element={<ProfileComplete />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/exam-preparation" element={<ExamPreparation />} />
-            
-            {/* Exam preparation pages with correct paths */}
-            <Route path="/jee-prep" element={<JEEPrep />} />
-            <Route path="/neet-prep" element={<NEETPrep />} />
-            <Route path="/iitm-bs-prep" element={<IITMBSPrep />} />
-            
-            <Route path="/career" element={<Career />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/employee-verification" element={<EmployeeVerification />} />
-            <Route path="/intern-verification" element={<InternVerification />} />
-            
-            {/* Admin routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/auth/callback" element={<AdminGoogleCallback />} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <BackendIntegratedWrapper>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<GoogleCallback />} />
+              <Route path="/student/login" element={<StudentLogin />} />
+              <Route path="/student/auth/callback" element={<StudentGoogleCallback />} />
+              <Route path="/profile/complete" element={<ProfileComplete />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/exam-preparation" element={<ExamPreparation />} />
+              
+              {/* Exam preparation pages with correct paths */}
+              <Route path="/jee-prep" element={<JEEPrep />} />
+              <Route path="/neet-prep" element={<NEETPrep />} />
+              <Route path="/iitm-bs-prep" element={<IITMBSPrep />} />
+              
+              <Route path="/career" element={<Career />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/employee-verification" element={<EmployeeVerification />} />
+              <Route path="/intern-verification" element={<InternVerification />} />
+              
+              {/* Admin routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/auth/callback" element={<AdminGoogleCallback />} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </BackendIntegratedWrapper>
     </AuthProvider>
   </QueryClientProvider>
 );

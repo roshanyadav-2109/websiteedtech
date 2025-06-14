@@ -182,36 +182,42 @@ export type Database = {
       important_dates: {
         Row: {
           branch: string | null
+          category: string | null
           created_at: string
           created_by: string | null
           date_value: string
           description: string | null
           exam_type: string | null
           id: string
+          is_highlighted: boolean | null
           level: string | null
           title: string
           updated_at: string
         }
         Insert: {
           branch?: string | null
+          category?: string | null
           created_at?: string
           created_by?: string | null
           date_value: string
           description?: string | null
           exam_type?: string | null
           id?: string
+          is_highlighted?: boolean | null
           level?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           branch?: string | null
+          category?: string | null
           created_at?: string
           created_by?: string | null
           date_value?: string
           description?: string | null
           exam_type?: string | null
           id?: string
+          is_highlighted?: boolean | null
           level?: string | null
           title?: string
           updated_at?: string
@@ -221,37 +227,52 @@ export type Database = {
       news_updates: {
         Row: {
           branch: string | null
+          category: string | null
           content: string
           created_at: string
           created_by: string | null
+          description: string | null
           exam_type: string | null
           id: string
+          is_active: boolean | null
           is_featured: boolean | null
+          is_important: boolean | null
           level: string | null
+          publish_date: string | null
           title: string
           updated_at: string
         }
         Insert: {
           branch?: string | null
+          category?: string | null
           content: string
           created_at?: string
           created_by?: string | null
+          description?: string | null
           exam_type?: string | null
           id?: string
+          is_active?: boolean | null
           is_featured?: boolean | null
+          is_important?: boolean | null
           level?: string | null
+          publish_date?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           branch?: string | null
+          category?: string | null
           content?: string
           created_at?: string
           created_by?: string | null
+          description?: string | null
           exam_type?: string | null
           id?: string
+          is_active?: boolean | null
           is_featured?: boolean | null
+          is_important?: boolean | null
           level?: string | null
+          publish_date?: string | null
           title?: string
           updated_at?: string
         }
@@ -265,12 +286,16 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          download_count: number | null
           exam_type: string | null
+          file_link: string | null
           id: string
+          is_active: boolean | null
           level: string | null
           subject: string | null
           title: string
           updated_at: string
+          upload_date: string | null
         }
         Insert: {
           branch?: string | null
@@ -279,12 +304,16 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          download_count?: number | null
           exam_type?: string | null
+          file_link?: string | null
           id?: string
+          is_active?: boolean | null
           level?: string | null
           subject?: string | null
           title: string
           updated_at?: string
+          upload_date?: string | null
         }
         Update: {
           branch?: string | null
@@ -293,12 +322,16 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          download_count?: number | null
           exam_type?: string | null
+          file_link?: string | null
           id?: string
+          is_active?: boolean | null
           level?: string | null
           subject?: string | null
           title?: string
           updated_at?: string
+          upload_date?: string | null
         }
         Relationships: []
       }
@@ -373,12 +406,16 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          download_count: number | null
           exam_type: string | null
+          file_link: string | null
           id: string
+          is_active: boolean | null
           level: string | null
           subject: string | null
           title: string
           updated_at: string
+          upload_date: string | null
           year: number | null
         }
         Insert: {
@@ -388,12 +425,16 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          download_count?: number | null
           exam_type?: string | null
+          file_link?: string | null
           id?: string
+          is_active?: boolean | null
           level?: string | null
           subject?: string | null
           title: string
           updated_at?: string
+          upload_date?: string | null
           year?: number | null
         }
         Update: {
@@ -403,12 +444,16 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          download_count?: number | null
           exam_type?: string | null
+          file_link?: string | null
           id?: string
+          is_active?: boolean | null
           level?: string | null
           subject?: string | null
           title?: string
           updated_at?: string
+          upload_date?: string | null
           year?: number | null
         }
         Relationships: []
@@ -490,7 +535,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      increment_download_count: {
+        Args: { table_name: string; content_id: string; user_email?: string }
+        Returns: undefined
+      }
       is_admin: {
+        Args: { user_email: string }
+        Returns: boolean
+      }
+      is_admin_user: {
         Args: { user_email: string }
         Returns: boolean
       }
