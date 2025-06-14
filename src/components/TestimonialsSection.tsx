@@ -97,7 +97,6 @@ const TestimonialsSection = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-royal/10 rounded-full mb-6">
             <Network className="w-8 h-8 text-royal" />
           </div>
-          <p className="text-lg font-semibold text-royal mb-2">20k+ Student Network</p>
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Student Voices</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Hear from students who transformed their academic journey with us and achieved their dreams

@@ -29,7 +29,7 @@ const features = [
   },
   {
     icon: Share2,
-    title: "5k+ Network",
+    title: "20k+ Network",
     description:
       "Strong community network of students and mentors.",
     color: "bg-[#F59E0B] text-white",
