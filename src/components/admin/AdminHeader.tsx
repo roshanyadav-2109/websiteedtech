@@ -2,13 +2,11 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, User } from 'lucide-react';
 
 const AdminHeader: React.FC = () => {
-  const { user, signOut } = useAuth();
-  const { isSuperAdmin } = useAdminCheck();
+  const { user, signOut, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
