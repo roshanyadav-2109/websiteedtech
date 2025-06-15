@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useDownloadHandler } from '@/hooks/useDownloadHandler';
 import { useContentManagement } from '@/hooks/useContentManagement';
+import { Course } from '@/components/admin/courses/types';
 
 interface BackendContextType {
   isAdmin: boolean;
@@ -14,7 +14,7 @@ interface BackendContextType {
   isDownloadCountsInitialized: boolean;
   notes: any[];
   pyqs: any[];
-  courses: any[];
+  courses: Course[];
   contentLoading: boolean;
   addNote: (noteData: any) => Promise<boolean>;
   addPyq: (pyqData: any) => Promise<boolean>;

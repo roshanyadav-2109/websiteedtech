@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { Course } from "./courses/types";
-import { useCoursesManager } from "@/hooks/useCoursesManager";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 import CourseForm, { CourseFormData } from "./courses/CourseForm";
 import CourseList from "./courses/CourseList";
 
@@ -33,7 +32,7 @@ const initialFormData: CourseFormData = {
 };
 
 const CoursesManagerTab = () => {
-  const { courses, isLoading, createCourse, updateCourse, deleteCourse } = useCoursesManager();
+  const { courses, contentLoading: isLoading, createCourse, updateCourse, deleteCourse } = useBackend();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [formData, setFormData] = useState<CourseFormData>(initialFormData);
