@@ -17,7 +17,26 @@ const keywordsToHighlight = [
   "work full-time",
   "work full time",
   "free",
-  "batch"
+  "batch",
+  "stuck in JEE",
+  "students really need",
+  "powerful",
+  "fresh start",
+  "enjoy studying",
+  "easier",
+  "well arranged",
+  "accurate",
+  "worked",
+  "included",
+  "cared",
+  "doable",
+  "good decision",
+  "real difference",
+  "huge difference",
+  "more than enough",
+  "confident",
+  "easy to access",
+  "sail through"
 ];
 
 export const TestimonialsColumn = (props: {
