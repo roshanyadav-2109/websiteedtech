@@ -45,8 +45,8 @@ const BranchNotesTab = () => {
         return;
       }
       // Map Supabase data to Note[]
-      const mappedNotes = (data || []).map((n: any) => {
-        // Extract week number from title if possible
+      const mappedNotes: Note[] = (data || []).map((n: any) => {
+        // Try to extract week number from title if present
         let weekNum = 1;
         const match = n.title?.match(/week\s*(\d+)/i);
         if (match) weekNum = parseInt(match[1], 10);
@@ -56,7 +56,7 @@ const BranchNotesTab = () => {
           title: n.title,
           description: n.description || "",
           week: weekNum,
-          downloads: n.download_count || 0,
+          downloads: n.download_count ?? 0,
           subject: n.subject || null,
         };
       });
@@ -275,14 +275,16 @@ const BranchNotesTab = () => {
   };
 
   const getNotesForSubject = (subjectId: string, subjectTitle: string) => {
-    // Prefer Supabase data for this subject if present
+    // Prefer Supabase notes for this subject if present
     let subjectNotes = notes.filter(
-      n => (n.subject?.toLowerCase() === subjectTitle.toLowerCase())
+      n =>
+        n.subject?.toLowerCase() === subjectTitle.toLowerCase() ||
+        n.title?.toLowerCase().includes(subjectTitle.toLowerCase())
     );
     if (subjectNotes.length > 0) {
       return subjectNotes;
     }
-    // fallback to old generated data
+    // fallback: generated notes for demo
     return generateSubjectNotes(subjectId, subjectTitle);
   };
 
