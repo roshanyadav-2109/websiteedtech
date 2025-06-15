@@ -23,6 +23,7 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [reloadFlag, setReloadFlag] = useState(0);
+  const reloadNotes = () => setReloadFlag((x) => x + 1);
 
   useEffect(() => {
     setLoading(true);
@@ -59,6 +60,24 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
     })();
   }, [branch, level, reloadFlag]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('iitm-branch-notes-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'iitm_branch_notes' },
+        (payload) => {
+          console.log('Real-time change detected in iitm_branch_notes:', payload);
+          reloadNotes();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const groupedNotes = notes.reduce((acc: Record<string, Note[]>, note) => {
     if (note.subject) {
       if (!acc[note.subject]) {
@@ -70,8 +89,6 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
   }, {});
 
   const getCurrentSubjects = () => Object.keys(groupedNotes).sort();
-
-  const reloadNotes = () => setReloadFlag((x) => x + 1);
 
   return { notes, loading, groupedNotes, getCurrentSubjects, reloadNotes };
 }
