@@ -407,6 +407,48 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
         ]
     }
   ],
+  "degree-electronic-systems": [
+    {
+      key: "computer_organization_es",
+      name: "Computer Organization",
+      fields: [
+        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "electromagnetic_fields_es",
+      name: "Electromagnetic Fields and Transmission Lines",
+      fields: [
+        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "electronic_product_design_es",
+      name: "Electronic Product Design",
+      fields: [
+        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "strat_prof_growth_es",
+      name: "Strategies for Professional Growth",
+      fields: [
+        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+        { id: "GP", label: "Group Project (GP)", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    }
+  ],
   degree: [
     {
       key: "software_testing",

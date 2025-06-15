@@ -107,12 +107,20 @@ export function calculateDegreeGrade(subjectKey: string, values: Record<string, 
   const { GAA = 0, GA = 0, Qz1 = 0, Qz2 = 0, Qz3 = 0, F = 0, Bonus = 0, GP1 = 0, GP2 = 0, PP = 0, CP = 0, GP = 0, OPPE1 = 0, OPPE2 = 0, GAAP = 0, NPPE1 = 0, NPPE2 = 0, NPPE3 = 0 } = values;
   
   switch (subjectKey) {
+    case "computer_organization_es":
+    case "electromagnetic_fields_es":
+    case "electronic_product_design_es": {
+      const part1 = 0.1 * GAA + 0.6 * F + 0.2 * Math.max(Qz1, Qz2);
+      const part2 = 0.1 * GAA + 0.4 * F + 0.2 * Qz1 + 0.3 * Qz2;
+      return Math.max(part1, part2);
+    }
     case "software_engineering":
       return 0.05 * GAA + 0.2 * Qz2 + 0.4 * F + 0.1 * GP1 + 0.1 * GP2 + 0.1 * PP + 0.05 * CP;
     case "deep_learning":
     case "ai_search":
       return 0.1 * GAA + 0.4 * F + 0.25 * Qz1 + 0.25 * Qz2 + Bonus;
     case "strat_prof_growth":
+    case "strat_prof_growth_es":
       return 0.15 * GAA + 0.25 * GP + 0.25 * Qz2 + 0.35 * F;
     case "int_bigdata":
       return 0.1 * GAA + 0.3 * F + 0.2 * OPPE1 + 0.4 * OPPE2;

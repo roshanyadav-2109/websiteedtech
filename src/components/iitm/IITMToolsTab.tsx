@@ -485,8 +485,9 @@ const IITMToolsTab = () => {
             ) : /* Diploma: Both Data Science and Electronic Systems */
             level === "diploma" && (branch === "data-science" || branch === "electronic-systems") ? (
               <DiplomaMarksPredictor branch={branch} level={level} />
-            ) : branch === "data-science" && level === "degree" ? (
-              <DegreeMarksPredictor />
+            ) : /* Degree: Both Data Science and Electronic Systems */
+            level === "degree" && (branch === "data-science" || branch === "electronic-systems") ? (
+              <DegreeMarksPredictor branch={branch} level={level} />
             ) : (
               <div className="text-center text-gray-600 text-lg pt-12 pb-16">
                 Marks predictor is available for:
@@ -495,7 +496,7 @@ const IITMToolsTab = () => {
                 <br />
                 • <span className="font-semibold">Diploma level</span> of both <span className="font-semibold">BS Data Science</span> and <span className="font-semibold">BS Electronic Systems</span>
                 <br />
-                • <span className="font-semibold">Degree level</span> of <span className="font-semibold">BS Data Science</span>
+                • <span className="font-semibold">Degree level</span> of both <span className="font-semibold">BS Data Science</span> and <span className="font-semibold">BS Electronic Systems</span>
               </div>
             )}
           </CardContent>

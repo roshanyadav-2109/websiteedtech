@@ -1,553 +1,238 @@
-import React from "react";
+
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import MarksSubjectSelector from "./components/MarksSubjectSelector";
-import MarksInputFields from "./components/MarksInputFields";
-import EligibilityChecker from "./components/EligibilityChecker";
-import GradeRequirementsTable from "./components/GradeRequirementsTable";
-import { gradeThresholds, parseNumOrZero, hasMarksEntered } from "./utils/marksCalculations";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ALL_SUBJECTS } from "./data/subjectsData";
+import { calculateDegreeGrade } from "./utils/gradeCalculations";
 
-const DEGREE_COURSES = [
-  {
-    key: "software_testing",
-    name: "Software Testing",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.25×Qz1 + 0.25×Qz2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "software_engineering",
-    name: "Software Engineering",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-      { id: "GP1", label: "Group Project 1", min: 0, max: 100 },
-      { id: "GP2", label: "Group Project 2", min: 0, max: 100 },
-      { id: "PP", label: "Project Presentation", min: 0, max: 100 },
-      { id: "CP", label: "Course Participation", min: 0, max: 100 }
-    ],
-    formula: "T = 0.05×GAA + 0.2×Qz2 + 0.4×F + 0.1×GP1 + 0.1×GP2 + 0.1×PP + 0.05×CP",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Submit GP1, GP2, GP3 (score > 0)"
-    ]
-  },
-  {
-    key: "deep_learning",
-    name: "Deep Learning",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-      { id: "Bonus", label: "Bonus (Programming Activities, max 5)", min: 0, max: 5 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.25×Qz1 + 0.25×Qz2 + Bonus",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "ai_search",
-    name: "AI: Search Methods for Problem Solving",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-      { id: "Bonus", label: "Bonus (Programming Assignment, max 5)", min: 0, max: 5 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.25×Qz1 + 0.25×Qz2 + Bonus",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "strat_prof_growth",
-    name: "Strategies for Professional Growth",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "GP", label: "Group Project (GP)", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.15×GAA + 0.25×GP + 0.25×Qz2 + 0.35×F",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)"
-    ]
-  },
-  {
-    key: "int_bigdata",
-    name: "Introduction to Big Data",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "OPPE1", label: "OPPE1", min: 0, max: 100 },
-      { id: "OPPE2", label: "OPPE2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.3×F + 0.2×OPPE1 + 0.4×OPPE2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "At least 40/100 in OPPE1 or OPPE2"
-    ]
-  },
-  {
-    key: "c_prog",
-    name: "Programming in C",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "GAAP", label: "Programming Assign. Avg (Best 7/8, GAAP)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "OPPE1", label: "OPPE1", min: 0, max: 100 },
-      { id: "OPPE2", label: "OPPE2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.05×GAA + 0.1×GAAP + 0.15×Qz1 + 0.2×OPPE1 + 0.2×OPPE2 + 0.3×F",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "At least 40/100 in OPPE1 or OPPE2"
-    ]
-  },
-  {
-    key: "dl_cv",
-    name: "Deep Learning for Computer Vision",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.25×Qz1 + 0.25×Qz2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "mgr_econ",
-    name: "Managerial Economics",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.25×Qz1 + 0.25×Qz2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "bioinfo",
-    name: "Algorithmic Thinking in Bioinformatics",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.2×GAA + 0.2×Qz1 + 0.2×Qz2 + 0.4×F",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "llm",
-    name: "Large Language Models",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-      { id: "Bonus", label: "Bonus (max 10)", min: 0, max: 10 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.25×Qz1 + 0.25×Qz2 + Bonus",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "speech_tech",
-    name: "Speech Technology",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "V", label: "Viva (V)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.15×GAA + 0.15×V + 0.3×F + 0.2×Qz1 + 0.2×Qz2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "design_thinking",
-    name: "Design Thinking for Data-Driven App Development",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "GP1", label: "Project 1 (GP1)", min: 0, max: 100 },
-      { id: "GP2", label: "Project 2 (GP2)", min: 0, max: 100 },
-      { id: "GP3", label: "Project 3 (GP3)", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.1×GP1 + 0.1×GP2 + 0.2×GP3 + 0.2×Qz2 + 0.3×F",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Final Project > 60/100"
-    ]
-  },
-  {
-    key: "market_research",
-    name: "Market Research",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-      { id: "P", label: "Project", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.2×Qz1 + 0.2×Qz2 + 0.25×P + 0.25×F",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "stat_computing",
-    name: "Statistical Computing",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.25×Qz1 + 0.25×Qz2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "adv_algo",
-    name: "Advanced Algorithms",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.15×GAA + 0.35×F + 0.25×Qz1 + 0.25×Qz2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "game_theory",
-    name: "Game Theory and Strategy",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.25×Qz1 + 0.25×Qz2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "csd",
-    name: "Computer System Design",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-      { id: "Circ", label: "Circuit Verse Assignment", min: 0, max: 100 }
-    ],
-    formula: "T = 0.1×GAA + 0.4×F + 0.2×Qz1 + 0.25×Qz2 + 0.05×Circ",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "dl_practice",
-    name: "Deep Learning Practice",
-    fields: [
-      { id: "GA", label: "Assignment Avg (Best 5/7, GA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-      { id: "Qz3", label: "Quiz 3", min: 0, max: 100 },
-      { id: "NPPE1", label: "NPPE 1", min: 0, max: 100 },
-      { id: "NPPE2", label: "NPPE 2", min: 0, max: 100 },
-      { id: "NPPE3", label: "NPPE 3", min: 0, max: 100 }
-    ],
-    formula:
-      "T = 0.2×GA + 0.15×Qz1 + 0.15×Qz2 + 0.15×Qz3 + 0.15×Best(NPPEs) + 0.1×SecondBest(NPPEs) + 0.1×Lowest(NPPEs)",
-    eligibility: [
-      "GA ≥ 40/100 (best 5/7)",
-      "Attend at least one quiz"
-    ]
-  },
-  {
-    key: "mf_genai",
-    name: "Math Foundations of Generative AI",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "Qz1", label: "Quiz 1", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 },
-      { id: "OPPE", label: "OPPE", min: 0, max: 100 }
-    ],
-    formula: "T = 0.2×GAA + 0.35×F + 0.1×Qz1 + 0.15×Qz2 + 0.2×OPPE",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)"
-    ]
-  },
-  {
-    key: "ads",
-    name: "Algorithms for Data Science (ADS)",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 2/3, GAA)", min: 0, max: 100 },
-      { id: "Qz2", label: "Quiz 2", min: 0, max: 100 }
-    ],
-    formula: "T = 0.2×GAA + 0.45×F + 0.35×Qz2",
-    eligibility: [
-      "GAA ≥ 40/100 (best 2/3)"
-    ]
-  },
-  {
-    key: "mlops",
-    name: "MLOPS",
-    fields: [
-      { id: "GAA", label: "Assignment Avg (Best 5/7, GAA)", min: 0, max: 100 },
-      { id: "OPPE1", label: "OPPE1", min: 0, max: 100 },
-      { id: "OPPE2", label: "OPPE2", min: 0, max: 100 },
-      { id: "Bonus", label: "Bonus", min: 0, max: 10 }
-    ],
-    formula: "T = 0.1×GAA + 0.3×F + 0.3×OPPE1 + 0.3×OPPE2 + Bonus",
-    eligibility: [
-      "GAA ≥ 40/100 (best 5/7)"
-    ]
-  }
-];
-
-// Per course, calculate T given values and F
-function calcScore(courseKey: string, values: Record<string, number>, F: number) {
-  switch (courseKey) {
-    case "software_testing":
-    case "dl_cv":
-    case "mgr_econ":
-    case "stat_computing":
-    case "game_theory":
-      // All: 0.1*GAA+0.4*F+0.25*Qz1+0.25*Qz2
-      return 0.1 * (values.GAA ?? 0) + 0.4 * F + 0.25 * (values.Qz1 ?? 0) + 0.25 * (values.Qz2 ?? 0);
-    case "deep_learning":
-    case "ai_search": {
-      // 0.1*GAA+0.4*F+0.25*Qz1+0.25*Qz2+Bonus
-      return 0.1 * (values.GAA ?? 0) + 0.4 * F + 0.25 * (values.Qz1 ?? 0) + 0.25 * (values.Qz2 ?? 0) + (values.Bonus ?? 0);
-    }
-    case "software_engineering":
-      return (
-        0.05 * (values.GAA ?? 0) +
-        0.2 * (values.Qz2 ?? 0) +
-        0.4 * F +
-        0.1 * (values.GP1 ?? 0) +
-        0.1 * (values.GP2 ?? 0) +
-        0.1 * (values.PP ?? 0) +
-        0.05 * (values.CP ?? 0)
-      );
-    case "strat_prof_growth":
-      return (
-        0.15 * (values.GAA ?? 0) +
-        0.25 * (values.GP ?? 0) +
-        0.25 * (values.Qz2 ?? 0) +
-        0.35 * F
-      );
-    case "int_bigdata":
-      return (
-        0.1 * (values.GAA ?? 0) +
-        0.3 * F +
-        0.2 * (values.OPPE1 ?? 0) +
-        0.4 * (values.OPPE2 ?? 0)
-      );
-    case "c_prog":
-      return (
-        0.05 * (values.GAA ?? 0) +
-        0.1 * (values.GAAP ?? 0) +
-        0.15 * (values.Qz1 ?? 0) +
-        0.2 * (values.OPPE1 ?? 0) +
-        0.2 * (values.OPPE2 ?? 0) +
-        0.3 * F
-      );
-    case "bioinfo":
-      return (
-        0.2 * (values.GAA ?? 0) +
-        0.2 * (values.Qz1 ?? 0) +
-        0.2 * (values.Qz2 ?? 0) +
-        0.4 * F
-      );
-    case "llm":
-      return (
-        0.1 * (values.GAA ?? 0) +
-        0.4 * F +
-        0.25 * (values.Qz1 ?? 0) +
-        0.25 * (values.Qz2 ?? 0) +
-        (values.Bonus ?? 0)
-      );
-    case "speech_tech":
-      return (
-        0.15 * (values.GAA ?? 0) +
-        0.15 * (values.V ?? 0) +
-        0.3 * F +
-        0.2 * (values.Qz1 ?? 0) +
-        0.2 * (values.Qz2 ?? 0)
-      );
-    case "design_thinking":
-      return (
-        0.1 * (values.GAA ?? 0) +
-        0.1 * (values.GP1 ?? 0) +
-        0.1 * (values.GP2 ?? 0) +
-        0.2 * (values.GP3 ?? 0) +
-        0.2 * (values.Qz2 ?? 0) +
-        0.3 * F
-      );
-    case "market_research":
-      return (
-        0.1 * (values.GAA ?? 0) +
-        0.2 * (values.Qz1 ?? 0) +
-        0.2 * (values.Qz2 ?? 0) +
-        0.25 * (values.P ?? 0) +
-        0.25 * F
-      );
-    case "adv_algo":
-      return (
-        0.15 * (values.GAA ?? 0) +
-        0.35 * F +
-        0.25 * (values.Qz1 ?? 0) +
-        0.25 * (values.Qz2 ?? 0)
-      );
-    case "csd":
-      return (
-        0.1 * (values.GAA ?? 0) +
-        0.4 * F +
-        0.2 * (values.Qz1 ?? 0) +
-        0.25 * (values.Qz2 ?? 0) +
-        0.05 * (values.Circ ?? 0)
-      );
-    case "dl_practice": {
-      const best = Math.max(values.NPPE1 ?? 0, values.NPPE2 ?? 0, values.NPPE3 ?? 0);
-      const arr = [values.NPPE1 ?? 0, values.NPPE2 ?? 0, values.NPPE3 ?? 0].sort((a, b) => b - a);
-      return (
-        0.2 * (values.GA ?? 0) +
-        0.15 * (values.Qz1 ?? 0) +
-        0.15 * (values.Qz2 ?? 0) +
-        0.15 * (values.Qz3 ?? 0) +
-        0.15 * arr[0] + 0.1 * arr[1] + 0.1 * arr[2]
-      );
-    }
-    case "mf_genai":
-      return (
-        0.2 * (values.GAA ?? 0) +
-        0.35 * F +
-        0.1 * (values.Qz1 ?? 0) +
-        0.15 * (values.Qz2 ?? 0) +
-        0.2 * (values.OPPE ?? 0)
-      );
-    case "ads":
-      return (
-        0.2 * (values.GAA ?? 0) +
-        0.45 * F +
-        0.35 * (values.Qz2 ?? 0)
-      );
-    case "mlops":
-      return (
-        0.1 * (values.GAA ?? 0) +
-        0.3 * F +
-        0.3 * (values.OPPE1 ?? 0) +
-        0.3 * (values.OPPE2 ?? 0) +
-        (values.Bonus ?? 0)
-      );
-    default:
-      return 0;
-  }
+interface DegreeMarksPredictorProps {
+  branch: string;
+  level: string;
 }
 
-// For each course & values (except F), and target T, what F is minimally required for that T?
-function requiredF(courseKey: string, values: Record<string, number>, targetT: number): number | null {
-  for (let F = 0; F <= 100; ++F) {
-    if (calcScore(courseKey, values, F) >= targetT) return F;
+const GRADES: [string, number][] = [
+  ["S", 90],
+  ["A", 80],
+  ["B", 70],
+  ["C", 60],
+  ["D", 50],
+  ["E", 40],
+];
+
+function calcRequiredF(subjectKey: string, inputs: Record<string, number>, targetT: number): number | null {
+  const clamp = (x: number, minv = 0, maxv = 100) => Math.max(minv, Math.min(maxv, x));
+
+  for (let F = 0; F <= 100; F++) {
+    const score = calculateDegreeGrade(subjectKey, { ...inputs, F });
+    if (score >= targetT) return clamp(F);
   }
   return null;
 }
 
-const getEligibility = (courseKey: string, values: Record<string, number>): [boolean, string] => {
-  // Only show common minimum: GAA or GA ≥ 40
-  let minGAAId = "GAA";
-  if (courseKey === "dl_practice") minGAAId = "GA";
-  const minGAA = values[minGAAId] ?? 0;
-  if (minGAA < 40) return [false, "Assignment average must be at least 40."];
-  // Most courses: require attendance of quiz
-  if (["software_testing", "deep_learning", "ai_search", "dl_cv", "mgr_econ", "bioinfo", "llm", "speech_tech", "market_research", "stat_computing", "adv_algo", "game_theory", "csd", "dl_practice"].includes(courseKey)) {
-    const Qz1 = values.Qz1 ?? 0, Qz2 = values.Qz2 ?? 0, Qz3 = values.Qz3 ?? 0;
-    if (Qz1 <= 0 && Qz2 <= 0 && Qz3 <= 0) return [false, "At least one quiz score must be entered (>0)."];
+function checkEligibility(subjectKey: string, inputs: Record<string, number>): string | null {
+  const GAA_val = inputs.GAA ?? inputs.GA ?? 0;
+  
+  if (GAA_val < 40) {
+    return "Eligibility: Assignment average must be at least 40/100 to appear for end term.";
   }
-  return [true, "Eligible for Final Exam"];
-};
+  
+  const quizSubjects = [
+      "computer_organization_es", "electromagnetic_fields_es", "electronic_product_design_es",
+      "software_testing", "deep_learning", "ai_search", "deep_learning_cv", "managerial_economics",
+      "algo_thinking_bio", "large_language_models", "speech_technology", "market_research",
+      "statistical_computing", "advanced_algorithms", "game_theory_strategy", "computer_system_design",
+      "deep_learning_practice"
+  ];
+  if (quizSubjects.includes(subjectKey)) {
+    if ((inputs.Qz1 ?? 0) <= 0 && (inputs.Qz2 ?? 0) <= 0 && (inputs.Qz3 ?? 0) <= 0) {
+        return "Eligibility: At least one quiz must be attended (>0).";
+    }
+  }
 
-export default function DegreeMarksPredictor() {
-  const [course, setCourse] = React.useState(DEGREE_COURSES[0].key);
-  const [form, setForm] = React.useState<Record<string, string>>({});
+  if (subjectKey === "int_bigdata" || subjectKey === "c_prog") {
+      if ((inputs.OPPE1 ?? 0) < 40 && (inputs.OPPE2 ?? 0) < 40) {
+          return "Note: To be eligible for a grade, at least one of OPPE1 or OPPE2 must be ≥ 40.";
+      }
+  }
 
-  const subject = DEGREE_COURSES.find((c) => c.key === course);
+  return null;
+}
 
-  // Compose numeric values except F
-  const values: Record<string, number> = {};
-  (subject?.fields || []).forEach(f => {
-    if (f.id !== "F") values[f.id] = parseNumOrZero(form[f.id]);
-  });
+export default function DegreeMarksPredictor({ branch, level }: DegreeMarksPredictorProps) {
+  const getSubjectsKey = () => {
+    if (branch === "electronic-systems" && level === "degree") {
+      return "degree-electronic-systems";
+    }
+    return "degree";
+  };
+  
+  const subjects = ALL_SUBJECTS[getSubjectsKey()] || [];
+  const [subjectKey, setSubjectKey] = useState(subjects[0]?.key || "");
+  const [inputs, setInputs] = useState<Record<string, string>>({});
 
-  // Only show table if a mark is entered
-  const markEntered = hasMarksEntered(form);
+  const subjectObj = useMemo(() => subjects.find(s => s.key === subjectKey), [subjects, subjectKey]);
 
-  // Eligibility
-  const [eligible, eligMsg] = getEligibility(course, values);
+  const numericInputs = useMemo(() => {
+    const numInputs: Record<string, number> = {};
+    if (subjectObj) {
+        subjectObj.fields.forEach(field => {
+            if (field.id !== 'F') {
+                const val = inputs[field.id] ?? "";
+                numInputs[field.id] = val === "" ? 0 : Math.max(field.min, Math.min(field.max, Number(val)));
+            }
+        });
+    }
+    return numInputs;
+  }, [inputs, subjectObj]);
 
-  // Required F table
-  const requiredTable = gradeThresholds.map((g) => ({
-    letter: g.letter,
-    min: g.min,
-    requiredF: requiredF(course, values, g.min)
-  }));
+  const eligibility = useMemo(() => subjectObj ? checkEligibility(subjectKey, numericInputs) : null, [subjectKey, numericInputs, subjectObj]);
+  
+  const GAA_val = numericInputs.GAA ?? numericInputs.GA ?? 0;
 
-  const resetForm = () => setForm({});
+  const currentScore = useMemo(() => subjectObj ? calculateDegreeGrade(subjectKey, { ...numericInputs, F: 0 }) : 0, [subjectKey, numericInputs, subjectObj]);
 
+  const requiredFs = useMemo(() => {
+    if (!subjectObj || GAA_val < 40) return null;
+    if (eligibility && eligibility.startsWith("Eligibility:")) return null;
+    
+    const out: { grade: string; mark: number | null; already: boolean }[] = [];
+    for (const [grade, threshold] of GRADES) {
+      if (currentScore >= threshold) {
+        out.push({ grade, mark: null, already: true });
+        continue;
+      }
+      const val = calcRequiredF(subjectKey, numericInputs, threshold);
+      out.push({
+        grade,
+        mark: val === null || val > 100 ? null : Math.ceil(val * 100) / 100,
+        already: false,
+      });
+    }
+    return out;
+  }, [subjectKey, numericInputs, GAA_val, currentScore, subjectObj, eligibility]);
+
+  const handleInput = (id: string, val: string) => {
+    if (/^(\d{0,3}(\.\d{0,2})?)?$/.test(val) || val === "") {
+      setInputs(prev => ({ ...prev, [id]: val }));
+    }
+  };
+
+  const handleSubjectChange = (newSubjectKey: string) => {
+    setSubjectKey(newSubjectKey);
+    setInputs({});
+  };
+  
+  React.useEffect(() => {
+      if (subjects.length > 0 && (!subjectKey || !subjects.find(s => s.key === subjectKey))) {
+        setSubjectKey(subjects[0].key);
+        setInputs({});
+      }
+  }, [subjects, subjectKey]);
+
+
+  if (!subjectObj) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center text-gray-600">
+            No subjects available for the selected branch and level combination.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Degree Final Exam Marks Predictor</CardTitle>
-        <div className="text-xs mt-2 text-gray-600">{subject?.formula}</div>
+        <CardTitle>Degree Subject Final Exam Marks Predictor</CardTitle>
+        <div className="text-sm text-gray-600">
+          {branch === "electronic-systems" ? "BS Electronic Systems" : "BS Data Science"} - Degree Level
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <MarksSubjectSelector
-            subjects={DEGREE_COURSES}
-            selectedSubject={course}
-            onSubjectChange={setCourse}
-            onFormReset={resetForm}
-          />
-          <MarksInputFields
-            fields={subject?.fields ?? []}
-            form={form}
-            onFormChange={setForm}
-          />
+        <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label>Subject</Label>
+            <Select value={subjectKey} onValueChange={handleSubjectChange}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {subjects.map(subj => (
+                  <SelectItem key={subj.key} value={subj.key}>{subj.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {subjectObj.fields.filter(f => f.id !== 'F').map(f => (
+            <div key={f.id}>
+              <Label>{f.label}</Label>
+              <Input
+                type="number"
+                min={f.min}
+                max={f.max}
+                value={inputs[f.id] ?? ""}
+                placeholder="0"
+                onChange={e => handleInput(f.id, e.target.value)}
+                inputMode="numeric"
+              />
+            </div>
+          ))}
         </div>
-        
-        <EligibilityChecker eligible={eligible} message={eligMsg} />
 
-        {markEntered && (
-          <GradeRequirementsTable requirements={requiredTable} />
+        {eligibility && eligibility.startsWith("Eligibility:") ? (
+          <div className="p-3 rounded bg-yellow-100 text-yellow-900 font-medium mb-4">
+            {eligibility}
+          </div>
+        ) : eligibility ? (
+          <div className="p-3 rounded bg-blue-100 text-blue-900 font-medium mb-4">
+            {eligibility}
+          </div>
+        ) : (
+          <div className="p-3 rounded bg-green-50 text-green-900 font-medium mb-4">
+            Eligible for end term!
+          </div>
         )}
+
+        {requiredFs && (
+          <div className="mb-4">
+            <h3 className="font-semibold mb-3">Required Final Exam Marks for Each Grade</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Grade</TableHead>
+                  <TableHead>Minimum Total Score</TableHead>
+                  <TableHead>Required Final Exam Marks (/100)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {requiredFs.map(({ grade, mark, already }) => (
+                  <TableRow key={grade}>
+                    <TableCell className="font-semibold">{grade}</TableCell>
+                    <TableCell>{GRADES.find(([g]) => g === grade)?.[1]}</TableCell>
+                    <TableCell>
+                      {already ? (
+                        <span className="text-green-700 font-semibold">Already scored</span>
+                      ) : mark === null ? (
+                        <span className="text-red-600 font-semibold">Not attainable</span>
+                      ) : (
+                        <span className="font-semibold">{mark}</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        <div className="mt-4 text-xs text-gray-500">
+          Enter your scores above to see the minimum Final Exam marks needed for each grade.
+        </div>
       </CardContent>
     </Card>
   );
