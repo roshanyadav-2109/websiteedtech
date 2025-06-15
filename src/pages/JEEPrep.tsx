@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import JEESubjectBlock from "@/components/JEESubjectBlock";
 import JEEPYQTab from "@/components/JEEPYQTab";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
-import AdminAddButton from "@/components/admin/AdminAddButton";
 
 const JEEPrep = () => {
   const [activeTab, setActiveTab] = useState("notes");
@@ -81,15 +80,7 @@ const JEEPrep = () => {
               </div>
 
               <TabsContent value="notes">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
-                  <AdminAddButton 
-                    contentType="notes"
-                    examType="JEE"
-                  >
-                    Add Notes
-                  </AdminAddButton>
-                </div>
+                <h2 className="text-2xl font-bold mb-4">Subject-wise Notes</h2>
                 
                 {/* Subject Filter Tabs */}
                 <div className="mb-6">
@@ -130,28 +121,12 @@ const JEEPrep = () => {
               </TabsContent>
 
               <TabsContent value="pyqs">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Previous Year Questions</h2>
-                  <AdminAddButton 
-                    contentType="pyqs"
-                    examType="JEE"
-                  >
-                    Add PYQs
-                  </AdminAddButton>
-                </div>
+                <h2 className="text-2xl font-bold mb-4">Previous Year Questions</h2>
                 {renderTabContent("pyqs", <JEEPYQTab downloads={downloads} onDownload={handleDownload} />)}
               </TabsContent>
 
               <TabsContent value="study-groups">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Study Groups</h2>
-                  <AdminAddButton 
-                    contentType="communities"
-                    examType="JEE"
-                  >
-                    Add Study Group
-                  </AdminAddButton>
-                </div>
+                <h2 className="text-2xl font-bold mb-4">Study Groups</h2>
                 {renderTabContent("study-groups", 
                   <div className="text-center py-8">
                     <p className="text-gray-600">Study groups feature coming soon...</p>
@@ -160,15 +135,7 @@ const JEEPrep = () => {
               </TabsContent>
 
               <TabsContent value="news-updates">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">News Updates</h2>
-                  <AdminAddButton 
-                    contentType="news"
-                    examType="JEE"
-                  >
-                    Add News
-                  </AdminAddButton>
-                </div>
+                <h2 className="text-2xl font-bold mb-4">News Updates</h2>
                 {renderTabContent("news-updates", 
                   <div className="text-center py-8">
                     <p className="text-gray-600">News updates feature coming soon...</p>
@@ -177,15 +144,7 @@ const JEEPrep = () => {
               </TabsContent>
 
               <TabsContent value="important-dates">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Important Dates</h2>
-                  <AdminAddButton 
-                    contentType="dates"
-                    examType="JEE"
-                  >
-                    Add Date
-                  </AdminAddButton>
-                </div>
+                <h2 className="text-2xl font-bold mb-4">Important Dates</h2>
                 {renderTabContent("important-dates", 
                   <div className="text-center py-8">
                     <p className="text-gray-600">Important dates feature coming soon...</p>
