@@ -1,11 +1,10 @@
+
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-// Import JEE components
-import JEESubjectBlock from "@/components/JEESubjectBlock";
+import SubjectBlock from "@/components/SubjectBlock";
 import JEEPYQTab from "@/components/JEEPYQTab";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
 
@@ -113,9 +112,10 @@ const JEEPrep = () => {
                 </div>
 
                 {renderTabContent("notes", 
-                  <JEESubjectBlock 
+                  <SubjectBlock 
                     subject={activeSubject} 
                     selectedClass={activeClass}
+                    examType="JEE"
                   />
                 )}
               </TabsContent>
