@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -28,7 +27,7 @@ export const usePyqsManager = () => {
   const [pyqs, setPyqs] = useState<PYQ[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchPyqs = useCallback(async () => {
+  const fetchPyqs = async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -48,7 +47,7 @@ export const usePyqsManager = () => {
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  };
 
   const addPyq = async (pyqData: Omit<PYQ, 'id' | 'download_count' | 'created_by' | 'is_active' | 'created_at'>): Promise<boolean> => {
     if (!user) {
@@ -127,23 +126,7 @@ export const usePyqsManager = () => {
 
   useEffect(() => {
     fetchPyqs();
-    
-    const channel = supabase
-      .channel('public:pyqs')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'pyqs' },
-        (payload) => {
-          console.log('Real-time change detected in pyqs, refetching...', payload);
-          fetchPyqs();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchPyqs]);
+  }, []);
 
   return {
     pyqs,
@@ -154,4 +137,3 @@ export const usePyqsManager = () => {
     fetchPyqs,
   };
 };
-
