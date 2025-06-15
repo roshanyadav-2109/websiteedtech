@@ -1,12 +1,8 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 
 // Import IITM BS components
 import BranchNotesTab from "@/components/iitm/BranchNotesTab";
@@ -21,7 +17,6 @@ import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
 import AdminAddButton from "@/components/admin/AdminAddButton";
 
 const IITMBSPrep = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("branch-notes");
 
   const renderTabContent = (tab: string, content: React.ReactNode) => {
@@ -45,24 +40,6 @@ const IITMBSPrep = () => {
             <p className="text-xl max-w-3xl mx-auto">
               Comprehensive resources to help you excel in your IIT Madras BS online degree program
             </p>
-          </div>
-        </section>
-
-        {/* Search Section */}
-        <section className="py-8 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center max-w-md mx-auto">
-              <Input
-                type="text"
-                placeholder="Search resources..."
-                className="w-full"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Button className="ml-2 bg-royal hover:bg-royal-dark">
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </section>
 

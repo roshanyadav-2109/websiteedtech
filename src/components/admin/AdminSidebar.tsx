@@ -12,7 +12,7 @@ import {
   GraduationCap,
   MessageSquare,
   UserCog,
-  Home
+  LayoutDashboard
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -22,7 +22,7 @@ interface AdminSidebarProps {
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActiveTab }) => {
   const menuItems = [
-    { id: "content-management", label: "Content Management", icon: Home },
+    { id: "content-management", label: "Content Management", icon: LayoutDashboard },
     { id: "courses", label: "Courses", icon: GraduationCap },
     { id: "notes", label: "Notes", icon: BookOpen },
     { id: "pyqs", label: "Previous Year Questions", icon: FileText },
