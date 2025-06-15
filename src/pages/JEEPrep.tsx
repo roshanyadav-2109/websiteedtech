@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
@@ -7,12 +6,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubjectBlock from "@/components/SubjectBlock";
 import JEEPYQTab from "@/components/JEEPYQTab";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 
 const JEEPrep = () => {
+  const { notes, contentLoading } = useBackend();
   const [activeTab, setActiveTab] = useState("notes");
+
+  const jeeNotes = useMemo(() => notes.filter(note => note.exam_type === 'JEE'), [notes]);
+
+  const subjects = useMemo(() => {
+    const preferredOrder = ["Physics", "Mathematics", "Physical Chemistry", "Inorganic Chemistry", "Organic Chemistry"];
+    const subjectSet = new Set(jeeNotes.map(note => note.subject).filter(Boolean) as string[]);
+    const sortedSubjects = preferredOrder.filter(s => subjectSet.has(s));
+    
+    Array.from(subjectSet).forEach(s => {
+        if (!sortedSubjects.includes(s)) {
+            sortedSubjects.push(s);
+        }
+    });
+
+    return sortedSubjects;
+  }, [jeeNotes]);
+
   const [activeSubject, setActiveSubject] = useState("Physics");
   const [activeClass, setActiveClass] = useState("class11");
   const [downloads, setDownloads] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    if (!contentLoading && subjects.length > 0 && !subjects.includes(activeSubject)) {
+      setActiveSubject(subjects[0]);
+    }
+  }, [contentLoading, subjects, activeSubject]);
 
   const handleDownload = (id: string) => {
     setDownloads(prev => ({
@@ -33,7 +57,6 @@ const JEEPrep = () => {
     return content;
   };
 
-  const subjects = ["Physics", "Mathematics", "Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry"];
   const classes = [
     { value: "class11", label: "Class 11" },
     { value: "class12", label: "Class 12" }
@@ -83,17 +106,23 @@ const JEEPrep = () => {
                 
                 {/* Subject Filter Tabs */}
                 <div className="mb-6">
-                  <Tabs value={activeSubject} onValueChange={setActiveSubject}>
-                    <div className="overflow-x-auto pb-2">
-                      <TabsList className="w-full min-w-fit">
-                        {subjects.map((subject) => (
-                          <TabsTrigger key={subject} value={subject} className="rounded-md flex-shrink-0">
-                            {subject}
-                          </TabsTrigger>
-                        ))}
-                      </TabsList>
-                    </div>
-                  </Tabs>
+                  {contentLoading && subjects.length === 0 ? (
+                     <div className="flex justify-center items-center py-4">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
+                     </div>
+                  ) : (
+                    <Tabs value={activeSubject} onValueChange={setActiveSubject}>
+                      <div className="overflow-x-auto pb-2">
+                        <TabsList className="w-full min-w-fit">
+                          {subjects.map((subject) => (
+                            <TabsTrigger key={subject} value={subject} className="rounded-md flex-shrink-0">
+                              {subject}
+                            </TabsTrigger>
+                          ))}
+                        </TabsList>
+                      </div>
+                    </Tabs>
+                  )}
                 </div>
 
                 {/* Class Filter */}
