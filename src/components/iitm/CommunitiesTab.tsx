@@ -1,107 +1,194 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Link as LinkIcon, BookOpen } from "lucide-react";
-import AuthWrapper from '@/components/AuthWrapper';
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, ExternalLink } from "lucide-react";
+import { useAuth } from '@/hooks/useAuth';
+
+interface Community {
+  id: string;
+  name: string;
+  description: string;
+  group_link: string;
+  group_type: string;
+  exam_type: string;
+  branch: string;
+  level: string;
+  subject: string;
+  member_count: number;
+  is_active: boolean;
+}
+
+interface UserProfile {
+  branch: string;
+  level: string;
+}
 
 const CommunitiesTab = () => {
-  const communityLinks = [
-    { title: "IITM BS Padhai Mitra", type: "WhatsApp", link: "https://chat.whatsapp.com/example1" },
-    { title: "Unknown IITians IITM BS Community", type: "Telegram", link: "https://t.me/example1" },
-  ];
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const { user } = useAuth();
 
-  const studyGuides = [
-    { title: "Foundation Level Guide", description: "Essential topics and approaches for foundation courses" },
-    { title: "Diploma Programming Guide", description: "Coding tips and practices for programming courses" },
-    { title: "BS Degree Preparation", description: "How to manage time and prepare for higher level courses" },
-    { title: "Qualifier Examination Strategy", description: "Strategic preparation for qualifier exams" },
-  ];
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('branch, level')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+        setUserProfile(data);
+      } catch (error: any) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    const fetchCommunities = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const { data, error } = await supabase
+          .from('communities')
+          .select('*')
+          .eq('is_active', true)
+          .or('exam_type.eq.IITM_BS,exam_type.is.null')
+          .order('member_count', { ascending: false });
+
+        if (error) throw error;
+        setCommunities(data || []);
+      } catch (error: any) {
+        setError("Failed to fetch communities. Please try again later.");
+        console.error("Error fetching communities:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+    fetchCommunities();
+  }, [user]);
+
+  const getFilteredCommunities = () => {
+    if (activeFilter === "all") return communities;
+    
+    if (activeFilter === "my-branch" && userProfile?.branch) {
+      return communities.filter(community => 
+        community.branch === userProfile.branch || !community.branch
+      );
+    }
+    
+    if (activeFilter === "my-level" && userProfile?.level) {
+      return communities.filter(community => 
+        community.level === userProfile.level || !community.level
+      );
+    }
+
+    return communities.filter(community => community.group_type === activeFilter);
+  };
+
+  const filteredCommunities = getFilteredCommunities();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">{error}</div>;
+  }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      <div className="lg:col-span-8">
-        <h3 className="text-2xl font-bold mb-6">Padhai Mitra Community Links</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {communityLinks.map((link, index) => (
-            <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
-              <CardHeader className="pb-2">
-                <div className="flex items-center">
-                  <div className="rounded-full bg-royal/10 p-2 mr-3">
-                    <Users className="h-5 w-5 text-royal" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg">{link.title}</CardTitle>
-                    <CardDescription>{link.type} Group</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardFooter>
-                <Button asChild className="w-full bg-royal hover:bg-royal-dark text-white">
-                  <a href={link.link} target="_blank" rel="noopener noreferrer">
-                    Join Group
-                  </a>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+    <div className="space-y-6">
+      {/* Filter Tabs */}
+      <Tabs value={activeFilter} onValueChange={setActiveFilter}>
+        <div className="overflow-x-auto pb-2">
+          <TabsList className="w-full min-w-fit">
+            <TabsTrigger value="all" className="rounded-md flex-shrink-0">
+              All Communities
+            </TabsTrigger>
+            {userProfile?.branch && (
+              <TabsTrigger value="my-branch" className="rounded-md flex-shrink-0">
+                My Branch ({userProfile.branch})
+              </TabsTrigger>
+            )}
+            {userProfile?.level && (
+              <TabsTrigger value="my-level" className="rounded-md flex-shrink-0">
+                My Level ({userProfile.level})
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="WhatsApp" className="rounded-md flex-shrink-0">
+              WhatsApp Groups
+            </TabsTrigger>
+            <TabsTrigger value="Telegram" className="rounded-md flex-shrink-0">
+              Telegram Groups
+            </TabsTrigger>
+            <TabsTrigger value="Discord" className="rounded-md flex-shrink-0">
+              Discord Servers
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </div>
 
-      <div className="lg:col-span-4">
-        <h3 className="text-2xl font-bold mb-6">IITM BS Telegram Community</h3>
-        <Card className="border-none shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-blue-50 to-indigo-50">
-          <CardHeader>
-            <div className="flex items-center">
-              <div className="rounded-full bg-blue-500 p-3 mr-4">
-                <LinkIcon className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <CardTitle>Official Telegram Group</CardTitle>
-                <CardDescription>Join our main community channel</CardDescription>
-              </div>
+        <TabsContent value={activeFilter}>
+          {filteredCommunities.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">No communities available for the selected filter.</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600">
-              Connect with fellow IITM BS students, share resources, and get your doubts resolved in our official Telegram community
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button asChild className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-              <a href="https://t.me/example-iitmbs" target="_blank" rel="noopener noreferrer">
-                Join Telegram Group
-              </a>
-            </Button>
-          </CardFooter>
-        </Card>
-
-        <div className="mt-6">
-          <h3 className="text-2xl font-bold mb-6">Study Guides</h3>
-          <div className="grid grid-cols-1 gap-4">
-            {studyGuides.map((guide, index) => (
-              <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center">
-                    <div className="rounded-full bg-royal/10 p-2 mr-3">
-                      <BookOpen className="h-5 w-5 text-royal" />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredCommunities.map((community) => (
+                <Card key={community.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center">
+                        <div className="rounded-full bg-royal/10 p-2 mr-3">
+                          <Users className="h-5 w-5 text-royal" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">{community.name}</CardTitle>
+                          <CardDescription>{community.group_type} Group</CardDescription>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle className="text-lg">{guide.title}</CardTitle>
-                      <CardDescription>{guide.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {community.description && (
+                      <p className="text-sm text-gray-600 mb-2">{community.description}</p>
+                    )}
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {community.branch && <Badge variant="outline">{community.branch}</Badge>}
+                      {community.level && <Badge variant="outline">{community.level}</Badge>}
+                      {community.subject && <Badge variant="secondary">{community.subject}</Badge>}
                     </div>
-                  </div>
-                </CardHeader>
-                <CardFooter>
-                  <Button className="w-full bg-royal hover:bg-royal-dark text-white">
-                    Download Guide
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
+                    {community.member_count > 0 && (
+                      <p className="text-xs text-gray-500">{community.member_count} members</p>
+                    )}
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild className="w-full bg-royal hover:bg-royal-dark text-white">
+                      <a href={community.group_link} target="_blank" rel="noopener noreferrer">
+                        Join Group <ExternalLink className="h-4 w-4 ml-2" />
+                      </a>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -1,110 +1,131 @@
 
-import React from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Calendar } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
-interface NewsItem {
+interface News {
   id: string;
   title: string;
   description: string;
-  date: string;
-  category: string;
-  link: string;
+  content: string;
+  exam_type: string;
+  tag: string;
+  date_time: string;
+  is_featured: boolean;
+  is_important: boolean;
+  branch: string;
+  level: string;
 }
 
 const NewsTab = () => {
-  const [newsItems] = React.useState<NewsItem[]>([
-    {
-      id: "news-1",
-      title: "Applications Open for July 2025 Cohort",
-      description: "IIT Madras is now accepting applications for the July 2025 cohort of the BS in Data Science and Applications program.",
-      date: "2025-04-01",
-      category: "admissions",
-      link: "#"
-    },
-    {
-      id: "news-2",
-      title: "New Specializations Announced",
-      description: "Two new specializations in AI and IoT have been announced for the diploma level of the program.",
-      date: "2025-03-15",
-      category: "curriculum",
-      link: "#"
-    },
-    {
-      id: "news-3",
-      title: "Scholarship Applications Now Open",
-      description: "Merit-based and need-based scholarships for the next academic year are now open for applications.",
-      date: "2025-03-10",
-      category: "scholarships",
-      link: "#"
-    },
-    {
-      id: "news-4",
-      title: "Industry Partnership with Microsoft",
-      description: "IIT Madras has partnered with Microsoft to offer specialized workshops and internship opportunities.",
-      date: "2025-02-28",
-      category: "partnerships",
-      link: "#"
-    },
-    {
-      id: "news-5",
-      title: "Alumni Placement Report 2024",
-      description: "The placement report for the 2024 graduating class shows impressive statistics with top companies.",
-      date: "2025-02-15",
-      category: "placements",
-      link: "#"
-    },
-    {
-      id: "news-6",
-      title: "Research Opportunities for BS Students",
-      description: "New research projects open for BS degree students in collaboration with industry partners.",
-      date: "2025-01-30",
-      category: "research",
-      link: "#"
+  const [news, setNews] = useState<News[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const { data, error } = await supabase
+          .from('news_updates')
+          .select('*')
+          .eq('is_active', true)
+          .or('exam_type.eq.IITM_BS,exam_type.is.null')
+          .order('date_time', { ascending: false });
+
+        if (error) throw error;
+        setNews(data || []);
+      } catch (error: any) {
+        setError("Failed to fetch news updates. Please try again later.");
+        console.error("Error fetching news updates:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
+  const toggleExpanded = (id: string) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
     }
-  ]);
+    setExpandedItems(newExpanded);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">{error}</div>;
+  }
   
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {newsItems.map((item) => (
-          <Card key={item.id} className="border-none shadow-md hover:shadow-lg transition-all">
-            <CardHeader>
-              <div className="flex justify-between items-start mb-2">
-                <Badge className={`
-                  ${item.category === 'admissions' ? 'bg-blue-100 text-blue-800' : ''}
-                  ${item.category === 'curriculum' ? 'bg-purple-100 text-purple-800' : ''}
-                  ${item.category === 'scholarships' ? 'bg-green-100 text-green-800' : ''}
-                  ${item.category === 'partnerships' ? 'bg-yellow-100 text-yellow-800' : ''}
-                  ${item.category === 'placements' ? 'bg-pink-100 text-pink-800' : ''}
-                  ${item.category === 'research' ? 'bg-indigo-100 text-indigo-800' : ''}
-                `}>
-                  {item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-                </Badge>
-                <div className="flex items-center text-gray-500 text-sm">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  {new Date(item.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
+    <div className="space-y-4">
+      {news.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-gray-600">No news updates available for IITM BS at the moment.</p>
+        </div>
+      ) : (
+        news.map((newsItem) => (
+          <Card key={newsItem.id}>
+            <Collapsible onOpenChange={() => toggleExpanded(newsItem.id)}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="flex flex-wrap items-center gap-2 text-lg">
+                      {newsItem.title}
+                      {newsItem.tag && <Badge variant="secondary">{newsItem.tag}</Badge>}
+                      {newsItem.branch && <Badge variant="outline">{newsItem.branch}</Badge>}
+                      {newsItem.level && <Badge variant="outline">{newsItem.level}</Badge>}
+                      {newsItem.is_featured && <Badge className="bg-yellow-500 text-white">Featured</Badge>}
+                      {newsItem.is_important && <Badge className="bg-red-500 text-white">Important</Badge>}
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      {newsItem.description}
+                      {newsItem.date_time && (
+                        <span className="ml-2 text-xs text-gray-500">
+                          {new Date(newsItem.date_time).toLocaleString()}
+                        </span>
+                      )}
+                    </CardDescription>
+                  </div>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      {expandedItems.has(newsItem.id) ? 
+                        <ChevronDown className="h-4 w-4" /> : 
+                        <ChevronRight className="h-4 w-4" />
+                      }
+                      <span className="sr-only">Toggle content</span>
+                    </Button>
+                  </CollapsibleTrigger>
                 </div>
-              </div>
-              <CardTitle className="text-lg">{item.title}</CardTitle>
-              <CardDescription>{item.description}</CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <Button asChild variant="outline" className="w-full">
-                <a href={item.link} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4 mr-2" /> Read More
-                </a>
-              </Button>
-            </CardFooter>
+              </CardHeader>
+              <CollapsibleContent>
+                <CardContent>
+                  <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                    {newsItem.content}
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
           </Card>
-        ))}
-      </div>
+        ))
+      )}
     </div>
   );
 };
