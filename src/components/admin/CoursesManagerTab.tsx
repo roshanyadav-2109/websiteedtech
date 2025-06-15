@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,16 +15,22 @@ interface Course {
   id: string;
   title: string;
   description: string;
-  category: string;
+  exam_category: string | null;
   price: number;
-  discounted_price?: number;
+  discounted_price: number | null;
   duration: string;
-  features: string[];
-  image_url?: string;
-  bestseller: boolean;
-  students: number;
-  rating: number;
+  features: string[] | null;
+  image_url: string | null;
+  bestseller: boolean | null;
+  students: number | null;
+  rating: number | null;
   created_at: string;
+  subject: string | null;
+  start_date: string | null;
+  course_type: string | null;
+  branch: string | null;
+  level: string | null;
+  enroll_now_link: string | null;
 }
 
 const CoursesManagerTab = () => {
@@ -38,16 +43,25 @@ const CoursesManagerTab = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: '',
+    exam_category: '',
     price: '',
     discounted_price: '',
     duration: '',
     features: '',
     image_url: '',
     bestseller: false,
+    subject: '',
+    start_date: '',
+    course_type: '',
+    branch: '',
+    level: '',
+    enroll_now_link: '',
   });
 
-  const categories = ['IITM BS', 'JEE', 'NEET', 'General'];
+  const examCategories = ['IITM BS', 'JEE', 'NEET'];
+  const courseTypes = ['Regular', 'Gold'];
+  const iitmBranches = ['Data Science', 'Electronic System'];
+  const iitmLevels = ['Qualifier', 'Foundation', 'Diploma', 'Degree'];
 
   const fetchCourses = async () => {
     try {
@@ -75,13 +89,19 @@ const CoursesManagerTab = () => {
     setFormData({
       title: '',
       description: '',
-      category: '',
+      exam_category: '',
       price: '',
       discounted_price: '',
       duration: '',
       features: '',
       image_url: '',
       bestseller: false,
+      subject: '',
+      start_date: '',
+      course_type: '',
+      branch: '',
+      level: '',
+      enroll_now_link: '',
     });
     setEditingCourse(null);
   };
@@ -94,13 +114,19 @@ const CoursesManagerTab = () => {
       const courseData = {
         title: formData.title,
         description: formData.description,
-        category: formData.category,
+        exam_category: formData.exam_category || null,
         price: parseFloat(formData.price),
         discounted_price: formData.discounted_price ? parseFloat(formData.discounted_price) : null,
         duration: formData.duration,
         features: formData.features.split('\n').filter(f => f.trim()),
         image_url: formData.image_url || null,
         bestseller: formData.bestseller,
+        subject: formData.subject || null,
+        start_date: formData.start_date || null,
+        course_type: formData.course_type || null,
+        branch: formData.exam_category === 'IITM BS' ? (formData.branch || null) : null,
+        level: formData.exam_category === 'IITM BS' ? (formData.level || null) : null,
+        enroll_now_link: formData.enroll_now_link || null,
       };
 
       if (editingCourse) {
@@ -139,13 +165,19 @@ const CoursesManagerTab = () => {
     setFormData({
       title: course.title,
       description: course.description,
-      category: course.category,
+      exam_category: course.exam_category || '',
       price: course.price.toString(),
       discounted_price: course.discounted_price?.toString() || '',
       duration: course.duration,
-      features: course.features.join('\n'),
+      features: course.features?.join('\n') || '',
       image_url: course.image_url || '',
-      bestseller: course.bestseller,
+      bestseller: course.bestseller || false,
+      subject: course.subject || '',
+      start_date: course.start_date ? course.start_date.split('T')[0] : '', // Format for date input
+      course_type: course.course_type || '',
+      branch: course.branch || '',
+      level: course.level || '',
+      enroll_now_link: course.enroll_now_link || '',
     });
     setIsDialogOpen(true);
   };
@@ -181,7 +213,7 @@ const CoursesManagerTab = () => {
               <Plus className="mr-2 h-4 w-4" /> Add New Course
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingCourse ? 'Edit Course' : 'Add New Course'}</DialogTitle>
               <DialogDescription>
@@ -189,7 +221,7 @@ const CoursesManagerTab = () => {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="title">Course Title</Label>
                   <Input
@@ -200,20 +232,15 @@ const CoursesManagerTab = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="subject">Subject</Label>
+                  <Input
+                    id="subject"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  />
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -224,9 +251,9 @@ const CoursesManagerTab = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="price">Price (₹)</Label>
+                  <Label htmlFor="price">Original Price (₹)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -256,6 +283,75 @@ const CoursesManagerTab = () => {
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="start_date">Start Date</Label>
+                  <Input
+                    id="start_date"
+                    type="date"
+                    value={formData.start_date}
+                    onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                  />
+                </div>
+                 <div>
+                  <Label htmlFor="course_type">Course Type</Label>
+                  <Select value={formData.course_type} onValueChange={(value) => setFormData({ ...formData, course_type: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select course type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {courseTypes.map((type) => (
+                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="exam_category">Exam Category</Label>
+                  <Select value={formData.exam_category} onValueChange={(value) => setFormData({ ...formData, exam_category: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select exam category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {examCategories.map((cat) => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {formData.exam_category === 'IITM BS' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-md bg-slate-50">
+                  <div>
+                    <Label htmlFor="branch">Branch</Label>
+                    <Select value={formData.branch} onValueChange={(value) => setFormData({ ...formData, branch: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select branch" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {iitmBranches.map((branch) => (
+                          <SelectItem key={branch} value={branch}>{branch}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="level">Level</Label>
+                    <Select value={formData.level} onValueChange={(value) => setFormData({ ...formData, level: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {iitmLevels.map((level) => (
+                          <SelectItem key={level} value={level}>{level}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <Label htmlFor="features">Features (one per line)</Label>
                 <Textarea
@@ -266,15 +362,27 @@ const CoursesManagerTab = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="image_url">Image URL</Label>
+                  <Input
+                    id="image_url"
+                    type="url"
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  />
+                </div>
+                 <div>
+                  <Label htmlFor="enroll_now_link">Enroll Now Link</Label>
+                  <Input
+                    id="enroll_now_link"
+                    type="url"
+                    value={formData.enroll_now_link}
+                    onChange={(e) => setFormData({ ...formData, enroll_now_link: e.target.value })}
+                  />
+                </div>
               </div>
+
 
               <div className="flex items-center space-x-2">
                 <input
@@ -291,7 +399,7 @@ const CoursesManagerTab = () => {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Saving...' : editingCourse ? 'Update' : 'Create'}
+                  {isLoading ? 'Saving...' : editingCourse ? 'Update Course' : 'Create Course'}
                 </Button>
               </div>
             </form>
@@ -310,13 +418,14 @@ const CoursesManagerTab = () => {
           </Card>
         ) : (
           courses.map((course) => (
-            <Card key={course.id}>
+            <Card key={course.id} className={course.course_type === 'Gold' ? 'bg-amber-50 border-amber-200' : ''}>
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       {course.title}
                       {course.bestseller && <Badge variant="secondary">Bestseller</Badge>}
+                      {course.course_type && <Badge variant={course.course_type === 'Gold' ? 'default' : 'outline'} className={course.course_type === 'Gold' ? 'bg-amber-500' : ''}>{course.course_type}</Badge>}
                     </CardTitle>
                     <CardDescription>{course.description}</CardDescription>
                   </div>
@@ -333,7 +442,7 @@ const CoursesManagerTab = () => {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
-                    <span className="font-medium">Category:</span> {course.category}
+                    <span className="font-medium">Exam Category:</span> {course.exam_category}
                   </div>
                   <div>
                     <span className="font-medium">Price:</span> ₹{course.price}
@@ -345,10 +454,15 @@ const CoursesManagerTab = () => {
                     <span className="font-medium">Duration:</span> {course.duration}
                   </div>
                   <div>
-                    <span className="font-medium">Students:</span> {course.students}
+                    <span className="font-medium">Students:</span> {course.students || 'N/A'}
                   </div>
+                   {course.subject && <div><span className="font-medium">Subject:</span> {course.subject}</div>}
+                  {course.start_date && <div><span className="font-medium">Start Date:</span> {new Date(course.start_date).toLocaleDateString()}</div>}
+                  {course.branch && <div><span className="font-medium">Branch:</span> {course.branch}</div>}
+                  {course.level && <div><span className="font-medium">Level:</span> {course.level}</div>}
+
                 </div>
-                {course.features.length > 0 && (
+                {course.features && course.features.length > 0 && (
                   <div className="mt-4">
                     <span className="font-medium">Features:</span>
                     <div className="flex flex-wrap gap-1 mt-1">
@@ -358,6 +472,13 @@ const CoursesManagerTab = () => {
                         </Badge>
                       ))}
                     </div>
+                  </div>
+                )}
+                {course.enroll_now_link && (
+                  <div className="mt-4">
+                    <Button asChild>
+                      <a href={course.enroll_now_link} target="_blank" rel="noopener noreferrer">Enroll Now</a>
+                    </Button>
                   </div>
                 )}
               </CardContent>

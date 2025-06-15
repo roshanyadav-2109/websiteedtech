@@ -90,49 +90,67 @@ export type Database = {
       courses: {
         Row: {
           bestseller: boolean | null
-          category: string
+          branch: string | null
+          course_type: string | null
           created_at: string | null
           description: string
           discounted_price: number | null
           duration: string
+          enroll_now_link: string | null
+          exam_category: string | null
           features: string[] | null
           id: string
           image_url: string | null
+          level: string | null
           price: number
           rating: number | null
+          start_date: string | null
           students: number | null
+          subject: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
           bestseller?: boolean | null
-          category: string
+          branch?: string | null
+          course_type?: string | null
           created_at?: string | null
           description: string
           discounted_price?: number | null
           duration: string
+          enroll_now_link?: string | null
+          exam_category?: string | null
           features?: string[] | null
           id?: string
           image_url?: string | null
+          level?: string | null
           price: number
           rating?: number | null
+          start_date?: string | null
           students?: number | null
+          subject?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
           bestseller?: boolean | null
-          category?: string
+          branch?: string | null
+          course_type?: string | null
           created_at?: string | null
           description?: string
           discounted_price?: number | null
           duration?: string
+          enroll_now_link?: string | null
+          exam_category?: string | null
           features?: string[] | null
           id?: string
           image_url?: string | null
+          level?: string | null
           price?: number
           rating?: number | null
+          start_date?: string | null
           students?: number | null
+          subject?: string | null
           title?: string
           updated_at?: string | null
         }
