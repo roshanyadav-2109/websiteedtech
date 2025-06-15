@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/use-toast';
@@ -8,6 +8,60 @@ export const useDownloadHandler = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>({});
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Load initial download counts from database
+  useEffect(() => {
+    const loadDownloadCounts = async () => {
+      try {
+        console.log('Loading initial download counts...');
+        
+        // Load notes download counts
+        const { data: notesData, error: notesError } = await supabase
+          .from('notes')
+          .select('id, download_count')
+          .eq('is_active', true);
+
+        // Load pyqs download counts  
+        const { data: pyqsData, error: pyqsError } = await supabase
+          .from('pyqs')
+          .select('id, download_count')
+          .eq('is_active', true);
+
+        if (notesError) {
+          console.error('Error loading notes download counts:', notesError);
+        }
+        
+        if (pyqsError) {
+          console.error('Error loading pyqs download counts:', pyqsError);
+        }
+
+        // Combine all download counts
+        const combinedCounts: Record<string, number> = {};
+        
+        if (notesData) {
+          notesData.forEach(note => {
+            combinedCounts[note.id] = note.download_count || 0;
+          });
+        }
+        
+        if (pyqsData) {
+          pyqsData.forEach(pyq => {
+            combinedCounts[pyq.id] = pyq.download_count || 0;
+          });
+        }
+
+        console.log('Loaded download counts:', combinedCounts);
+        setDownloadCounts(combinedCounts);
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Error loading download counts:', error);
+        setIsInitialized(true);
+      }
+    };
+
+    loadDownloadCounts();
+  }, []);
 
   const handleDownload = async (contentId: string, tableName: 'notes' | 'pyqs', fileUrl?: string) => {
     try {
@@ -75,6 +129,7 @@ export const useDownloadHandler = () => {
   return { 
     handleDownload, 
     downloadCounts, 
-    updateDownloadCount 
+    updateDownloadCount,
+    isInitialized
   };
 };

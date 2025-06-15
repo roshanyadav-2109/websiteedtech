@@ -35,7 +35,7 @@ const IITMBSNotesSection = ({ subject, notes: propNotes, downloads: propDownload
     isAdmin, 
     handleDownload, 
     downloadCounts, 
-    updateDownloadCount,
+    isDownloadCountsInitialized,
     notes: backendNotes,
     contentLoading,
     deleteNote
@@ -61,15 +61,6 @@ const IITMBSNotesSection = ({ subject, notes: propNotes, downloads: propDownload
     ? notesWithWeeks 
     : notesWithWeeks.filter(note => note.week === parseInt(selectedWeek));
 
-  // Update download counts from database
-  useEffect(() => {
-    backendNotes.forEach(note => {
-      if (note.download_count && !downloadCounts[note.id]) {
-        updateDownloadCount(note.id, note.download_count);
-      }
-    });
-  }, [backendNotes, downloadCounts, updateDownloadCount]);
-
   const handleDownloadClick = async (noteId: string, fileUrl?: string) => {
     if (propOnDownload) {
       propOnDownload(noteId);
@@ -84,7 +75,29 @@ const IITMBSNotesSection = ({ subject, notes: propNotes, downloads: propDownload
     }
   };
 
+  // Use the actual download counts from the backend or props
   const currentDownloads = propDownloads || downloadCounts;
+
+  // Show loading state while download counts are being initialized
+  if (!isDownloadCountsInitialized && !propDownloads) {
+    return (
+      <div className="my-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold capitalize">{subject}</h2>
+          {isAdmin && (
+            <Button className="admin-only bg-blue-600 hover:bg-blue-700">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Note
+            </Button>
+          )}
+        </div>
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
+          <span className="ml-2 text-gray-600">Loading download counts...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="my-8">

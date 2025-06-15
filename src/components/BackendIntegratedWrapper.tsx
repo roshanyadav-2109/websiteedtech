@@ -10,6 +10,7 @@ interface BackendContextType {
   handleDownload: (contentId: string, tableName: 'notes' | 'pyqs', fileUrl?: string) => Promise<void>;
   downloadCounts: Record<string, number>;
   updateDownloadCount: (contentId: string, count: number) => void;
+  isDownloadCountsInitialized: boolean;
   notes: any[];
   pyqs: any[];
   contentLoading: boolean;
@@ -39,7 +40,7 @@ interface BackendIntegratedWrapperProps {
 
 export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> = ({ children }) => {
   const { isAdmin, isLoading: isAdminLoading } = useAdminCheck();
-  const { handleDownload, downloadCounts, updateDownloadCount } = useDownloadHandler();
+  const { handleDownload, downloadCounts, updateDownloadCount, isInitialized: isDownloadCountsInitialized } = useDownloadHandler();
   
   // UseContentManagement already fetches notes/pyqs with is_active filtering
   const {
@@ -57,6 +58,7 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
   } = useContentManagement();
 
   console.log('BackendIntegratedWrapper - Admin status:', { isAdmin, isAdminLoading });
+  console.log('BackendIntegratedWrapper - Download counts initialized:', isDownloadCountsInitialized);
 
   // context value
   const contextValue: BackendContextType = {
@@ -65,6 +67,7 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     handleDownload,
     downloadCounts,
     updateDownloadCount,
+    isDownloadCountsInitialized,
     notes,
     pyqs,
     contentLoading,
