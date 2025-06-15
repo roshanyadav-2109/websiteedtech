@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -32,6 +31,7 @@ const CoursesManagerTab = () => {
     branch: '',
     level: '',
     enroll_now_link: '',
+    students_enrolled: '',
   });
 
   const examCategories = ['IITM BS', 'JEE', 'NEET'];
@@ -78,6 +78,7 @@ const CoursesManagerTab = () => {
       branch: '',
       level: '',
       enroll_now_link: '',
+      students_enrolled: '',
     });
     setEditingCourse(null);
   };
@@ -103,6 +104,7 @@ const CoursesManagerTab = () => {
         branch: formData.exam_category === 'IITM BS' ? (formData.branch || null) : null,
         level: formData.exam_category === 'IITM BS' ? (formData.level || null) : null,
         enroll_now_link: formData.enroll_now_link || null,
+        students_enrolled: formData.students_enrolled ? parseInt(formData.students_enrolled) : 0,
       };
 
       if (editingCourse) {
@@ -149,11 +151,12 @@ const CoursesManagerTab = () => {
       image_url: course.image_url || '',
       bestseller: course.bestseller || false,
       subject: course.subject || '',
-      start_date: course.start_date ? course.start_date.split('T')[0] : '', // Format for date input
+      start_date: course.start_date ? course.start_date.split('T')[0] : '',
       course_type: course.course_type || '',
       branch: course.branch || '',
       level: course.level || '',
       enroll_now_link: course.enroll_now_link || '',
+      students_enrolled: course.students_enrolled?.toString() || '0',
     });
     setIsDialogOpen(true);
   };

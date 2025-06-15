@@ -106,6 +106,7 @@ export type Database = {
           rating: number | null
           start_date: string | null
           students: number | null
+          students_enrolled: number | null
           subject: string | null
           title: string
           updated_at: string | null
@@ -128,6 +129,7 @@ export type Database = {
           rating?: number | null
           start_date?: string | null
           students?: number | null
+          students_enrolled?: number | null
           subject?: string | null
           title: string
           updated_at?: string | null
@@ -150,6 +152,7 @@ export type Database = {
           rating?: number | null
           start_date?: string | null
           students?: number | null
+          students_enrolled?: number | null
           subject?: string | null
           title?: string
           updated_at?: string | null
@@ -242,6 +245,8 @@ export type Database = {
           id: string
           is_highlighted: boolean | null
           level: string | null
+          matter: string | null
+          tag: string | null
           title: string
           updated_at: string
         }
@@ -256,6 +261,8 @@ export type Database = {
           id?: string
           is_highlighted?: boolean | null
           level?: string | null
+          matter?: string | null
+          tag?: string | null
           title: string
           updated_at?: string
         }
@@ -270,6 +277,8 @@ export type Database = {
           id?: string
           is_highlighted?: boolean | null
           level?: string | null
+          matter?: string | null
+          tag?: string | null
           title?: string
           updated_at?: string
         }
@@ -282,6 +291,7 @@ export type Database = {
           content: string
           created_at: string
           created_by: string | null
+          date_time: string | null
           description: string | null
           exam_type: string | null
           id: string
@@ -290,6 +300,7 @@ export type Database = {
           is_important: boolean | null
           level: string | null
           publish_date: string | null
+          tag: string | null
           title: string
           updated_at: string
         }
@@ -299,6 +310,7 @@ export type Database = {
           content: string
           created_at?: string
           created_by?: string | null
+          date_time?: string | null
           description?: string | null
           exam_type?: string | null
           id?: string
@@ -307,6 +319,7 @@ export type Database = {
           is_important?: boolean | null
           level?: string | null
           publish_date?: string | null
+          tag?: string | null
           title: string
           updated_at?: string
         }
@@ -316,6 +329,7 @@ export type Database = {
           content?: string
           created_at?: string
           created_by?: string | null
+          date_time?: string | null
           description?: string | null
           exam_type?: string | null
           id?: string
@@ -324,6 +338,7 @@ export type Database = {
           is_important?: boolean | null
           level?: string | null
           publish_date?: string | null
+          tag?: string | null
           title?: string
           updated_at?: string
         }
@@ -343,6 +358,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           level: string | null
+          session: string | null
+          shift: string | null
           subject: string | null
           title: string
           updated_at: string
@@ -361,6 +378,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           level?: string | null
+          session?: string | null
+          shift?: string | null
           subject?: string | null
           title: string
           updated_at?: string
@@ -379,6 +398,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           level?: string | null
+          session?: string | null
+          shift?: string | null
           subject?: string | null
           title?: string
           updated_at?: string
@@ -463,6 +484,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           level: string | null
+          session: string | null
+          shift: string | null
           subject: string | null
           title: string
           updated_at: string
@@ -482,6 +505,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           level?: string | null
+          session?: string | null
+          shift?: string | null
           subject?: string | null
           title: string
           updated_at?: string
@@ -501,6 +526,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           level?: string | null
+          session?: string | null
+          shift?: string | null
           subject?: string | null
           title?: string
           updated_at?: string

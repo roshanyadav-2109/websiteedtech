@@ -4,24 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { Plus, Edit, Trash2, FileQuestion } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, Edit, Trash2, Download, Search } from "lucide-react";
 
 interface PYQ {
   id: string;
   title: string;
-  description?: string;
-  content_url?: string;
-  subject?: string;
-  class_level?: string;
-  exam_type?: string;
-  branch?: string;
-  level?: string;
-  year?: number;
+  description: string;
+  year: number;
+  subject: string;
+  exam_type: string;
+  branch: string;
+  level: string;
+  session: string;
+  shift: string;
+  file_link: string;
+  download_count: number;
   created_at: string;
 }
 
@@ -30,30 +33,45 @@ const PYQsManagerTab = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPyq, setEditingPyq] = useState<PYQ | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterExamType, setFilterExamType] = useState("all");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    content_url: '',
+    year: '',
     subject: '',
-    class_level: '',
     exam_type: '',
     branch: '',
     level: '',
-    year: '',
+    session: '',
+    shift: '',
+    file_link: '',
   });
 
-  const examTypes = ['IITM_BS', 'JEE', 'NEET'];
-  const subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Statistics', 'English'];
-  const classLevels = ['11th', '12th', 'Foundation Level', 'Diploma Level', 'Degree Level'];
-  const branches = ['CSE', 'Physics', 'Mathematics', 'Data Science', 'Economics'];
+  // Subject options based on exam type
+  const getSubjectOptions = (examType: string) => {
+    switch (examType) {
+      case 'JEE':
+        return ['Physics', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Mathematics'];
+      case 'NEET':
+        return ['Physics', 'Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Botany', 'Zoology'];
+      case 'IITM_BS':
+        return formData.branch === 'Data Science' 
+          ? ['Mathematics', 'Statistics', 'Programming', 'Data Analysis']
+          : ['Electronics', 'Signal Processing', 'Circuit Design', 'Digital Systems'];
+      default:
+        return [];
+    }
+  };
 
   const fetchPyqs = async () => {
     try {
       const { data, error } = await supabase
         .from('pyqs')
         .select('*')
+        .eq('is_active', true)
         .order('year', { ascending: false });
 
       if (error) throw error;
@@ -75,13 +93,14 @@ const PYQsManagerTab = () => {
     setFormData({
       title: '',
       description: '',
-      content_url: '',
+      year: '',
       subject: '',
-      class_level: '',
       exam_type: '',
       branch: '',
       level: '',
-      year: '',
+      session: '',
+      shift: '',
+      file_link: '',
     });
     setEditingPyq(null);
   };
@@ -93,14 +112,18 @@ const PYQsManagerTab = () => {
     try {
       const pyqData = {
         title: formData.title,
-        description: formData.description || null,
-        content_url: formData.content_url || null,
-        subject: formData.subject || null,
-        class_level: formData.class_level || null,
-        exam_type: formData.exam_type || null,
-        branch: formData.branch || null,
-        level: formData.level || null,
+        description: formData.description,
         year: formData.year ? parseInt(formData.year) : null,
+        subject: formData.subject || null,
+        exam_type: formData.exam_type || null,
+        branch: formData.exam_type === 'IITM_BS' ? formData.branch : null,
+        level: formData.exam_type === 'IITM_BS' ? formData.level : null,
+        session: formData.exam_type === 'JEE' ? formData.session : null,
+        shift: formData.exam_type === 'JEE' ? formData.shift : null,
+        file_link: formData.file_link || null,
+        upload_date: new Date().toISOString(),
+        download_count: 0,
+        is_active: true,
       };
 
       if (editingPyq) {
@@ -139,13 +162,14 @@ const PYQsManagerTab = () => {
     setFormData({
       title: pyq.title,
       description: pyq.description || '',
-      content_url: pyq.content_url || '',
+      year: pyq.year?.toString() || '',
       subject: pyq.subject || '',
-      class_level: pyq.class_level || '',
       exam_type: pyq.exam_type || '',
       branch: pyq.branch || '',
       level: pyq.level || '',
-      year: pyq.year?.toString() || '',
+      session: pyq.session || '',
+      shift: pyq.shift || '',
+      file_link: pyq.file_link || '',
     });
     setIsDialogOpen(true);
   };
@@ -156,7 +180,7 @@ const PYQsManagerTab = () => {
     try {
       const { error } = await supabase
         .from('pyqs')
-        .delete()
+        .update({ is_active: false })
         .eq('id', pyqId);
 
       if (error) throw error;
@@ -171,17 +195,25 @@ const PYQsManagerTab = () => {
     }
   };
 
+  const filteredPyqs = pyqs.filter(pyq => {
+    const matchesSearch = pyq.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         pyq.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         pyq.subject?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterExamType === 'all' || pyq.exam_type === filterExamType;
+    return matchesSearch && matchesFilter;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold">PYQs Management</h2>
+        <h2 className="text-3xl font-bold">Previous Year Questions Management</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-royal hover:bg-royal-dark" onClick={resetForm}>
               <Plus className="mr-2 h-4 w-4" /> Add New PYQ
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingPyq ? 'Edit PYQ' : 'Add New PYQ'}</DialogTitle>
               <DialogDescription>
@@ -189,49 +221,15 @@ const PYQsManagerTab = () => {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="title">PYQ Title</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="content_url">Content URL (PDF/Document Link)</Label>
-                <Input
-                  id="content_url"
-                  type="url"
-                  value={formData.content_url}
-                  onChange={(e) => setFormData({ ...formData, content_url: e.target.value })}
-                  placeholder="https://example.com/pyq.pdf"
-                />
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="exam_type">Exam Type</Label>
-                  <Select value={formData.exam_type} onValueChange={(value) => setFormData({ ...formData, exam_type: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select exam type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {examTypes.map((type) => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    required
+                  />
                 </div>
                 <div>
                   <Label htmlFor="year">Year</Label>
@@ -247,7 +245,30 @@ const PYQsManagerTab = () => {
                 </div>
               </div>
 
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={3}
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="exam_type">Exam Type *</Label>
+                  <Select value={formData.exam_type} onValueChange={(value) => setFormData({ ...formData, exam_type: value, subject: '', branch: '', level: '' })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select exam type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="JEE">JEE</SelectItem>
+                      <SelectItem value="NEET">NEET</SelectItem>
+                      <SelectItem value="IITM_BS">IITM BS</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div>
                   <Label htmlFor="subject">Subject</Label>
                   <Select value={formData.subject} onValueChange={(value) => setFormData({ ...formData, subject: value })}>
@@ -255,50 +276,80 @@ const PYQsManagerTab = () => {
                       <SelectValue placeholder="Select subject" />
                     </SelectTrigger>
                     <SelectContent>
-                      {subjects.map((subject) => (
+                      {getSubjectOptions(formData.exam_type).map(subject => (
                         <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="class_level">Class Level</Label>
-                  <Select value={formData.class_level} onValueChange={(value) => setFormData({ ...formData, class_level: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select class level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {classLevels.map((level) => (
-                        <SelectItem key={level} value={level}>{level}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="branch">Branch</Label>
-                  <Select value={formData.branch} onValueChange={(value) => setFormData({ ...formData, branch: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select branch" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {branches.map((branch) => (
-                        <SelectItem key={branch} value={branch}>{branch}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {formData.exam_type === 'IITM_BS' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="branch">Branch</Label>
+                    <Select value={formData.branch} onValueChange={(value) => setFormData({ ...formData, branch: value, subject: '' })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select branch" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Data Science">Data Science</SelectItem>
+                        <SelectItem value="Electronic System">Electronic System</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="level">Level</Label>
+                    <Select value={formData.level} onValueChange={(value) => setFormData({ ...formData, level: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Qualifier">Qualifier</SelectItem>
+                        <SelectItem value="Foundation">Foundation</SelectItem>
+                        <SelectItem value="Diploma">Diploma</SelectItem>
+                        <SelectItem value="Degree">Degree</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="level">Level</Label>
-                  <Input
-                    id="level"
-                    value={formData.level}
-                    onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                    placeholder="e.g., Beginner, Intermediate, Advanced"
-                  />
+              )}
+
+              {formData.exam_type === 'JEE' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="session">Session</Label>
+                    <Input
+                      id="session"
+                      value={formData.session}
+                      onChange={(e) => setFormData({ ...formData, session: e.target.value })}
+                      placeholder="e.g., Session 1, Session 2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="shift">Shift</Label>
+                    <Select value={formData.shift} onValueChange={(value) => setFormData({ ...formData, shift: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select shift" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Shift 1">Shift 1</SelectItem>
+                        <SelectItem value="Shift 2">Shift 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+              )}
+
+              <div>
+                <Label htmlFor="file_link">File Link</Label>
+                <Input
+                  id="file_link"
+                  type="url"
+                  value={formData.file_link}
+                  onChange={(e) => setFormData({ ...formData, file_link: e.target.value })}
+                  placeholder="https://..."
+                />
               </div>
 
               <div className="flex justify-end space-x-2">
@@ -306,7 +357,7 @@ const PYQsManagerTab = () => {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Saving...' : editingPyq ? 'Update' : 'Create'}
+                  {isLoading ? 'Saving...' : editingPyq ? 'Update PYQ' : 'Create PYQ'}
                 </Button>
               </div>
             </form>
@@ -314,25 +365,60 @@ const PYQsManagerTab = () => {
         </Dialog>
       </div>
 
+      {/* Search and Filter */}
+      <div className="flex gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search PYQs..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={filterExamType} onValueChange={setFilterExamType}>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="Filter by exam type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Exam Types</SelectItem>
+            <SelectItem value="JEE">JEE</SelectItem>
+            <SelectItem value="NEET">NEET</SelectItem>
+            <SelectItem value="IITM_BS">IITM BS</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* PYQs List */}
       <div className="grid gap-4">
-        {pyqs.length === 0 ? (
+        {filteredPyqs.length === 0 ? (
           <Card className="p-8">
             <CardContent className="flex flex-col items-center justify-center text-center">
-              <FileQuestion className="h-16 w-16 text-gray-300 mb-4" />
               <p className="text-lg font-medium text-gray-500">No PYQs found</p>
               <p className="text-sm text-gray-400 mt-1">Create your first PYQ to get started</p>
             </CardContent>
           </Card>
         ) : (
-          pyqs.map((pyq) => (
+          filteredPyqs.map((pyq) => (
             <Card key={pyq.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle>{pyq.title}</CardTitle>
-                    {pyq.description && <CardDescription>{pyq.description}</CardDescription>}
+                    <CardTitle className="flex items-center gap-2">
+                      {pyq.title}
+                      {pyq.exam_type && <Badge variant="outline">{pyq.exam_type}</Badge>}
+                      {pyq.year && <Badge variant="secondary">{pyq.year}</Badge>}
+                    </CardTitle>
+                    <CardDescription>{pyq.description}</CardDescription>
                   </div>
                   <div className="flex space-x-2">
+                    {pyq.file_link && (
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={pyq.file_link} target="_blank" rel="noopener noreferrer">
+                          <Download className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    )}
                     <Button variant="outline" size="sm" onClick={() => handleEdit(pyq)}>
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -343,35 +429,14 @@ const PYQsManagerTab = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                  {pyq.year && (
-                    <div><span className="font-medium">Year:</span> {pyq.year}</div>
-                  )}
-                  {pyq.exam_type && (
-                    <div><span className="font-medium">Exam:</span> {pyq.exam_type}</div>
-                  )}
-                  {pyq.subject && (
-                    <div><span className="font-medium">Subject:</span> {pyq.subject}</div>
-                  )}
-                  {pyq.class_level && (
-                    <div><span className="font-medium">Class:</span> {pyq.class_level}</div>
-                  )}
-                  {pyq.branch && (
-                    <div><span className="font-medium">Branch:</span> {pyq.branch}</div>
-                  )}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  {pyq.subject && <div><span className="font-medium">Subject:</span> {pyq.subject}</div>}
+                  {pyq.branch && <div><span className="font-medium">Branch:</span> {pyq.branch}</div>}
+                  {pyq.level && <div><span className="font-medium">Level:</span> {pyq.level}</div>}
+                  {pyq.session && <div><span className="font-medium">Session:</span> {pyq.session}</div>}
+                  {pyq.shift && <div><span className="font-medium">Shift:</span> {pyq.shift}</div>}
+                  <div><span className="font-medium">Downloads:</span> {pyq.download_count}</div>
                 </div>
-                {pyq.content_url && (
-                  <div className="mt-4">
-                    <a
-                      href={pyq.content_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 text-sm"
-                    >
-                      View Content →
-                    </a>
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))

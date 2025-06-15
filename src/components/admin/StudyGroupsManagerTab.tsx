@@ -3,51 +3,45 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Download, Search } from "lucide-react";
+import { Plus, Edit, Trash2, ExternalLink, Search } from "lucide-react";
 
-interface Note {
+interface StudyGroup {
   id: string;
   title: string;
-  description: string;
-  subject: string;
-  class_level: string;
+  join_link: string;
+  social_handle_type: string;
   exam_type: string;
+  subject: string;
   branch: string;
   level: string;
-  session: string;
-  shift: string;
-  file_link: string;
-  download_count: number;
+  class_level: string;
   created_at: string;
 }
 
-const NotesManagerTab = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
+const StudyGroupsManagerTab = () => {
+  const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [editingGroup, setEditingGroup] = useState<StudyGroup | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterExamType, setFilterExamType] = useState("all");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
-    subject: '',
-    class_level: '',
+    join_link: '',
+    social_handle_type: '',
     exam_type: '',
+    subject: '',
     branch: '',
     level: '',
-    session: '',
-    shift: '',
-    file_link: '',
+    class_level: '',
   });
 
   // Subject options based on exam type
@@ -66,43 +60,40 @@ const NotesManagerTab = () => {
     }
   };
 
-  const fetchNotes = async () => {
+  const fetchStudyGroups = async () => {
     try {
       const { data, error } = await supabase
-        .from('notes')
+        .from('study_groups')
         .select('*')
-        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setNotes(data || []);
+      setStudyGroups(data || []);
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to fetch notes",
+        description: "Failed to fetch study groups",
         variant: "destructive",
       });
     }
   };
 
   useEffect(() => {
-    fetchNotes();
+    fetchStudyGroups();
   }, []);
 
   const resetForm = () => {
     setFormData({
       title: '',
-      description: '',
-      subject: '',
-      class_level: '',
+      join_link: '',
+      social_handle_type: '',
       exam_type: '',
+      subject: '',
       branch: '',
       level: '',
-      session: '',
-      shift: '',
-      file_link: '',
+      class_level: '',
     });
-    setEditingNote(null);
+    setEditingGroup(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,46 +101,41 @@ const NotesManagerTab = () => {
     setIsLoading(true);
 
     try {
-      const noteData = {
+      const groupData = {
         title: formData.title,
-        description: formData.description,
-        subject: formData.subject || null,
-        class_level: formData.class_level || null,
+        join_link: formData.join_link,
+        social_handle_type: formData.social_handle_type,
         exam_type: formData.exam_type || null,
+        subject: formData.subject || null,
         branch: formData.exam_type === 'IITM_BS' ? formData.branch : null,
         level: formData.exam_type === 'IITM_BS' ? formData.level : null,
-        session: formData.exam_type === 'JEE' ? formData.session : null,
-        shift: formData.exam_type === 'JEE' ? formData.shift : null,
-        file_link: formData.file_link || null,
-        upload_date: new Date().toISOString(),
-        download_count: 0,
-        is_active: true,
+        class_level: ['JEE', 'NEET'].includes(formData.exam_type) ? formData.class_level : null,
       };
 
-      if (editingNote) {
+      if (editingGroup) {
         const { error } = await supabase
-          .from('notes')
-          .update(noteData)
-          .eq('id', editingNote.id);
+          .from('study_groups')
+          .update(groupData)
+          .eq('id', editingGroup.id);
 
         if (error) throw error;
-        toast({ title: "Success", description: "Note updated successfully" });
+        toast({ title: "Success", description: "Study group updated successfully" });
       } else {
         const { error } = await supabase
-          .from('notes')
-          .insert([noteData]);
+          .from('study_groups')
+          .insert([groupData]);
 
         if (error) throw error;
-        toast({ title: "Success", description: "Note created successfully" });
+        toast({ title: "Success", description: "Study group created successfully" });
       }
 
       resetForm();
       setIsDialogOpen(false);
-      fetchNotes();
+      fetchStudyGroups();
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "Failed to save note",
+        description: error.message || "Failed to save study group",
         variant: "destructive",
       });
     } finally {
@@ -157,82 +143,92 @@ const NotesManagerTab = () => {
     }
   };
 
-  const handleEdit = (note: Note) => {
-    setEditingNote(note);
+  const handleEdit = (group: StudyGroup) => {
+    setEditingGroup(group);
     setFormData({
-      title: note.title,
-      description: note.description || '',
-      subject: note.subject || '',
-      class_level: note.class_level || '',
-      exam_type: note.exam_type || '',
-      branch: note.branch || '',
-      level: note.level || '',
-      session: note.session || '',
-      shift: note.shift || '',
-      file_link: note.file_link || '',
+      title: group.title,
+      join_link: group.join_link,
+      social_handle_type: group.social_handle_type,
+      exam_type: group.exam_type || '',
+      subject: group.subject || '',
+      branch: group.branch || '',
+      level: group.level || '',
+      class_level: group.class_level || '',
     });
     setIsDialogOpen(true);
   };
 
-  const handleDelete = async (noteId: string) => {
-    if (!confirm('Are you sure you want to delete this note?')) return;
+  const handleDelete = async (groupId: string) => {
+    if (!confirm('Are you sure you want to delete this study group?')) return;
 
     try {
       const { error } = await supabase
-        .from('notes')
-        .update({ is_active: false })
-        .eq('id', noteId);
+        .from('study_groups')
+        .delete()
+        .eq('id', groupId);
 
       if (error) throw error;
-      toast({ title: "Success", description: "Note deleted successfully" });
-      fetchNotes();
+      toast({ title: "Success", description: "Study group deleted successfully" });
+      fetchStudyGroups();
     } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to delete note",
+        description: "Failed to delete study group",
         variant: "destructive",
       });
     }
   };
 
-  const filteredNotes = notes.filter(note => {
-    const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         note.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         note.subject?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterExamType === 'all' || note.exam_type === filterExamType;
+  const filteredGroups = studyGroups.filter(group => {
+    const matchesSearch = group.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         group.subject?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterExamType === 'all' || group.exam_type === filterExamType;
     return matchesSearch && matchesFilter;
   });
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold">Notes Management</h2>
+        <h2 className="text-3xl font-bold">Study Groups Management</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-royal hover:bg-royal-dark" onClick={resetForm}>
-              <Plus className="mr-2 h-4 w-4" /> Add New Note
+              <Plus className="mr-2 h-4 w-4" /> Add New Study Group
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{editingNote ? 'Edit Note' : 'Add New Note'}</DialogTitle>
+              <DialogTitle>{editingGroup ? 'Edit Study Group' : 'Add New Study Group'}</DialogTitle>
               <DialogDescription>
-                {editingNote ? 'Update note details' : 'Fill in the note information'}
+                {editingGroup ? 'Update study group details' : 'Fill in the study group information'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="title">Title *</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    required
-                  />
+                  <Label htmlFor="social_handle_type">Social Handle Type *</Label>
+                  <Select value={formData.social_handle_type} onValueChange={(value) => setFormData({ ...formData, social_handle_type: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Telegram">Telegram</SelectItem>
+                      <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
-                  <Label htmlFor="exam_type">Exam Type *</Label>
+                  <Label htmlFor="exam_type">Exam Type</Label>
                   <Select value={formData.exam_type} onValueChange={(value) => setFormData({ ...formData, exam_type: value, subject: '', branch: '', level: '' })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select exam type" />
@@ -247,16 +243,18 @@ const NotesManagerTab = () => {
               </div>
 
               <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
+                <Label htmlFor="join_link">Join Link *</Label>
+                <Input
+                  id="join_link"
+                  type="url"
+                  value={formData.join_link}
+                  onChange={(e) => setFormData({ ...formData, join_link: e.target.value })}
+                  placeholder="https://..."
+                  required
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {formData.exam_type && (
                 <div>
                   <Label htmlFor="subject">Subject</Label>
                   <Select value={formData.subject} onValueChange={(value) => setFormData({ ...formData, subject: value })}>
@@ -270,16 +268,7 @@ const NotesManagerTab = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="class_level">Class Level</Label>
-                  <Input
-                    id="class_level"
-                    value={formData.class_level}
-                    onChange={(e) => setFormData({ ...formData, class_level: e.target.value })}
-                    placeholder="e.g., Class 11, Class 12"
-                  />
-                </div>
-              </div>
+              )}
 
               {formData.exam_type === 'IITM_BS' && (
                 <div className="grid grid-cols-2 gap-4">
@@ -312,49 +301,24 @@ const NotesManagerTab = () => {
                 </div>
               )}
 
-              {formData.exam_type === 'JEE' && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="session">Session</Label>
-                    <Input
-                      id="session"
-                      value={formData.session}
-                      onChange={(e) => setFormData({ ...formData, session: e.target.value })}
-                      placeholder="e.g., Session 1, Session 2"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="shift">Shift</Label>
-                    <Select value={formData.shift} onValueChange={(value) => setFormData({ ...formData, shift: value })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select shift" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Shift 1">Shift 1</SelectItem>
-                        <SelectItem value="Shift 2">Shift 2</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              {['JEE', 'NEET'].includes(formData.exam_type) && (
+                <div>
+                  <Label htmlFor="class_level">Class Level</Label>
+                  <Input
+                    id="class_level"
+                    value={formData.class_level}
+                    onChange={(e) => setFormData({ ...formData, class_level: e.target.value })}
+                    placeholder="e.g., Class 11, Class 12"
+                  />
                 </div>
               )}
-
-              <div>
-                <Label htmlFor="file_link">File Link</Label>
-                <Input
-                  id="file_link"
-                  type="url"
-                  value={formData.file_link}
-                  onChange={(e) => setFormData({ ...formData, file_link: e.target.value })}
-                  placeholder="https://..."
-                />
-              </div>
 
               <div className="flex justify-end space-x-2">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Saving...' : editingNote ? 'Update Note' : 'Create Note'}
+                  {isLoading ? 'Saving...' : editingGroup ? 'Update Group' : 'Create Group'}
                 </Button>
               </div>
             </form>
@@ -367,7 +331,7 @@ const NotesManagerTab = () => {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search notes..."
+            placeholder="Search study groups..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -386,39 +350,40 @@ const NotesManagerTab = () => {
         </Select>
       </div>
 
-      {/* Notes List */}
+      {/* Study Groups List */}
       <div className="grid gap-4">
-        {filteredNotes.length === 0 ? (
+        {filteredGroups.length === 0 ? (
           <Card className="p-8">
             <CardContent className="flex flex-col items-center justify-center text-center">
-              <p className="text-lg font-medium text-gray-500">No notes found</p>
-              <p className="text-sm text-gray-400 mt-1">Create your first note to get started</p>
+              <p className="text-lg font-medium text-gray-500">No study groups found</p>
+              <p className="text-sm text-gray-400 mt-1">Create your first study group to get started</p>
             </CardContent>
           </Card>
         ) : (
-          filteredNotes.map((note) => (
-            <Card key={note.id}>
+          filteredGroups.map((group) => (
+            <Card key={group.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      {note.title}
-                      {note.exam_type && <Badge variant="outline">{note.exam_type}</Badge>}
+                      {group.title}
+                      <Badge variant="outline">{group.social_handle_type}</Badge>
+                      {group.exam_type && <Badge variant="secondary">{group.exam_type}</Badge>}
                     </CardTitle>
-                    <CardDescription>{note.description}</CardDescription>
+                    <CardDescription>
+                      Join this {group.social_handle_type} group for {group.exam_type || 'general'} discussions
+                    </CardDescription>
                   </div>
                   <div className="flex space-x-2">
-                    {note.file_link && (
-                      <Button variant="outline" size="sm" asChild>
-                        <a href={note.file_link} target="_blank" rel="noopener noreferrer">
-                          <Download className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    )}
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(note)}>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href={group.join_link} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(group)}>
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDelete(note.id)}>
+                    <Button variant="outline" size="sm" onClick={() => handleDelete(group.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -426,13 +391,10 @@ const NotesManagerTab = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  {note.subject && <div><span className="font-medium">Subject:</span> {note.subject}</div>}
-                  {note.class_level && <div><span className="font-medium">Class:</span> {note.class_level}</div>}
-                  {note.branch && <div><span className="font-medium">Branch:</span> {note.branch}</div>}
-                  {note.level && <div><span className="font-medium">Level:</span> {note.level}</div>}
-                  {note.session && <div><span className="font-medium">Session:</span> {note.session}</div>}
-                  {note.shift && <div><span className="font-medium">Shift:</span> {note.shift}</div>}
-                  <div><span className="font-medium">Downloads:</span> {note.download_count}</div>
+                  {group.subject && <div><span className="font-medium">Subject:</span> {group.subject}</div>}
+                  {group.branch && <div><span className="font-medium">Branch:</span> {group.branch}</div>}
+                  {group.level && <div><span className="font-medium">Level:</span> {group.level}</div>}
+                  {group.class_level && <div><span className="font-medium">Class:</span> {group.class_level}</div>}
                 </div>
               </CardContent>
             </Card>
@@ -443,4 +405,4 @@ const NotesManagerTab = () => {
   );
 };
 
-export default NotesManagerTab;
+export default StudyGroupsManagerTab;

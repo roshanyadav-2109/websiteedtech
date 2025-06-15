@@ -11,6 +11,7 @@ export interface Course {
   image_url: string | null;
   bestseller: boolean | null;
   students: number | null;
+  students_enrolled: number | null;
   rating: number | null;
   created_at: string;
   subject: string | null;

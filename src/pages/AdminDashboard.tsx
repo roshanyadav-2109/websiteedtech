@@ -5,12 +5,14 @@ import { useAuth } from "@/hooks/useAuth";
 import AdminCheck from "@/components/admin/AdminCheck";
 import ContentManagementTab from "@/components/admin/ContentManagementTab";
 
-// Import existing admin components
+// Import admin components
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
 import CoursesManagerTab from "@/components/admin/CoursesManagerTab";
 import NotesManagerTab from "@/components/admin/NotesManagerTab";
 import PYQsManagerTab from "@/components/admin/PYQsManagerTab";
+import StudyGroupsManagerTab from "@/components/admin/StudyGroupsManagerTab";
+import CommunitiesManagerTab from "@/components/admin/CommunitiesManagerTab";
 import NewsManagerTab from "@/components/admin/NewsManagerTab";
 import DatesManagerTab from "@/components/admin/DatesManagerTab";
 import JobsManagerTab from "@/components/admin/JobsManagerTab";
@@ -57,6 +59,14 @@ const AdminDashboard = () => {
               
               <TabsContent value="pyqs" className="mt-0">
                 <PYQsManagerTab />
+              </TabsContent>
+
+              <TabsContent value="study-groups" className="mt-0">
+                <StudyGroupsManagerTab />
+              </TabsContent>
+
+              <TabsContent value="communities" className="mt-0">
+                <CommunitiesManagerTab />
               </TabsContent>
               
               <TabsContent value="news" className="mt-0">

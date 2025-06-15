@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,13 +49,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onEdit, onDelete }) => 
             <span className="font-medium">Duration:</span> {course.duration}
           </div>
           <div>
-            <span className="font-medium">Students:</span> {course.students || 'N/A'}
+            <span className="font-medium">Students:</span> {course.students_enrolled || 0}
           </div>
            {course.subject && <div><span className="font-medium">Subject:</span> {course.subject}</div>}
           {course.start_date && <div><span className="font-medium">Start Date:</span> {new Date(course.start_date).toLocaleDateString()}</div>}
           {course.branch && <div><span className="font-medium">Branch:</span> {course.branch}</div>}
           {course.level && <div><span className="font-medium">Level:</span> {course.level}</div>}
-
         </div>
         {course.features && course.features.length > 0 && (
           <div className="mt-4">
