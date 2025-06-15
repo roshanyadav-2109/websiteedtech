@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -26,7 +27,7 @@ export const useNotesManager = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchNotes = async () => {
+  const fetchNotes = useCallback(async () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -46,7 +47,7 @@ export const useNotesManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   const addNote = async (noteData: Omit<Note, 'id' | 'download_count' | 'created_by' | 'is_active' | 'created_at'>): Promise<boolean> => {
     if (!user) {
@@ -125,7 +126,23 @@ export const useNotesManager = () => {
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+
+    const channel = supabase
+      .channel('public:notes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'notes' },
+        (payload) => {
+          console.log('Real-time change detected in notes, refetching...', payload);
+          fetchNotes();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchNotes]);
 
   return {
     notes,
@@ -136,3 +153,4 @@ export const useNotesManager = () => {
     fetchNotes,
   };
 };
+
