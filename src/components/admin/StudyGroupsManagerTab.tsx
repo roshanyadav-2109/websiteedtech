@@ -13,11 +13,11 @@ import { Plus, Edit, Trash2, ExternalLink, Search } from "lucide-react";
 
 interface StudyGroup {
   id: string;
-  title: string;
-  join_link: string;
-  social_handle_type: string;
+  name: string;
+  invite_link: string;
+  group_type: string;
   exam_type: string;
-  subject: string;
+  subjects: string[];
   branch: string;
   level: string;
   class_level: string;
@@ -34,11 +34,11 @@ const StudyGroupsManagerTab = () => {
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    title: '',
-    join_link: '',
-    social_handle_type: '',
+    name: '',
+    invite_link: '',
+    group_type: '',
     exam_type: '',
-    subject: '',
+    subjects: [] as string[],
     branch: '',
     level: '',
     class_level: '',
@@ -84,11 +84,11 @@ const StudyGroupsManagerTab = () => {
 
   const resetForm = () => {
     setFormData({
-      title: '',
-      join_link: '',
-      social_handle_type: '',
+      name: '',
+      invite_link: '',
+      group_type: '',
       exam_type: '',
-      subject: '',
+      subjects: [],
       branch: '',
       level: '',
       class_level: '',
@@ -102,11 +102,11 @@ const StudyGroupsManagerTab = () => {
 
     try {
       const groupData = {
-        title: formData.title,
-        join_link: formData.join_link,
-        social_handle_type: formData.social_handle_type,
+        name: formData.name,
+        invite_link: formData.invite_link,
+        group_type: formData.group_type,
         exam_type: formData.exam_type || null,
-        subject: formData.subject || null,
+        subjects: formData.subjects.length > 0 ? formData.subjects : null,
         branch: formData.exam_type === 'IITM_BS' ? formData.branch : null,
         level: formData.exam_type === 'IITM_BS' ? formData.level : null,
         class_level: ['JEE', 'NEET'].includes(formData.exam_type) ? formData.class_level : null,
@@ -146,11 +146,11 @@ const StudyGroupsManagerTab = () => {
   const handleEdit = (group: StudyGroup) => {
     setEditingGroup(group);
     setFormData({
-      title: group.title,
-      join_link: group.join_link,
-      social_handle_type: group.social_handle_type,
+      name: group.name,
+      invite_link: group.invite_link || '',
+      group_type: group.group_type || '',
       exam_type: group.exam_type || '',
-      subject: group.subject || '',
+      subjects: group.subjects || [],
       branch: group.branch || '',
       level: group.level || '',
       class_level: group.class_level || '',
@@ -179,9 +179,24 @@ const StudyGroupsManagerTab = () => {
     }
   };
 
+  const handleSubjectChange = (subject: string) => {
+    if (formData.subjects.includes(subject)) {
+      setFormData({
+        ...formData,
+        subjects: formData.subjects.filter(s => s !== subject)
+      });
+    } else {
+      setFormData({
+        ...formData,
+        subjects: [...formData.subjects, subject]
+      });
+    }
+  };
+
   const filteredGroups = studyGroups.filter(group => {
-    const matchesSearch = group.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         group.subject?.toLowerCase().includes(searchTerm.toLowerCase());
+    const subjectsText = group.subjects ? group.subjects.join(' ') : '';
+    const matchesSearch = group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         subjectsText.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterExamType === 'all' || group.exam_type === filterExamType;
     return matchesSearch && matchesFilter;
   });
@@ -205,19 +220,19 @@ const StudyGroupsManagerTab = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="name">Name *</Label>
                 <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="social_handle_type">Social Handle Type *</Label>
-                  <Select value={formData.social_handle_type} onValueChange={(value) => setFormData({ ...formData, social_handle_type: value })}>
+                  <Label htmlFor="group_type">Group Type *</Label>
+                  <Select value={formData.group_type} onValueChange={(value) => setFormData({ ...formData, group_type: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select platform" />
                     </SelectTrigger>
@@ -229,7 +244,7 @@ const StudyGroupsManagerTab = () => {
                 </div>
                 <div>
                   <Label htmlFor="exam_type">Exam Type</Label>
-                  <Select value={formData.exam_type} onValueChange={(value) => setFormData({ ...formData, exam_type: value, subject: '', branch: '', level: '' })}>
+                  <Select value={formData.exam_type} onValueChange={(value) => setFormData({ ...formData, exam_type: value, subjects: [], branch: '', level: '' })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select exam type" />
                     </SelectTrigger>
@@ -243,12 +258,12 @@ const StudyGroupsManagerTab = () => {
               </div>
 
               <div>
-                <Label htmlFor="join_link">Join Link *</Label>
+                <Label htmlFor="invite_link">Invite Link *</Label>
                 <Input
-                  id="join_link"
+                  id="invite_link"
                   type="url"
-                  value={formData.join_link}
-                  onChange={(e) => setFormData({ ...formData, join_link: e.target.value })}
+                  value={formData.invite_link}
+                  onChange={(e) => setFormData({ ...formData, invite_link: e.target.value })}
                   placeholder="https://..."
                   required
                 />
@@ -256,17 +271,21 @@ const StudyGroupsManagerTab = () => {
 
               {formData.exam_type && (
                 <div>
-                  <Label htmlFor="subject">Subject</Label>
-                  <Select value={formData.subject} onValueChange={(value) => setFormData({ ...formData, subject: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select subject" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getSubjectOptions(formData.exam_type).map(subject => (
-                        <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Subjects</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {getSubjectOptions(formData.exam_type).map(subject => (
+                      <div key={subject} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id={subject}
+                          checked={formData.subjects.includes(subject)}
+                          onChange={() => handleSubjectChange(subject)}
+                          className="rounded"
+                        />
+                        <Label htmlFor={subject} className="text-sm">{subject}</Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -274,7 +293,7 @@ const StudyGroupsManagerTab = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="branch">Branch</Label>
-                    <Select value={formData.branch} onValueChange={(value) => setFormData({ ...formData, branch: value, subject: '' })}>
+                    <Select value={formData.branch} onValueChange={(value) => setFormData({ ...formData, branch: value, subjects: [] })}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select branch" />
                       </SelectTrigger>
@@ -366,20 +385,22 @@ const StudyGroupsManagerTab = () => {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      {group.title}
-                      <Badge variant="outline">{group.social_handle_type}</Badge>
+                      {group.name}
+                      <Badge variant="outline">{group.group_type}</Badge>
                       {group.exam_type && <Badge variant="secondary">{group.exam_type}</Badge>}
                     </CardTitle>
                     <CardDescription>
-                      Join this {group.social_handle_type} group for {group.exam_type || 'general'} discussions
+                      Join this {group.group_type} group for {group.exam_type || 'general'} discussions
                     </CardDescription>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <a href={group.join_link} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    </Button>
+                    {group.invite_link && (
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={group.invite_link} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    )}
                     <Button variant="outline" size="sm" onClick={() => handleEdit(group)}>
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -391,7 +412,9 @@ const StudyGroupsManagerTab = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  {group.subject && <div><span className="font-medium">Subject:</span> {group.subject}</div>}
+                  {group.subjects && group.subjects.length > 0 && (
+                    <div><span className="font-medium">Subjects:</span> {group.subjects.join(', ')}</div>
+                  )}
                   {group.branch && <div><span className="font-medium">Branch:</span> {group.branch}</div>}
                   {group.level && <div><span className="font-medium">Level:</span> {group.level}</div>}
                   {group.class_level && <div><span className="font-medium">Class:</span> {group.class_level}</div>}

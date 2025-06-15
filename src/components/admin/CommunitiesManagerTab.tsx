@@ -13,11 +13,11 @@ import { Plus, Edit, Trash2, ExternalLink, Search } from "lucide-react";
 
 interface Community {
   id: string;
-  title: string;
+  name: string;
   branch: string;
   level: string;
   subject: string;
-  join_link: string;
+  group_link: string;
   exam_type: string;
   created_at: string;
 }
@@ -32,11 +32,11 @@ const CommunitiesManagerTab = () => {
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    title: '',
+    name: '',
     branch: '',
     level: '',
     subject: '',
-    join_link: '',
+    group_link: '',
   });
 
   // Subject options based on branch
@@ -75,11 +75,11 @@ const CommunitiesManagerTab = () => {
 
   const resetForm = () => {
     setFormData({
-      title: '',
+      name: '',
       branch: '',
       level: '',
       subject: '',
-      join_link: '',
+      group_link: '',
     });
     setEditingCommunity(null);
   };
@@ -90,11 +90,12 @@ const CommunitiesManagerTab = () => {
 
     try {
       const communityData = {
-        title: formData.title,
+        name: formData.name,
         branch: formData.branch,
         level: formData.level,
         subject: formData.subject || null,
-        join_link: formData.join_link,
+        group_link: formData.group_link,
+        group_type: 'Telegram',
         exam_type: 'IITM_BS',
       };
 
@@ -132,11 +133,11 @@ const CommunitiesManagerTab = () => {
   const handleEdit = (community: Community) => {
     setEditingCommunity(community);
     setFormData({
-      title: community.title,
+      name: community.name,
       branch: community.branch || '',
       level: community.level,
       subject: community.subject || '',
-      join_link: community.join_link,
+      group_link: community.group_link,
     });
     setIsDialogOpen(true);
   };
@@ -163,7 +164,7 @@ const CommunitiesManagerTab = () => {
   };
 
   const filteredCommunities = communities.filter(community => {
-    const matchesSearch = community.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          community.subject?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterBranch === 'all' || community.branch === filterBranch;
     return matchesSearch && matchesFilter;
@@ -188,11 +189,11 @@ const CommunitiesManagerTab = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="name">Name *</Label>
                 <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                 />
               </div>
@@ -242,12 +243,12 @@ const CommunitiesManagerTab = () => {
               )}
 
               <div>
-                <Label htmlFor="join_link">Join Community Link *</Label>
+                <Label htmlFor="group_link">Join Community Link *</Label>
                 <Input
-                  id="join_link"
+                  id="group_link"
                   type="url"
-                  value={formData.join_link}
-                  onChange={(e) => setFormData({ ...formData, join_link: e.target.value })}
+                  value={formData.group_link}
+                  onChange={(e) => setFormData({ ...formData, group_link: e.target.value })}
                   placeholder="https://..."
                   required
                 />
@@ -305,7 +306,7 @@ const CommunitiesManagerTab = () => {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      {community.title}
+                      {community.name}
                       <Badge variant="outline">{community.branch}</Badge>
                       <Badge variant="secondary">{community.level}</Badge>
                     </CardTitle>
@@ -315,7 +316,7 @@ const CommunitiesManagerTab = () => {
                   </div>
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" asChild>
-                      <a href={community.join_link} target="_blank" rel="noopener noreferrer">
+                      <a href={community.group_link} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-4 w-4" />
                       </a>
                     </Button>
