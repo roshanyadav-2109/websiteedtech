@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Calculator, TrendingUp, Award, RefreshCw } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import FoundationMarksPredictor from "./FoundationMarksPredictor";
 import DiplomaMarksPredictor from "./DiplomaMarksPredictor";
 import DegreeMarksPredictor from "./DegreeMarksPredictor";
@@ -452,22 +451,18 @@ const IITMToolsTab = () => {
             <div className="space-y-6">
               <div className="p-4 rounded-md bg-blue-50 border border-blue-200">
                 <h4 className="font-semibold text-blue-800 mb-2 text-center">Grade Points Reference</h4>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[180px]">Letter Grade</TableHead>
-                      <TableHead className="text-right">Grade Points</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                <div className="max-w-xs mx-auto">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                    <div className="font-semibold text-gray-700 border-b pb-1">Letter Grade</div>
+                    <div className="font-semibold text-gray-700 border-b pb-1 text-right">Grade Points</div>
                     {gradeReference.map((grade) => (
-                      <TableRow key={grade.letter}>
-                        <TableCell className="font-medium">{grade.letter}</TableCell>
-                        <TableCell className="text-right">{grade.points}</TableCell>
-                      </TableRow>
+                      <React.Fragment key={grade.letter}>
+                        <div className="font-medium">{grade.letter}</div>
+                        <div className="text-right">{grade.points}</div>
+                      </React.Fragment>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+                </div>
                 <p className="text-xs text-gray-600 mt-2 text-center">Use the grade points in the calculator below.</p>
               </div>
 
