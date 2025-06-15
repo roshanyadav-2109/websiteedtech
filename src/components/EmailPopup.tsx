@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -7,7 +7,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { Mail, X } from "lucide-react";
 
 const formSchema = z.object({
@@ -17,16 +33,16 @@ const formSchema = z.object({
 });
 
 const EmailPopup = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleOpen = () => setIsOpen(true);
-    window.addEventListener('openContactForm', handleOpen);
+    const handleOpen = () => setOpen(true);
+    window.addEventListener("openContactForm", handleOpen);
     return () => {
-      window.removeEventListener('openContactForm', handleOpen);
+      window.removeEventListener("openContactForm", handleOpen);
     };
   }, []);
 
@@ -43,52 +59,78 @@ const EmailPopup = () => {
     setIsSubmitting(true);
     setShowConfirmation(false);
     setError(null);
-    
-    const { error } = await supabase.functions.invoke('contact-us', {
+    const { error } = await supabase.functions.invoke("contact-us", {
       body: values,
     });
-
     setIsSubmitting(false);
 
     if (error) {
-      setError('There was an error submitting the form. Please try again.');
-      console.error("Error invoking function:", error);
+      setError("There was an error submitting the form. Please try again.");
     } else {
       setShowConfirmation(true);
       form.reset();
       setTimeout(() => {
         setShowConfirmation(false);
-        setIsOpen(false);
-      }, 3000);
+        setOpen(false);
+      }, 2200);
     }
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
-      {!isOpen && (
-        <div className="bg-golden text-black py-2 px-4 rounded-lg shadow-lg text-sm animate-fade-in">
-          Have queries? Raise a ticket!
-        </div>
-      )}
-      <div 
-        className="bg-royal text-white w-14 h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-royal-dark transition-colors"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X size={24} /> : <Mail size={24} />}
+    <Dialog open={open} onOpenChange={setOpen}>
+      {/* Floating trigger button */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        {!open && (
+          <div className="bg-golden text-black py-2 px-4 rounded-lg shadow-lg text-sm animate-fade-in font-semibold">
+            Have queries? Raise a ticket!
+          </div>
+        )}
+        <DialogTrigger asChild>
+          <button
+            className={
+              "bg-royal text-white w-14 h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-royal-dark transition-colors outline-none border-4 border-white"
+            }
+            aria-label={open ? "Close Contact Form" : "Open Contact Form"}
+          >
+            {open ? <X size={28} /> : <Mail size={28} />}
+          </button>
+        </DialogTrigger>
       </div>
-      {isOpen && (
-        <div className="bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
-          <h2 className="text-xl font-bold mb-4 text-center">Contact Us</h2>
+      <DialogContent className="max-w-md p-0 rounded-2xl overflow-hidden animate-scale-in border-0 shadow-premium">
+        <DialogHeader className="relative">
+          {/* Gradient header with icon and close button */}
+          <div className="bg-gradient-to-r from-royal to-royal-dark py-6 px-6 flex flex-col items-center relative">
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-white shadow scale-110 -mt-4 mb-1 border-4 border-golden">
+              <Mail className="text-royal" size={30} />
+            </div>
+            <DialogTitle className="text-2xl font-bold text-white mt-2 mb-1">
+              Contact Us
+            </DialogTitle>
+            <DialogDescription className="text-white/90 text-base font-medium pb-2">
+              We'd love to hear from you. Fill out the form below and our team will respond soon!
+            </DialogDescription>
+            <DialogClose className="absolute right-2 top-2 rounded-full p-1 hover:bg-royal-light focus:outline-none">
+              <X className="text-white" size={22} />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+          </div>
+        </DialogHeader>
+        <div className="bg-white px-6 py-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Your Email</FormLabel>
+                    <FormLabel className="text-gray-700">Your Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="you@example.com" {...field} />
+                      <Input
+                        placeholder="you@example.com"
+                        autoComplete="email"
+                        className="bg-gray-50 focus:bg-white"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -99,9 +141,13 @@ const EmailPopup = () => {
                 name="subject"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Subject</FormLabel>
+                    <FormLabel className="text-gray-700">Subject</FormLabel>
                     <FormControl>
-                      <Input placeholder="Inquiry about..." {...field} />
+                      <Input
+                        placeholder="Inquiry about..."
+                        className="bg-gray-50 focus:bg-white"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -112,33 +158,64 @@ const EmailPopup = () => {
                 name="message"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Your Message</FormLabel>
+                    <FormLabel className="text-gray-700">Your Message</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Your message here..." rows={4} {...field} />
+                      <Textarea
+                        placeholder="Type your message here..."
+                        rows={4}
+                        className="bg-gray-50 focus:bg-white resize-none"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
-                {isSubmitting ? 'Submitting...' : 'Submit'}
+              {/* Feedback messages */}
+              {showConfirmation ? (
+                <div className="bg-green-50 text-green-700 font-medium px-3 py-2 rounded w-full text-center animate-fade-in">
+                  🎉 Thank you! Your message has been sent.
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 text-red-700 font-medium px-3 py-2 rounded w-full text-center animate-fade-in">
+                  {error}
+                </div>
+              ) : null}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-royal hover:bg-royal-dark text-white font-semibold rounded-lg shadow transition"
+                size="lg"
+              >
+                {isSubmitting ? (
+                  <span>
+                    <svg className="inline-block mr-2 animate-spin" width={18} height={18} viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="31.415,31.415" />
+                    </svg>
+                    Submitting...
+                  </span>
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </form>
           </Form>
-          {showConfirmation && (
-            <div className="bg-green-100 text-green-800 p-3 rounded-lg mt-4 text-center">
-              Thank you! Your message has been sent.
-            </div>
-          )}
-          {error && (
-             <div className="bg-red-100 text-red-800 p-3 rounded-lg mt-4 text-center">
-              {error}
-            </div>
-          )}
+          {/* Subtle divider & info */}
+          <div className="border-t border-gray-200 my-6"></div>
+          <div className="text-xs text-gray-400 text-center">
+            We’ll never share your email. For urgent queries, email{" "}
+            <a
+              href="mailto:help.unknowniitians@gmail.com"
+              className="text-royal underline hover:text-royal-dark"
+            >
+              help.unknowniitians@gmail.com
+            </a>
+          </div>
         </div>
-      )}
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
 export default EmailPopup;
+
