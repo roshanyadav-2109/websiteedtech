@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Youtube, Linkedin, Mail } from "lucide-react";
@@ -67,12 +66,6 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/exam-preparation/iitm-bs" className="hover:text-white transition-colors">IITM BS Resources</Link>
-              </li>
-              <li>
-                <Link to="/resources/skills" className="hover:text-white transition-colors">Skill Enhancement</Link>
-              </li>
-              <li>
-                <Link to="/blog" className="hover:text-white transition-colors">Blog & Articles</Link>
               </li>
             </ul>
           </div>
