@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AuthWrapper from "@/components/AuthWrapper";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import { ShimmerButton } from "./ui/shimmer-button";
+import AdminAddButton from "./admin/AdminAddButton";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 
 interface JEEPYQTabProps {
   downloads: Record<string, number>;
@@ -14,7 +16,7 @@ interface JEEPYQTabProps {
 }
 
 const JEEPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: JEEPYQTabProps) => {
-  const { pyqs, handleDownload, downloadCounts, contentLoading } = useBackend();
+  const { pyqs, handleDownload, downloadCounts, contentLoading, isAdmin, deletePyq } = useBackend();
   const [activeSubject, setActiveSubject] = useState("Physics");
   const [year, setYear] = useState("2024");
   const [session, setSession] = useState("January");
@@ -47,6 +49,10 @@ const JEEPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: JEE
     await handleDownload(pyqId, 'pyqs', fileUrl);
   };
   
+  const handleDelete = async (pyqId: string) => {
+    await deletePyq(pyqId);
+  };
+
   const currentDownloads = downloadCounts;
 
   return (
@@ -102,6 +108,13 @@ const JEEPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: JEE
               </Select>
             </div>
           </div>
+          <AdminAddButton
+            contentType="pyqs"
+            examType="JEE"
+            prefilledSubject={activeSubject}
+          >
+            Add PYQ
+          </AdminAddButton>
         </div>
         
         {contentLoading ? (
@@ -113,8 +126,43 @@ const JEEPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: JEE
             {filteredPapers.map((pyq) => (
               <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
                 <CardHeader>
-                  <CardTitle className="text-lg">{pyq.title}</CardTitle>
-                  <CardDescription>{pyq.description || ''}</CardDescription>
+                    <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                            <CardTitle className="text-lg">{pyq.title}</CardTitle>
+                            <CardDescription>{pyq.description || ''}</CardDescription>
+                        </div>
+                        {isAdmin && (
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                        title="Delete PYQ"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the PYQ "{pyq.title}".
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={() => handleDelete(pyq.id)}
+                                            className="bg-red-600 hover:bg-red-700"
+                                        >
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        )}
+                    </div>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
                   <ShimmerButton

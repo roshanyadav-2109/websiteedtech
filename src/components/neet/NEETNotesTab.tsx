@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubjectBlock from "@/components/SubjectBlock";
+import AdminAddButton from "@/components/admin/AdminAddButton";
 
 const NEETNotesTab = () => {
   const [activeSubject, setActiveSubject] = useState("Physics");
@@ -17,6 +18,14 @@ const NEETNotesTab = () => {
     <>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
+        <AdminAddButton
+            contentType="notes"
+            examType="NEET"
+            prefilledSubject={activeSubject}
+            prefilledClass={activeClass}
+        >
+            Add Note
+        </AdminAddButton>
       </div>
 
       {/* Subject Filter Tabs */}

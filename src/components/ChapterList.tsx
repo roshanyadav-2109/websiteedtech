@@ -1,8 +1,11 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Download, Eye } from "lucide-react";
+import { Download, Eye, Trash2 } from "lucide-react";
 import { ShimmerButton } from './ui/shimmer-button';
+import { useBackend } from './BackendIntegratedWrapper';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface Chapter {
     id: string;
@@ -20,12 +23,25 @@ interface ChapterListProps {
 }
 
 const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onDownload }) => {
+    const { isAdmin, deleteNote } = useBackend();
+    const { toast } = useToast();
+
+    const handleDelete = async (chapterId: string) => {
+        const success = await deleteNote(chapterId);
+        if (success) {
+            toast({
+              title: "Success",
+              description: "Note deleted successfully.",
+            });
+        }
+    };
+    
     return (
         <div className="space-y-4">
             <ul className="space-y-3">
                 {chapters.map((chapter) => (
                     <li key={chapter.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors">
-                        <div className="mb-4 sm:mb-0">
+                        <div className="mb-4 sm:mb-0 flex-grow">
                             <h3 className="text-md font-semibold text-gray-900">{chapter.title}</h3>
                             {chapter.description && <p className="text-sm text-gray-500 mt-1">{chapter.description}</p>}
                         </div>
@@ -58,6 +74,37 @@ const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onD
                                     <span className="hidden md:inline">Download</span>
                                 </span>
                             </ShimmerButton>
+                            {isAdmin && (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                            title="Delete note"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. This will permanently delete the note "{chapter.title}".
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={() => handleDelete(chapter.id)}
+                                                className="bg-red-600 hover:bg-red-700"
+                                            >
+                                                Delete
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            )}
                         </div>
                     </li>
                 ))}

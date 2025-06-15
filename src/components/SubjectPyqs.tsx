@@ -3,9 +3,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import AdminAddButton from "@/components/admin/AdminAddButton";
 import { ShimmerButton } from "./ui/shimmer-button";
+import { useBackend } from "./BackendIntegratedWrapper";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 
 interface PyqSet {
   id: string;
@@ -42,6 +44,7 @@ const SubjectPyqs = ({
   level
 }: SubjectPyqsProps) => {
   const [selectedYear, setSelectedYear] = useState(years[0] || "");
+  const { isAdmin, deletePyq } = useBackend();
 
   // Enhanced filtering based on exam type
   const filteredPyqs = pyqsByYear[selectedYear]?.filter(pyq => {
@@ -60,6 +63,10 @@ const SubjectPyqs = ({
     
     return subjectMatch && examTypeMatch;
   }) || [];
+
+  const handleDelete = async (pyqId: string) => {
+    await deletePyq(pyqId);
+  }
 
   return (
     <div className="mt-4">
@@ -103,10 +110,45 @@ const SubjectPyqs = ({
           <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
             <CardHeader>
               <div className="flex justify-between items-start">
-                <CardTitle className="text-lg">{pyq.title}</CardTitle>
-                <Badge variant="outline" className="ml-2">
-                  {selectedYear}
-                </Badge>
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{pyq.title}</CardTitle>
+                </div>
+                <div className="flex items-center">
+                  <Badge variant="outline" className="ml-2">
+                    {selectedYear}
+                  </Badge>
+                  {isAdmin && (
+                      <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                              <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-600 hover:bg-red-50 hover:text-red-700 ml-2"
+                                  title="Delete PYQ"
+                              >
+                                  <Trash2 className="h-4 w-4" />
+                              </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                              <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                      This action cannot be undone. This will permanently delete the PYQ "{pyq.title}".
+                                  </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                      onClick={() => handleDelete(pyq.id)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                  >
+                                      Delete
+                                  </AlertDialogAction>
+                              </AlertDialogFooter>
+                          </AlertDialogContent>
+                      </AlertDialog>
+                  )}
+                </div>
               </div>
               <CardDescription>{pyq.description}</CardDescription>
             </CardHeader>

@@ -2,7 +2,6 @@
 import React from "react";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import ChapterList from "./ChapterList";
-import { jeeChapters, neetChapters } from "@/data/chaptersData";
 
 interface SubjectBlockProps {
   subject: string;
@@ -13,18 +12,10 @@ interface SubjectBlockProps {
 const SubjectBlock = ({ subject, selectedClass, examType }: SubjectBlockProps) => {
   const { notes, handleDownload, downloadCounts, contentLoading } = useBackend();
   
-  // Get chapters from the data files
-  const chaptersData = examType === 'JEE' ? jeeChapters : neetChapters;
-  const staticChapters = chaptersData[subject]?.[selectedClass] || [];
-  
   // Filter database notes for this subject and class
-  const examNotes = notes.filter(note => note.exam_type === examType);
-  const dbChapters = examNotes.filter(
-    note => note.subject === subject && note.class_level === selectedClass
+  const filteredNotes = notes.filter(
+    note => note.exam_type === examType && note.subject === subject && note.class_level === selectedClass
   );
-
-  // Combine static chapters with database chapters, giving priority to database data
-  const allChapters = [...staticChapters, ...dbChapters];
 
   const handleDownloadClick = async (noteId: string, fileUrl?: string) => {
     await handleDownload(noteId, 'notes', fileUrl);
@@ -40,7 +31,7 @@ const SubjectBlock = ({ subject, selectedClass, examType }: SubjectBlockProps) =
 
   return (
     <div>
-      <ChapterList chapters={allChapters} downloadCounts={downloadCounts} onDownload={handleDownloadClick} />
+      <ChapterList chapters={filteredNotes} downloadCounts={downloadCounts} onDownload={handleDownloadClick} />
     </div>
   );
 };
