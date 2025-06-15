@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,6 @@ import { Download, Trash2, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import AuthWrapper from "@/components/AuthWrapper";
-import { ShinyButton } from "./ui/shiny-button";
 
 const NEETPYQTab = () => {
   const [year, setYear] = useState("2024");
@@ -105,14 +103,12 @@ const NEETPYQTab = () => {
                   </div>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
-                  <ShinyButton
+                  <Button
                     onClick={() => handleDownloadClick(pyq.id, pyq.file_link || undefined)}
+                    className="bg-royal hover:bg-royal-dark text-white"
                   >
-                    <span className="flex items-center justify-center">
-                      <Download className="h-4 w-4 mr-2" />
-                      <span>Download</span>
-                    </span>
-                  </ShinyButton>
+                    <Download className="h-4 w-4 mr-2" /> Download
+                  </Button>
                   <div className="flex items-center">
                     <span className="text-sm text-gray-500">{currentDownloads[pyq.id] || pyq.download_count || 0}</span>
                     <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">

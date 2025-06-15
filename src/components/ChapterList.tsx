@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Download, Eye } from "lucide-react";
-import { ShinyButton } from './ui/shiny-button';
 
 interface Chapter {
     id: string;
@@ -44,17 +44,16 @@ const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onD
                                     <span className="hidden md:inline">Preview</span>
                                 </Button>
                             )}
-                            <ShinyButton
+                            <Button
                                 onClick={() => onDownload(chapter.id, chapter.file_link || undefined)}
+                                className="bg-royal hover:bg-royal-dark text-white"
+                                size="sm"
                                 disabled={!chapter.file_link}
                                 title={!chapter.file_link ? "No file available for download" : "Download file"}
-                                className={!chapter.file_link ? 'opacity-50 cursor-not-allowed' : ''}
                             >
-                                <span className="flex items-center justify-center">
-                                    <Download className="h-4 w-4 mr-2" />
-                                    <span>Download</span>
-                                </span>
-                            </ShinyButton>
+                                <Download className="h-4 w-4 md:mr-2" />
+                                <span className="hidden md:inline">Download</span>
+                            </Button>
                         </div>
                     </li>
                 ))}
