@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Download, Eye } from "lucide-react";
 import { ShimmerButton } from './ui/shimmer-button';
+import { useBackend } from './BackendIntegratedWrapper';
 
 interface Chapter {
     id: string;
@@ -15,11 +16,15 @@ interface Chapter {
 
 interface ChapterListProps {
     chapters: Chapter[];
-    downloadCounts: Record<string, number>;
-    onDownload: (noteId: string, fileUrl?: string) => Promise<void>;
 }
 
-const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onDownload }) => {
+const ChapterList: React.FC<ChapterListProps> = ({ chapters }) => {
+    const { downloadCounts, handleDownload } = useBackend();
+
+    const onDownload = async (noteId: string, fileUrl?: string) => {
+        await handleDownload(noteId, 'notes', fileUrl);
+    };
+
     return (
         <div className="space-y-4">
             <ul className="space-y-3">

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Download } from "lucide-react";
 import AdminAddButton from "@/components/admin/AdminAddButton";
 import { ShimmerButton } from "./ui/shimmer-button";
+import { useBackend } from "./BackendIntegratedWrapper";
 
 interface PyqSet {
   id: string;
@@ -16,6 +18,8 @@ interface PyqSet {
   class_level?: string;
   branch?: string;
   level?: string;
+  download_count?: number;
+  file_link?: string;
 }
 
 interface SubjectPyqsProps {
@@ -23,8 +27,6 @@ interface SubjectPyqsProps {
   examType: string;
   years: string[];
   pyqsByYear: Record<string, PyqSet[]>;
-  downloads: Record<string, number>;
-  onDownload: (id: string) => void;
   classLevel?: string;
   branch?: string;
   level?: string;
@@ -35,13 +37,16 @@ const SubjectPyqs = ({
   examType, 
   years, 
   pyqsByYear, 
-  downloads, 
-  onDownload,
   classLevel,
   branch,
   level
 }: SubjectPyqsProps) => {
   const [selectedYear, setSelectedYear] = useState(years[0] || "");
+  const { downloadCounts, handleDownload } = useBackend();
+
+  const onDownload = async (pyqId: string, fileUrl?: string) => {
+    await handleDownload(pyqId, 'pyqs', fileUrl);
+  };
 
   // Enhanced filtering based on exam type
   const filteredPyqs = pyqsByYear[selectedYear]?.filter(pyq => {
@@ -112,7 +117,7 @@ const SubjectPyqs = ({
             </CardHeader>
             <CardFooter className="flex justify-between">
               <ShimmerButton
-                onClick={() => onDownload(pyq.id)}
+                onClick={() => onDownload(pyq.id, pyq.file_link)}
                 background="rgba(26, 86, 219, 0.8)"
                 borderRadius="var(--radius)"
               >
@@ -121,11 +126,11 @@ const SubjectPyqs = ({
                 </span>
               </ShimmerButton>
               <div className="flex items-center">
-                <span className="text-sm text-gray-500">{downloads[pyq.id] || 0}</span>
+                <span className="text-sm text-gray-500">{downloadCounts[pyq.id] || pyq.download_count || 0}</span>
                 <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
                   <div 
                     className="bg-royal h-full rounded-full" 
-                    style={{ width: `${Math.min(100, ((downloads[pyq.id] || 0) / 100) * 100)}%` }}
+                    style={{ width: `${Math.min(100, ((downloadCounts[pyq.id] || pyq.download_count || 0) / 100) * 100)}%` }}
                   ></div>
                 </div>
               </div>

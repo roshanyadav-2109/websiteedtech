@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,12 +9,7 @@ import AuthWrapper from "@/components/AuthWrapper";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import { ShimmerButton } from "./ui/shimmer-button";
 
-interface JEEPYQTabProps {
-  downloads: Record<string, number>;
-  onDownload: (id: string) => void;
-}
-
-const JEEPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: JEEPYQTabProps) => {
+const JEEPYQTab = () => {
   const { pyqs, handleDownload, downloadCounts, contentLoading } = useBackend();
   const [activeSubject, setActiveSubject] = useState("Physics");
   const [year, setYear] = useState("2024");
