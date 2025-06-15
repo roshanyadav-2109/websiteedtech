@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import SubjectBlock from "@/components/SubjectBlock";
+import NEETSubjectBlock from "@/components/NEETSubjectBlock";
 
 const NEETNotesTab = () => {
   const [activeSubject, setActiveSubject] = useState("Physics");
@@ -48,10 +48,9 @@ const NEETNotesTab = () => {
         </Tabs>
       </div>
       
-      <SubjectBlock 
+      <NEETSubjectBlock 
         subject={activeSubject} 
         selectedClass={activeClass}
-        examType="NEET"
       />
     </>
   );

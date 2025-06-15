@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Download, Eye } from "lucide-react";
 
-export interface Chapter {
+interface Chapter {
     id: string;
     title: string;
     description?: string;
