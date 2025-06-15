@@ -40,13 +40,6 @@ const SubjectBlock = ({ subject, selectedClass, examType }: SubjectBlockProps) =
 
   return (
     <div>
-      {staticChapters.length > 0 && dbChapters.length === 0 && (
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-blue-800 text-sm">
-            📚 <strong>Demonstration Content:</strong> These are sample chapters. Download links will be added soon.
-          </p>
-        </div>
-      )}
       <ChapterList chapters={allChapters} downloadCounts={downloadCounts} onDownload={handleDownloadClick} />
     </div>
   );
