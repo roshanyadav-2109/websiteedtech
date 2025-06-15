@@ -50,11 +50,8 @@ const AdminLogin = () => {
         description: "Welcome to the admin panel",
       });
 
-      // Small delay to allow auth state to update
-      setTimeout(() => {
-        navigate('/admin/dashboard');
-      }, 1000);
-
+      // The auth state change will handle the redirect
+      
     } catch (error: any) {
       console.error('Login failed:', error);
       toast({
@@ -64,6 +61,34 @@ const AdminLogin = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      console.log('Starting Google OAuth login');
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/admin/dashboard`
+        }
+      });
+
+      if (error) {
+        console.error('Google login error:', error);
+        toast({
+          title: "Login failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Google login failed:', error);
+      toast({
+        title: "Login failed",
+        description: "Failed to initiate Google login",
+        variant: "destructive",
+      });
     }
   };
 
@@ -124,6 +149,17 @@ const AdminLogin = () => {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
+
+          <div className="mt-4">
+            <Button 
+              onClick={handleGoogleLogin}
+              variant="outline" 
+              className="w-full"
+              disabled={isLoading}
+            >
+              Sign in with Google
+            </Button>
+          </div>
           
           <div className="mt-4 text-center">
             <Button 

@@ -99,15 +99,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    console.log('useAuth: Setting up auth listener');
+    
+    // Get initial session
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('useAuth: Error getting initial session:', error);
+        } else {
+          console.log('useAuth: Initial session:', session?.user?.email || 'No session');
+          setSession(session);
+          setUser(session?.user ?? null);
+          setIsLoading(false);
+          
+          if (session?.user) {
+            // Defer admin check to not block the initial render
+            setTimeout(() => {
+              checkAdminStatus();
+            }, 100);
+          }
+        }
+      } catch (error) {
+        console.error('useAuth: Error in getInitialSession:', error);
+        setIsLoading(false);
+      }
+    };
+
+    getInitialSession();
+
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('useAuth: Auth state changed:', event, session?.user?.email);
+        console.log('useAuth: Auth state changed:', event, session?.user?.email || 'No user');
         setSession(session);
         setUser(session?.user ?? null);
-        setIsLoading(false);
+        
+        if (!isLoading) {
+          setIsLoading(false);
+        }
         
         if (session?.user) {
-          // Use setTimeout to defer admin check and prevent blocking
+          // Defer admin check to not block the auth state change
           setTimeout(() => {
             checkAdminStatus();
           }, 100);
@@ -119,21 +152,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('useAuth: Initial session:', session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-      
-      if (session?.user) {
-        setTimeout(() => {
-          checkAdminStatus();
-        }, 100);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('useAuth: Cleaning up auth listener');
+      subscription.unsubscribe();
+    };
   }, []);
 
   console.log('useAuth: Current state:', {

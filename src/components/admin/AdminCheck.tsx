@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useAdminCheck } from '@/hooks/useAdminCheck';
 import { Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
@@ -11,19 +10,14 @@ interface AdminCheckProps {
 }
 
 const AdminCheck: React.FC<AdminCheckProps> = ({ children, requireSuperAdmin = false }) => {
-  const { user, isLoading: authLoading } = useAuth();
-  const { isAdmin, isSuperAdmin, isLoading: adminLoading } = useAdminCheck();
-
-  const isLoading = authLoading || adminLoading;
+  const { user, isLoading, isAdmin, isSuperAdmin } = useAuth();
 
   console.log('AdminCheck state:', { 
     user: user?.email, 
     isAdmin, 
     isSuperAdmin,
     requireSuperAdmin,
-    isLoading, 
-    authLoading, 
-    adminLoading 
+    isLoading
   });
 
   if (isLoading) {
@@ -55,6 +49,14 @@ const AdminCheck: React.FC<AdminCheckProps> = ({ children, requireSuperAdmin = f
             {requireSuperAdmin && (
               <p className="text-gray-500">Super Admin required: {isSuperAdmin ? 'Yes' : 'No'}</p>
             )}
+          </div>
+          <div className="mt-4">
+            <button 
+              onClick={() => window.location.href = '/admin/login'}
+              className="bg-royal text-white px-4 py-2 rounded hover:bg-royal-dark"
+            >
+              Go to Admin Login
+            </button>
           </div>
         </div>
       </div>
