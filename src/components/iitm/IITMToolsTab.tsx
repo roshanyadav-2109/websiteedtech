@@ -479,20 +479,16 @@ const IITMToolsTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Foundation: Data Science or Electronic Systems */}
-            {level === "foundation" ? (
-              <FoundationMarksPredictor branch={branch} level={level} />
-            ) : level === "diploma" && branch === "data-science" ? (
+            {/* Foundation: Data Science, Foundation */}
+            {branch === "data-science" && level === "foundation" ? (
+              <FoundationMarksPredictor />
+            ) : branch === "data-science" && level === "diploma" ? (
               <DiplomaMarksPredictor />
-            ) : level === "degree" && branch === "data-science" ? (
+            ) : branch === "data-science" && level === "degree" ? (
               <DegreeMarksPredictor />
             ) : (
               <div className="text-center text-gray-600 text-lg pt-12 pb-16">
-                {level === "all" ? (
-                  <>Please select a specific <span className="font-semibold">level</span> (Foundation, Diploma, or Degree) to use the marks predictor.</>
-                ) : (
-                  <>Marks predictor for <span className="font-semibold">{level}</span> level is only available for <span className="font-semibold">BS Data Science branch</span>.</>
-                )}
+                Marks predictor is only available for <span className="font-semibold">Foundation, Diploma, or Degree subjects</span> of <span className="font-semibold">BS Data Science branch</span>.
               </div>
             )}
           </CardContent>

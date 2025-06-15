@@ -1,3 +1,4 @@
+
 import { Subject } from "../types/gradeTypes";
 
 export const ALL_SUBJECTS: Record<string, Subject[]> = {
@@ -80,101 +81,6 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
       name: "Mathematics 2",
       fields: [
         { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "english_es1",
-      name: "English - I (ES)",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "math_electronics1",
-      name: "Math for Electronics - I",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "electronic_systems_thinking",
-      name: "Electronic Systems Thinking and Circuits",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "intro_c_programming",
-      name: "Introduction to C Programming",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "OPPE1", label: "OPPE1 Score", min: 0, max: 100 },
-        { id: "OPPE2", label: "OPPE2 Score", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "english_es2",
-      name: "English - II (ES)",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "intro_linux_programming",
-      name: "Introduction to Linux Programming",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "NPPE", label: "Avg. NPPE Assignments", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "OPE", label: "Online Programming Exam", min: 0, max: 100 },
-        { id: "BPTA", label: "Avg. Biweekly Programming Tests", min: 0, max: 100 },
-        { id: "VMT", label: "Avg. Virtual Machine Tasks", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "digital_systems",
-      name: "Digital Systems",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "electrical_electronic_circuits",
-      name: "Electrical and Electronic Circuits",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
-        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
-        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
-      ]
-    },
-    {
-      key: "embedded_c_programming",
-      name: "Embedded C Programming",
-      fields: [
-        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
-        { id: "GRPA", label: "Avg. Programming Assignments", min: 0, max: 100 },
         { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
         { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
         { id: "F", label: "Final Exam Score", min: 0, max: 100 }
