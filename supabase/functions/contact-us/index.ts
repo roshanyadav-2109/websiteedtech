@@ -11,10 +11,10 @@ const corsHeaders = {
 };
 
 interface ContactFormPayload {
+  name: string;
   email: string;
-  subject: string;
   message: string;
-  phone?: string;
+  phone: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -23,18 +23,18 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, subject, message, phone }: ContactFormPayload = await req.json();
+    const { name, email, phone, message }: ContactFormPayload = await req.json();
 
     const { data, error } = await resend.emails.send({
       from: "Unknown IITians <onboarding@resend.dev>",
       to: ["help.unknowniitians@gmail.com"],
       reply_to: email,
-      subject: `New Contact Form Submission: ${subject}`,
+      subject: `New Contact Form Submission from ${name}`,
       html: `
         <h1>New Contact Form Submission</h1>
+        <p><strong>Name:</strong> ${name}</p>
         <p><strong>From:</strong> ${email}</p>
-        ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ""}
-        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
         <hr>
         <p>${message.replace(/\n/g, "<br>")}</p>
       `,

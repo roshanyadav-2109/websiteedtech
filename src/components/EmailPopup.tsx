@@ -27,9 +27,9 @@ import {
 import { Mail, X } from "lucide-react";
 
 const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
-  phone: z.string().optional(),
-  subject: z.string().min(2, { message: "Subject must be at least 2 characters." }),
+  phone: z.string().min(10, { message: "Please enter a valid 10-digit phone number." }).max(10, { message: "Please enter a valid 10-digit phone number." }),
   message: z.string().min(10, { message: "Message must be at least 10 characters." }),
 });
 
@@ -50,9 +50,9 @@ const EmailPopup = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       phone: "",
-      subject: "",
       message: "",
     },
   });
@@ -118,6 +118,24 @@ const EmailPopup = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
               <FormField
                 control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 text-xs">Your Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g. Jane Doe"
+                        autoComplete="name"
+                        className="bg-gray-50 focus:bg-white h-8 text-xs"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -139,28 +157,11 @@ const EmailPopup = () => {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 text-xs">Phone (Optional)</FormLabel>
+                    <FormLabel className="text-gray-700 text-xs">Phone</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Your phone number"
                         autoComplete="tel"
-                        className="bg-gray-50 focus:bg-white h-8 text-xs"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="subject"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700 text-xs">Subject</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Inquiry about..."
                         className="bg-gray-50 focus:bg-white h-8 text-xs"
                         {...field}
                       />
