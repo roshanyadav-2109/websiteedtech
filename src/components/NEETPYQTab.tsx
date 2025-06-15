@@ -6,12 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import AuthWrapper from "@/components/AuthWrapper";
 
-interface NEETPYQTabProps {
-  downloads?: Record<string, number>;
-  onDownload?: (id: string) => void;
-}
-
-const NEETPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: NEETPYQTabProps) => {
+const NEETPYQTab = () => {
   const [year, setYear] = useState("2024");
   const { 
     isAdmin, 
@@ -42,11 +37,7 @@ const NEETPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: NE
   }, [pyqs, downloadCounts, updateDownloadCount]);
 
   const handleDownloadClick = async (pyqId: string, fileUrl?: string) => {
-    if (propOnDownload) {
-      propOnDownload(pyqId);
-    } else {
-      await handleDownload(pyqId, 'pyqs', fileUrl);
-    }
+    await handleDownload(pyqId, 'pyqs', fileUrl);
   };
 
   const handleDeleteClick = async (pyqId: string) => {
@@ -55,7 +46,7 @@ const NEETPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: NE
     }
   };
 
-  const currentDownloads = propDownloads || downloadCounts;
+  const currentDownloads = downloadCounts;
 
   return (
     <AuthWrapper>
