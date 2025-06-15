@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +11,9 @@ import {
 } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
+import { runPopulation } from "@/utils/populateIITMNotes";
 
 interface Note {
   id: string;
@@ -27,6 +29,7 @@ const BranchNotesTab = () => {
   const [level, setLevel] = useState("foundation");
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isAdmin } = useBackend();
 
   // Fetch notes from the dedicated iitm_branch_notes table
   useEffect(() => {
@@ -384,6 +387,12 @@ const BranchNotesTab = () => {
           </div>
         )}
       </div>
+      {/* Add admin trigger button */}
+      {isAdmin && (
+        <div className="flex justify-end mb-2">
+          <Button variant="outline" onClick={handlePopulateClick}>Populate All Notes (Admin)</Button>
+        </div>
+      )}
     </div>
   );
 };
