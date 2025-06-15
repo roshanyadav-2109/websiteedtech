@@ -1,24 +1,25 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import ContentManagementCard from './ContentManagementCard';
 import { useBackend } from '@/components/BackendIntegratedWrapper';
 
 const ContentManagementTab = () => {
-  const { notes, pyqs, contentLoading } = useBackend();
+  const { notes, pyqs, courses, contentLoading } = useBackend();
   const [searchQuery, setSearchQuery] = useState('');
   const [subjectFilter, setSubjectFilter] = useState('');
   const [examTypeFilter, setExamTypeFilter] = useState('');
 
   const filterContent = (items: any[]) => {
     return items.filter(item => {
-      const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch = (item.title?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
                            (item.description || '').toLowerCase().includes(searchQuery.toLowerCase());
       const matchesSubject = !subjectFilter || item.subject === subjectFilter;
-      const matchesExamType = !examTypeFilter || item.exam_type === examTypeFilter;
+      const matchesExamType = !examTypeFilter || (item.exam_type || item.exam_category) === examTypeFilter;
       
       return matchesSearch && matchesSubject && matchesExamType;
     });
@@ -26,9 +27,10 @@ const ContentManagementTab = () => {
 
   const filteredNotes = filterContent(notes);
   const filteredPyqs = filterContent(pyqs);
+  const filteredCourses = filterContent(courses || []);
 
-  const allSubjects = [...new Set([...notes, ...pyqs].map(item => item.subject).filter(Boolean))];
-  const allExamTypes = [...new Set([...notes, ...pyqs].map(item => item.exam_type).filter(Boolean))];
+  const allSubjects = [...new Set([...notes, ...pyqs, ...(courses || [])].map(item => item.subject).filter(Boolean))];
+  const allExamTypes = [...new Set([...notes, ...pyqs, ...(courses || [])].map(item => item.exam_type || item.exam_category).filter(Boolean))];
 
   if (contentLoading) {
     return (
@@ -84,6 +86,7 @@ const ContentManagementTab = () => {
           <TabsList>
             <TabsTrigger value="notes">Notes ({filteredNotes.length})</TabsTrigger>
             <TabsTrigger value="pyqs">PYQs ({filteredPyqs.length})</TabsTrigger>
+            <TabsTrigger value="courses">Courses ({filteredCourses.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="notes" className="mt-6">
@@ -119,6 +122,46 @@ const ContentManagementTab = () => {
                   />
                 ))}
               </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="courses" className="mt-6">
+            {filteredCourses.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No courses found matching your criteria.
+              </div>
+            ) : (
+               <div className="border rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Bestseller</TableHead>
+                      <TableHead>Enrolled</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCourses.map(course => (
+                      <TableRow key={course.id}>
+                        <TableCell className="font-medium">{course.title}</TableCell>
+                        <TableCell>{course.exam_category}</TableCell>
+                        <TableCell>
+                          {course.discounted_price ? (
+                            <div className="flex items-center gap-2">
+                              <span className="line-through text-gray-500">₹{course.price}</span>
+                              <span className="font-semibold">₹{course.discounted_price}</span>
+                            </div>
+                          ) : `₹${course.price}`}
+                        </TableCell>
+                        <TableCell>{course.bestseller ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>{course.students_enrolled || 0}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+               </div>
             )}
           </TabsContent>
         </Tabs>

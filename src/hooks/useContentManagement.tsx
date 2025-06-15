@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useNotesManager } from './useNotesManager';
 import { usePyqsManager } from './usePyqsManager';
+import { useCoursesManager } from './useCoursesManager';
 
 interface Note {
   id: string;
@@ -61,18 +62,32 @@ export const useContentManagement = () => {
     updatePyq,
     fetchPyqs,
   } = usePyqsManager();
+  
+  const {
+    courses,
+    isLoading: coursesLoading,
+    createCourse,
+    updateCourse,
+    deleteCourse,
+    fetchCourses,
+  } = useCoursesManager();
 
   return {
     notes,
     pyqs,
-    loading: notesLoading || pyqsLoading,
+    courses,
+    loading: notesLoading || pyqsLoading || coursesLoading,
     addNote,
     addPyq,
+    createCourse,
     deleteNote,
     deletePyq,
+    deleteCourse,
     updateNote,
     updatePyq,
+    updateCourse,
     refreshNotes: fetchNotes,
     refreshPyqs: fetchPyqs,
+    refreshCourses: fetchCourses,
   };
 };

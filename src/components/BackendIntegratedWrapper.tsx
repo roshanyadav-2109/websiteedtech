@@ -14,15 +14,20 @@ interface BackendContextType {
   isDownloadCountsInitialized: boolean;
   notes: any[];
   pyqs: any[];
+  courses: any[];
   contentLoading: boolean;
   addNote: (noteData: any) => Promise<boolean>;
   addPyq: (pyqData: any) => Promise<boolean>;
+  createCourse: (courseData: any) => Promise<void>;
   deleteNote: (noteId: string) => Promise<boolean>;
   deletePyq: (pyqId: string) => Promise<boolean>;
+  deleteCourse: (courseId: string) => Promise<void>;
   updateNote: (noteId: string, updateData: any) => Promise<boolean>;
   updatePyq: (pyqId: string, updateData: any) => Promise<boolean>;
+  updateCourse: (courseId: string, updateData: any) => Promise<void>;
   refreshNotes: () => Promise<void>;
   refreshPyqs: () => Promise<void>;
+  refreshCourses: () => Promise<void>;
 }
 
 const BackendContext = createContext<BackendContextType | undefined>(undefined);
@@ -43,19 +48,24 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
   const { isAdmin, isSuperAdmin, isLoading: isAdminLoading } = useAuth();
   const { handleDownload, downloadCounts, updateDownloadCount, isInitialized: isDownloadCountsInitialized } = useDownloadHandler();
   
-  // UseContentManagement already fetches notes/pyqs with is_active filtering
+  // UseContentManagement now fetches notes/pyqs/courses with is_active filtering
   const {
     notes,
     pyqs,
+    courses,
     loading: contentLoading,
     addNote,
     addPyq,
+    createCourse,
     deleteNote,
     deletePyq,
+    deleteCourse,
     updateNote,
     updatePyq,
+    updateCourse,
     refreshNotes,
-    refreshPyqs
+    refreshPyqs,
+    refreshCourses
   } = useContentManagement();
 
   console.log('BackendIntegratedWrapper - Admin status:', { isAdmin, isSuperAdmin, isAdminLoading });
@@ -72,15 +82,20 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     isDownloadCountsInitialized,
     notes,
     pyqs,
+    courses,
     contentLoading,
     addNote,
     addPyq,
+    createCourse,
     deleteNote,
     deletePyq,
+    deleteCourse,
     updateNote,
     updatePyq,
+    updateCourse,
     refreshNotes,
-    refreshPyqs
+    refreshPyqs,
+    refreshCourses
   };
 
   return (
