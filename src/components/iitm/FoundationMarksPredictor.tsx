@@ -77,35 +77,25 @@ export default function FoundationMarksPredictor({ branch, level }: FoundationMa
 
   const subjectObj = subjects.find(s => s.key === subjectKey);
 
-  if (!subjectObj) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center text-gray-600">
-            No subjects available for the selected branch and level combination.
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   const parseInputNumber = (val: string, min: number, max: number): number =>
     val === "" ? 0 : Math.max(min, Math.min(max, Number(val)));
 
   const numericInputs: Record<string, number> = {};
-  subjectObj.fields.forEach(field => {
-    if (field.id !== 'F') { // Exclude F from inputs
-      numericInputs[field.id] = parseInputNumber(inputs[field.id] ?? "", field.min, field.max);
-    }
-  });
+  if (subjectObj) {
+    subjectObj.fields.forEach(field => {
+      if (field.id !== 'F') { // Exclude F from inputs
+        numericInputs[field.id] = parseInputNumber(inputs[field.id] ?? "", field.min, field.max);
+      }
+    });
+  }
 
-  const eligibility = checkEligibility(subjectKey, numericInputs);
+  const eligibility = subjectObj ? checkEligibility(subjectKey, numericInputs) : null;
   const GAA_val = numericInputs.GAA ?? 0;
 
-  const currentScore = calculateFoundationGrade(subjectKey, { ...numericInputs, F: 0 });
+  const currentScore = subjectObj ? calculateFoundationGrade(subjectKey, { ...numericInputs, F: 0 }) : 0;
 
   const requiredFs = useMemo(() => {
-    if (GAA_val < 40) return null;
+    if (!subjectObj || GAA_val < 40) return null;
     if (eligibility && eligibility.startsWith("Eligibility:")) return null;
     
     const out: { grade: string; mark: number | null; already: boolean }[] = [];
@@ -122,7 +112,7 @@ export default function FoundationMarksPredictor({ branch, level }: FoundationMa
       });
     }
     return out;
-  }, [subjectKey, numericInputs, GAA_val, currentScore]);
+  }, [subjectKey, numericInputs, GAA_val, currentScore, subjectObj]);
 
   const handleInput = (id: string, val: string) => {
     if (/^(\d{0,3})$/.test(val) || val === "") {
@@ -134,6 +124,18 @@ export default function FoundationMarksPredictor({ branch, level }: FoundationMa
     setSubjectKey(newSubjectKey);
     setInputs({});
   };
+
+  if (!subjectObj) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center text-gray-600">
+            No subjects available for the selected branch and level combination.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
