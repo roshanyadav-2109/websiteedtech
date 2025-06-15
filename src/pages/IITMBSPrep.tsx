@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -15,7 +14,7 @@ import NewsTab from "@/components/iitm/NewsTab";
 import ImportantDatesTab from "@/components/iitm/ImportantDatesTab";
 import PaidCoursesTab from "@/components/iitm/PaidCoursesTab";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
-import AdminAddButton from "@/components/admin/AdminAddButton";
+import TelegramBanner from "@/components/iitm/TelegramBanner";
 
 const IITMBSPrep = () => {
   const [activeTab, setActiveTab] = useState("branch-notes");
@@ -47,6 +46,9 @@ const IITMBSPrep = () => {
         {/* Main Content */}
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <TelegramBanner />
+            </div>
             <Tabs defaultValue="branch-notes" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="overflow-x-auto pb-2">
                 <TabsList className="w-full min-w-fit">
@@ -80,12 +82,6 @@ const IITMBSPrep = () => {
               <TabsContent value="branch-notes">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Branch Notes</h2>
-                  <AdminAddButton 
-                    contentType="notes"
-                    examType="IITM_BS"
-                  >
-                    Add Notes
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("branch-notes", <BranchNotesTab />)}
               </TabsContent>
@@ -93,12 +89,6 @@ const IITMBSPrep = () => {
               <TabsContent value="pyqs">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
-                  <AdminAddButton 
-                    contentType="pyqs"
-                    examType="IITM_BS"
-                  >
-                    Add PYQs
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("pyqs", <PYQsTab />)}
               </TabsContent>
@@ -113,12 +103,6 @@ const IITMBSPrep = () => {
               <TabsContent value="communities">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Communities</h2>
-                  <AdminAddButton 
-                    contentType="communities"
-                    examType="IITM_BS"
-                  >
-                    Add Community
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("communities", <CommunitiesTab />)}
               </TabsContent>
@@ -126,12 +110,6 @@ const IITMBSPrep = () => {
               <TabsContent value="paid-courses">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Premium Courses</h2>
-                  <AdminAddButton 
-                    contentType="courses"
-                    examType="IITM_BS"
-                  >
-                    Add Course
-                  </AdminAddButton>
                 </div>
                 <PaidCoursesTab />
               </TabsContent>
@@ -139,12 +117,6 @@ const IITMBSPrep = () => {
               <TabsContent value="syllabus">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Syllabus</h2>
-                  <AdminAddButton 
-                    contentType="syllabus"
-                    examType="IITM_BS"
-                  >
-                    Add Syllabus
-                  </AdminAddButton>
                 </div>
                 <SyllabusTab />
               </TabsContent>
@@ -152,12 +124,6 @@ const IITMBSPrep = () => {
               <TabsContent value="news">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">News & Updates</h2>
-                  <AdminAddButton 
-                    contentType="news"
-                    examType="IITM_BS"
-                  >
-                    Add News
-                  </AdminAddButton>
                 </div>
                 <NewsTab />
               </TabsContent>
@@ -165,12 +131,6 @@ const IITMBSPrep = () => {
               <TabsContent value="dates">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Important Dates</h2>
-                  <AdminAddButton 
-                    contentType="dates"
-                    examType="IITM_BS"
-                  >
-                    Add Date
-                  </AdminAddButton>
                 </div>
                 <ImportantDatesTab />
               </TabsContent>

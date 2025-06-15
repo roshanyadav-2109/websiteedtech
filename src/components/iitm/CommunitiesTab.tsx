@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ const CommunitiesTab = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("all");
+  const [subjectFilter, setSubjectFilter] = useState<string | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -78,25 +79,31 @@ const CommunitiesTab = () => {
     fetchCommunities();
   }, [user]);
 
-  const getFilteredCommunities = () => {
-    if (activeFilter === "all") return communities;
-    
+  const foundationSubjects = ["Math 1", "Stats 1", "English 1", "CT", "Python"];
+  const diplomaSubjects = ["Math 2", "Stats 2", "English 2", "DBMS", "MLF", "BDM", "App Dev 1", "App Dev 2", "PDSA", "MAD 1", "MAD 2", "MLT", "MLP", "Tools in DS"];
+
+  const filteredCommunities = useMemo(() => {
+    if (!communities) return [];
+    let items = communities;
+
     if (activeFilter === "my-branch" && userProfile?.branch) {
-      return communities.filter(community => 
+      items = items.filter(community => 
         community.branch === userProfile.branch || !community.branch
       );
-    }
-    
-    if (activeFilter === "my-level" && userProfile?.level) {
-      return communities.filter(community => 
+    } else if (activeFilter === "my-level" && userProfile?.level) {
+      items = items.filter(community => 
         community.level === userProfile.level || !community.level
       );
+    } else if (activeFilter !== "all") {
+      items = items.filter(community => community.group_type === activeFilter);
     }
 
-    return communities.filter(community => community.group_type === activeFilter);
-  };
+    if (subjectFilter) {
+      items = items.filter(community => community.subject === subjectFilter);
+    }
 
-  const filteredCommunities = getFilteredCommunities();
+    return items;
+  }, [communities, activeFilter, subjectFilter, userProfile]);
 
   if (isLoading) {
     return (
@@ -140,55 +147,72 @@ const CommunitiesTab = () => {
             </TabsTrigger>
           </TabsList>
         </div>
+      </Tabs>
+      
+      {/* Subject Filter Tabs */}
+      <div>
+        <h3 className="text-lg font-medium text-gray-800 mb-2">Filter by Subject</h3>
+        <Tabs onValueChange={(value) => setSubjectFilter(value === "all" ? null : value)} defaultValue="all">
+          <div className="overflow-x-auto pb-2">
+            <TabsList className="w-full min-w-fit">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="Foundation" disabled className="text-royal font-semibold">Foundation</TabsTrigger>
+              {foundationSubjects.map(s => <TabsTrigger key={s} value={s}>{s}</TabsTrigger>)}
+              <TabsTrigger value="Diploma" disabled className="text-royal font-semibold">Diploma</TabsTrigger>
+              {diplomaSubjects.map(s => <TabsTrigger key={s} value={s}>{s}</TabsTrigger>)}
+            </TabsList>
+          </div>
+        </Tabs>
+      </div>
 
-        <TabsContent value={activeFilter}>
-          {filteredCommunities.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600">No communities available for the selected filter.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredCommunities.map((community) => (
-                <Card key={community.id} className="border-none shadow-md hover:shadow-lg transition-all">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center">
-                        <div className="rounded-full bg-royal/10 p-2 mr-3">
-                          <Users className="h-5 w-5 text-royal" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">{community.name}</CardTitle>
-                          <CardDescription>{community.group_type} Group</CardDescription>
-                        </div>
+      {/* Communities Grid */}
+      <div>
+        {filteredCommunities.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600">No communities available for the selected filter.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredCommunities.map((community) => (
+              <Card key={community.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center">
+                      <div className="rounded-full bg-royal/10 p-2 mr-3">
+                        <Users className="h-5 w-5 text-royal" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{community.name}</CardTitle>
+                        <CardDescription>{community.group_type} Group</CardDescription>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    {community.description && (
-                      <p className="text-sm text-gray-600 mb-2">{community.description}</p>
-                    )}
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {community.branch && <Badge variant="outline">{community.branch}</Badge>}
-                      {community.level && <Badge variant="outline">{community.level}</Badge>}
-                      {community.subject && <Badge variant="secondary">{community.subject}</Badge>}
-                    </div>
-                    {community.member_count > 0 && (
-                      <p className="text-xs text-gray-500">{community.member_count} members</p>
-                    )}
-                  </CardContent>
-                  <CardFooter>
-                    <Button asChild className="w-full bg-royal hover:bg-royal-dark text-white">
-                      <a href={community.group_link} target="_blank" rel="noopener noreferrer">
-                        Join Group <ExternalLink className="h-4 w-4 ml-2" />
-                      </a>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {community.description && (
+                    <p className="text-sm text-gray-600 mb-2">{community.description}</p>
+                  )}
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {community.branch && <Badge variant="outline">{community.branch}</Badge>}
+                    {community.level && <Badge variant="outline">{community.level}</Badge>}
+                    {community.subject && <Badge variant="secondary">{community.subject}</Badge>}
+                  </div>
+                  {community.member_count > 0 && (
+                    <p className="text-xs text-gray-500">{community.member_count} members</p>
+                  )}
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full bg-royal hover:bg-royal-dark text-white">
+                    <a href={community.group_link} target="_blank" rel="noopener noreferrer">
+                      Join Group <ExternalLink className="h-4 w-4 ml-2" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
