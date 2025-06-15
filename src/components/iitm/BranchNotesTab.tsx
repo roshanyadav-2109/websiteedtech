@@ -303,7 +303,7 @@ const BranchNotesTab = () => {
         toast({
           title: "Done!",
           description: result.message || "All notes populated successfully.",
-          variant: "success",
+          variant: "default", // <-- fix: from 'success' to 'default'
         });
         // Trigger reload
         setReloadFlag((x) => x + 1);
