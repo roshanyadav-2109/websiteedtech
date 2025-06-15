@@ -329,6 +329,66 @@ export type Database = {
         }
         Relationships: []
       }
+      jobs: {
+        Row: {
+          application_url: string | null
+          company: string
+          created_at: string
+          deadline: string | null
+          description: string | null
+          duration: string | null
+          experience_level: string | null
+          id: string
+          is_active: boolean
+          is_featured: boolean
+          job_type: string
+          location: string
+          requirements: string[] | null
+          skills: string[] | null
+          stipend: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          application_url?: string | null
+          company?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          duration?: string | null
+          experience_level?: string | null
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          job_type: string
+          location: string
+          requirements?: string[] | null
+          skills?: string[] | null
+          stipend?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          application_url?: string | null
+          company?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          duration?: string | null
+          experience_level?: string | null
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          job_type?: string
+          location?: string
+          requirements?: string[] | null
+          skills?: string[] | null
+          stipend?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       news_updates: {
         Row: {
           branch: string | null

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
@@ -19,64 +20,50 @@ import {
   Check, 
   Users, 
   Star, 
-  FileText 
+  FileText,
+  Loader2
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Job {
+  id: string;
+  title: string;
+  job_type: string;
+  location: string;
+  stipend?: string;
+  duration?: string;
+  deadline?: string;
+  skills: string[];
+  description: string;
+  requirements: string[];
+  application_url?: string;
+}
 
 const Career = () => {
-  // Current job openings
-  const currentOpenings = [
-    {
-      id: 1,
-      title: "Content Developer - Physics",
-      type: "Remote",
-      location: "Work from Home",
-      stipend: "₹5,000 - ₹8,000/month",
-      duration: "3 months",
-      deadline: "June 15, 2025",
-      skills: ["Physics Knowledge", "Content Creation", "Communication"],
-      description: "Create high-quality content for JEE/NEET Physics, develop problem sets, and explain concepts clearly.",
-      requirements: [
-        "Bachelor's degree in Physics or related field",
-        "Strong understanding of JEE/NEET Physics syllabus",
-        "Excellent writing and explanation skills",
-        "Ability to create engaging educational content"
-      ]
-    },
-    {
-      id: 2,
-      title: "Web Developer Intern",
-      type: "Hybrid",
-      location: "Delhi/Remote",
-      stipend: "₹10,000 - ₹15,000/month",
-      duration: "6 months",
-      deadline: "June 20, 2025",
-      skills: ["React", "Tailwind CSS", "TypeScript", "Node.js"],
-      description: "Develop and maintain educational web applications, implement user interfaces, and collaborate with the design team.",
-      requirements: [
-        "Pursuing or completed degree in Computer Science or related field",
-        "Strong knowledge of React and modern JavaScript",
-        "Experience with responsive web design",
-        "Portfolio demonstrating web development skills"
-      ]
-    },
-    {
-      id: 3,
-      title: "Marketing Intern",
-      type: "Remote",
-      location: "Work from Home",
-      stipend: "₹8,000 - ₹12,000/month",
-      duration: "4 months",
-      deadline: "June 25, 2025",
-      skills: ["Social Media Marketing", "Content Writing", "SEO", "Analytics"],
-      description: "Execute marketing campaigns, create engaging content, analyze performance metrics, and grow our online presence.",
-      requirements: [
-        "Pursuing degree in Marketing, Communications, or related field",
-        "Experience with social media platforms and digital marketing",
-        "Strong writing and communication skills",
-        "Basic knowledge of SEO and analytics tools"
-      ]
-    }
-  ];
+  const [openings, setOpenings] = useState<Job[]>([]);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setIsLoadingJobs(true);
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('is_active', true)
+        .order('is_featured', { ascending: false })
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error("Error fetching jobs:", error);
+        setOpenings([]);
+      } else {
+        setOpenings(data as Job[]);
+      }
+      setIsLoadingJobs(false);
+    };
+
+    fetchJobs();
+  }, []);
 
   // Career email subscription form
   const [email, setEmail] = useState("");
@@ -179,66 +166,88 @@ const Career = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {currentOpenings.map((job) => (
-                <motion.div 
-                  key={job.id}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardHeader className="pb-4 border-b">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-xl">{job.title}</CardTitle>
-                          <CardDescription className="mt-1">Unknown IITians</CardDescription>
+            {isLoadingJobs ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="h-12 w-12 animate-spin text-royal" />
+              </div>
+            ) : openings.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {openings.map((job) => (
+                  <motion.div 
+                    key={job.id}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col">
+                      <CardHeader className="pb-4 border-b">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="text-xl">{job.title}</CardTitle>
+                            <CardDescription className="mt-1">Unknown IITians</CardDescription>
+                          </div>
+                          <Badge variant={job.job_type === "Remote" ? "outline" : "secondary"} className="bg-royal/10 text-royal">
+                            {job.job_type}
+                          </Badge>
                         </div>
-                        <Badge variant={job.type === "Remote" ? "outline" : "secondary"} className="bg-royal/10 text-royal">
-                          {job.type}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center text-sm">
-                          <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-                          <span>{job.location}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Briefcase className="h-4 w-4 mr-2 text-gray-500" />
-                          <span>{job.stipend}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Clock className="h-4 w-4 mr-2 text-gray-500" />
-                          <span>{job.duration}</span>
-                        </div>
-                        <div className="flex items-center text-sm">
-                          <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                          <span>Apply by: {job.deadline}</span>
-                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-6 flex-grow">
+                        <div className="space-y-4">
+                          <div className="flex items-center text-sm">
+                            <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                            <span>{job.location}</span>
+                          </div>
+                          {job.stipend && (
+                            <div className="flex items-center text-sm">
+                              <Briefcase className="h-4 w-4 mr-2 text-gray-500" />
+                              <span>{job.stipend}</span>
+                            </div>
+                          )}
+                          {job.duration && (
+                            <div className="flex items-center text-sm">
+                              <Clock className="h-4 w-4 mr-2 text-gray-500" />
+                              <span>{job.duration}</span>
+                            </div>
+                          )}
+                          {job.deadline && (
+                            <div className="flex items-center text-sm">
+                              <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                              <span>Apply by: {new Date(job.deadline).toLocaleDateString()}</span>
+                            </div>
+                          )}
 
-                        <div className="pt-2">
-                          <p className="text-sm text-gray-600 mb-2">{job.description}</p>
+                          {job.description && (
+                            <div className="pt-2">
+                              <p className="text-sm text-gray-600 mb-2">{job.description}</p>
+                            </div>
+                          )}
+                          
+                          {job.skills && job.skills.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {job.skills.map((skill, index) => (
+                                <Badge key={index} variant="outline" className="bg-gray-100 text-gray-800">
+                                  {skill}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
                         </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          {job.skills.map((skill, index) => (
-                            <Badge key={index} variant="outline" className="bg-gray-100 text-gray-800">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="pt-4 border-t flex justify-end">
-                      <Button className="bg-royal hover:bg-royal-dark text-white">Apply Now</Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-
+                      </CardContent>
+                      <CardFooter className="pt-4 border-t flex justify-end">
+                        <Button asChild className="bg-royal hover:bg-royal-dark text-white">
+                          <a href={job.application_url || '#'} target="_blank" rel="noopener noreferrer">Apply Now</a>
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-lg text-gray-600">No open positions at the moment. Please check back later!</p>
+              </div>
+            )}
+            
             <div className="text-center mt-12">
               <p className="text-gray-600 mb-4">Get notified when new positions open up</p>
               
