@@ -31,20 +31,23 @@ const BranchNotesTab = () => {
   const [loading, setLoading] = useState(true);
   const { isAdmin } = useBackend();
 
+  // Start: Added ref for force reload after population
+  const [reloadFlag, setReloadFlag] = useState(0);
+
   // Fetch notes from the dedicated iitm_branch_notes table
   useEffect(() => {
     const fetchNotes = async () => {
       setLoading(true);
       try {
-        // Use type assertion to bypass TypeScript checking for the new table
+        // Use type assertion for the non-standard table
         const { data, error } = await (supabase as any)
-          .from('iitm_branch_notes')
-          .select('*')
-          .eq('is_active', true)
-          .eq('branch', branch)
-          .eq('level', level)
-          .order('subject', { ascending: true })
-          .order('week_number', { ascending: true });
+          .from("iitm_branch_notes")
+          .select("*")
+          .eq("is_active", true)
+          .eq("branch", branch)
+          .eq("level", level)
+          .order("subject", { ascending: true })
+          .order("week_number", { ascending: true });
 
         if (error) {
           console.error('Error fetching notes:', error);
@@ -72,7 +75,7 @@ const BranchNotesTab = () => {
       }
     };
     fetchNotes();
-  }, [branch, level]);
+  }, [branch, level, reloadFlag]); // Note: added reloadFlag to dependencies
 
   // Levels with proper capitalization
   const levels = [
@@ -286,6 +289,42 @@ const BranchNotesTab = () => {
   const groupedNotes = groupNotesBySubject();
   const currentSubjects = getCurrentSubjects();
 
+  // --- IMPLEMENT handlePopulateClick FOR ADMIN ---
+  const handlePopulateClick = async () => {
+    // Disables click while loading (optional)
+    if (loading) return;
+    try {
+      const toastId = toast({
+        title: "Populating notes...",
+        description: "Starting population of all IITM branch notes.",
+      });
+      const result = await runPopulation();
+      if (result.success) {
+        toast({
+          title: "Done!",
+          description: result.message || "All notes populated successfully.",
+          variant: "success",
+        });
+        // Trigger reload
+        setReloadFlag((x) => x + 1);
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Something went wrong while populating.",
+          variant: "destructive",
+        });
+      }
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: "Failed to populate notes.",
+        variant: "destructive",
+      });
+      // Optionally log full error
+      console.error(e);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -390,7 +429,9 @@ const BranchNotesTab = () => {
       {/* Add admin trigger button */}
       {isAdmin && (
         <div className="flex justify-end mb-2">
-          <Button variant="outline" onClick={handlePopulateClick}>Populate All Notes (Admin)</Button>
+          <Button variant="outline" onClick={handlePopulateClick}>
+            Populate All Notes (Admin)
+          </Button>
         </div>
       )}
     </div>
