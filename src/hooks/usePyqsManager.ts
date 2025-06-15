@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,7 +11,6 @@ export interface PYQ {
   exam_type: string | null;
   file_link: string | null;
   download_count: number;
-  upload_date: string;
   created_by: string | null;
   is_active: boolean;
   content_url: string | null;
@@ -51,7 +49,7 @@ export const usePyqsManager = () => {
     }
   };
 
-  const addPyq = async (pyqData: Omit<PYQ, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>): Promise<boolean> => {
+  const addPyq = async (pyqData: Omit<PYQ, 'id' | 'download_count' | 'created_by' | 'is_active' | 'created_at'>): Promise<boolean> => {
     if (!user) {
       toast({
         title: "Authentication Required",

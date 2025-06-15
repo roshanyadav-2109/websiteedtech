@@ -12,7 +12,6 @@ interface Note {
   subject: string | null;
   file_link: string | null;
   download_count: number;
-  upload_date: string;
   created_by: string | null;
   is_active: boolean;
   content_url: string | null;
@@ -32,7 +31,6 @@ interface PYQ {
   exam_type: string | null;
   file_link: string | null;
   download_count: number;
-  upload_date: string;
   created_by: string | null;
   is_active: boolean;
   content_url: string | null;

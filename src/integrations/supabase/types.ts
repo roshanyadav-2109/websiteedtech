@@ -105,7 +105,6 @@ export type Database = {
           price: number
           rating: number | null
           start_date: string | null
-          students: number | null
           students_enrolled: number | null
           subject: string | null
           title: string
@@ -128,7 +127,6 @@ export type Database = {
           price: number
           rating?: number | null
           start_date?: string | null
-          students?: number | null
           students_enrolled?: number | null
           subject?: string | null
           title: string
@@ -151,7 +149,6 @@ export type Database = {
           price?: number
           rating?: number | null
           start_date?: string | null
-          students?: number | null
           students_enrolled?: number | null
           subject?: string | null
           title?: string
@@ -363,7 +360,6 @@ export type Database = {
           subject: string | null
           title: string
           updated_at: string
-          upload_date: string | null
         }
         Insert: {
           branch?: string | null
@@ -383,7 +379,6 @@ export type Database = {
           subject?: string | null
           title: string
           updated_at?: string
-          upload_date?: string | null
         }
         Update: {
           branch?: string | null
@@ -403,7 +398,6 @@ export type Database = {
           subject?: string | null
           title?: string
           updated_at?: string
-          upload_date?: string | null
         }
         Relationships: []
       }
@@ -489,7 +483,6 @@ export type Database = {
           subject: string | null
           title: string
           updated_at: string
-          upload_date: string | null
           year: number | null
         }
         Insert: {
@@ -510,7 +503,6 @@ export type Database = {
           subject?: string | null
           title: string
           updated_at?: string
-          upload_date?: string | null
           year?: number | null
         }
         Update: {
@@ -531,7 +523,6 @@ export type Database = {
           subject?: string | null
           title?: string
           updated_at?: string
-          upload_date?: string | null
           year?: number | null
         }
         Relationships: []
@@ -581,30 +572,6 @@ export type Database = {
           name?: string
           subjects?: string[] | null
           updated_at?: string
-        }
-        Relationships: []
-      }
-      user_access: {
-        Row: {
-          content_type: string
-          created_at: string | null
-          exam_type: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          content_type: string
-          created_at?: string | null
-          exam_type: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          content_type?: string
-          created_at?: string | null
-          exam_type?: string
-          id?: string
-          user_id?: string
         }
         Relationships: []
       }
