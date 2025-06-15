@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram, Youtube, Linkedin, Mail, MessageSquare, Send, MessageCircle } from "lucide-react";
+import { Instagram, Youtube, Linkedin, Mail, MessageSquare, Send, MessageCircle } from "lucide-react";
 
 const Footer = () => {
   const handleOpenContactForm = () => {
@@ -20,12 +20,6 @@ const Footer = () => {
               Transforming education by providing high-quality resources and mentorship to students preparing for competitive exams.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
-                <Twitter size={20} />
-              </a>
               <a
                 href="https://www.instagram.com/unknown_iitians/"
                 target="_blank"
