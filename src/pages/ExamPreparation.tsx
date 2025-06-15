@@ -1,8 +1,6 @@
-
 import React from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import EmailPopup from "@/components/EmailPopup";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -168,7 +166,6 @@ const ExamPreparation = () => {
       </main>
 
       <Footer />
-      <EmailPopup />
     </>
   );
 };
