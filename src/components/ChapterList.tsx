@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Download, Eye } from "lucide-react";
+import { ShimmerButton } from './ui/shimmer-button';
 
 interface Chapter {
     id: string;
@@ -44,16 +45,19 @@ const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onD
                                     <span className="hidden md:inline">Preview</span>
                                 </Button>
                             )}
-                            <Button
+                            <ShimmerButton
                                 onClick={() => onDownload(chapter.id, chapter.file_link || undefined)}
-                                className="bg-royal hover:bg-royal-dark text-white"
-                                size="sm"
                                 disabled={!chapter.file_link}
                                 title={!chapter.file_link ? "No file available for download" : "Download file"}
+                                background={chapter.file_link ? "rgba(26, 86, 219, 0.8)" : "rgba(107, 114, 128, 0.5)"}
+                                borderRadius="var(--radius)"
+                                className={`px-3 h-9 ${!chapter.file_link ? "cursor-not-allowed opacity-70" : ""}`}
                             >
-                                <Download className="h-4 w-4 md:mr-2" />
-                                <span className="hidden md:inline">Download</span>
-                            </Button>
+                                <span className="flex items-center text-white">
+                                    <Download className="h-4 w-4 md:mr-2" />
+                                    <span className="hidden md:inline">Download</span>
+                                </span>
+                            </ShimmerButton>
                         </div>
                     </li>
                 ))}

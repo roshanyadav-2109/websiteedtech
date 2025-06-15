@@ -5,6 +5,7 @@ import { Download, Trash2, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import AuthWrapper from "@/components/AuthWrapper";
+import { ShimmerButton } from "./ui/shimmer-button";
 
 const NEETPYQTab = () => {
   const [year, setYear] = useState("2024");
@@ -103,12 +104,15 @@ const NEETPYQTab = () => {
                   </div>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
-                  <Button
+                  <ShimmerButton
                     onClick={() => handleDownloadClick(pyq.id, pyq.file_link || undefined)}
-                    className="bg-royal hover:bg-royal-dark text-white"
+                    background="rgba(26, 86, 219, 0.8)"
+                    borderRadius="var(--radius)"
                   >
-                    <Download className="h-4 w-4 mr-2" /> Download
-                  </Button>
+                    <span className="flex items-center text-white">
+                        <Download className="h-4 w-4 mr-2" /> Download
+                    </span>
+                  </ShimmerButton>
                   <div className="flex items-center">
                     <span className="text-sm text-gray-500">{currentDownloads[pyq.id] || pyq.download_count || 0}</span>
                     <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">

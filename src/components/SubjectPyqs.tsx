@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download } from "lucide-react";
 import AdminAddButton from "@/components/admin/AdminAddButton";
+import { ShimmerButton } from "./ui/shimmer-button";
 
 interface PyqSet {
   id: string;
@@ -111,12 +111,15 @@ const SubjectPyqs = ({
               <CardDescription>{pyq.description}</CardDescription>
             </CardHeader>
             <CardFooter className="flex justify-between">
-              <Button
+              <ShimmerButton
                 onClick={() => onDownload(pyq.id)}
-                className="bg-royal hover:bg-royal-dark text-white"
+                background="rgba(26, 86, 219, 0.8)"
+                borderRadius="var(--radius)"
               >
-                <Download className="h-4 w-4 mr-2" /> Download
-              </Button>
+                <span className="flex items-center text-white">
+                    <Download className="h-4 w-4 mr-2" /> Download
+                </span>
+              </ShimmerButton>
               <div className="flex items-center">
                 <span className="text-sm text-gray-500">{downloads[pyq.id] || 0}</span>
                 <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">

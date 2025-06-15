@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AuthWrapper from "@/components/AuthWrapper";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
+import { ShimmerButton } from "./ui/shimmer-button";
 
 interface JEEPYQTabProps {
   downloads: Record<string, number>;
@@ -117,12 +117,15 @@ const JEEPYQTab = ({ downloads: propDownloads, onDownload: propOnDownload }: JEE
                   <CardDescription>{pyq.description || ''}</CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
-                  <Button
+                  <ShimmerButton
                     onClick={() => handleDownloadClick(pyq.id, pyq.file_link || undefined)}
-                    className="bg-royal hover:bg-royal-dark text-white"
+                    background="rgba(26, 86, 219, 0.8)"
+                    borderRadius="var(--radius)"
                   >
-                    <Download className="h-4 w-4 mr-2" /> Download
-                  </Button>
+                    <span className="flex items-center text-white">
+                        <Download className="h-4 w-4 mr-2" /> Download
+                    </span>
+                  </ShimmerButton>
                   <div className="flex items-center">
                     <span className="text-sm text-gray-500">{currentDownloads[pyq.id] || pyq.download_count || 0}</span>
                     <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
