@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BackendIntegratedWrapper } from "@/components/BackendIntegratedWrapper";
+import EmailPopup from "@/components/EmailPopup";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Courses from "./pages/Courses";
@@ -39,6 +40,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <EmailPopup />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />

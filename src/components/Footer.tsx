@@ -1,8 +1,13 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram, Youtube, Linkedin, Mail } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Linkedin, Mail, MessageSquare } from "lucide-react";
 
 const Footer = () => {
+  const handleOpenContactForm = () => {
+    window.dispatchEvent(new CustomEvent('openContactForm'));
+  };
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -78,6 +83,12 @@ const Footer = () => {
                 <a href="mailto:help.unknowniitians@gmail.com" className="hover:text-white transition-colors">
                   help.unknowniitians@gmail.com
                 </a>
+              </li>
+              <li>
+                <button onClick={handleOpenContactForm} className="hover:text-white transition-colors text-left w-full flex items-center">
+                  <MessageSquare size={18} className="mr-2" />
+                  <span>Contact Form</span>
+                </button>
               </li>
               <li>
                 <p>IIT Madras Research Park,</p>
