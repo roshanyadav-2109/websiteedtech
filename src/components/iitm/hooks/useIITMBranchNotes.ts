@@ -9,13 +9,15 @@ export interface Note {
   week: number;
   downloads: number;
   subject?: string | null;
+  diploma_specialization?: string | null;
 }
 
 export interface UseIITMBranchNotesResult {
   notes: Note[];
   loading: boolean;
   groupedNotes: Record<string, Note[]>;
-  getCurrentSubjects: () => string[];
+  getCurrentSubjects: (specialization?: string | null) => string[];
+  getAvailableSpecializations: () => string[];
   reloadNotes: () => void;
 }
 
@@ -49,6 +51,7 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
           week: n.week_number || 1,
           downloads: n.download_count ?? 0,
           subject: n.subject || null,
+          diploma_specialization: n.diploma_specialization || null,
         }));
         setNotes(mappedNotes);
       } catch (error) {
@@ -78,6 +81,17 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
     };
   }, []);
 
+  const getAvailableSpecializations = () => {
+    if (level !== 'diploma') return [];
+    const specializations = new Set<string>();
+    notes.forEach(note => {
+      if (note.diploma_specialization) {
+        specializations.add(note.diploma_specialization);
+      }
+    });
+    return Array.from(specializations).sort();
+  };
+
   const groupedNotes = notes.reduce((acc: Record<string, Note[]>, note) => {
     if (note.subject) {
       if (!acc[note.subject]) {
@@ -88,7 +102,20 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
     return acc;
   }, {});
 
-  const getCurrentSubjects = () => Object.keys(groupedNotes).sort();
+  const getCurrentSubjects = (specialization?: string | null) => {
+    let filteredNotes = notes;
+    if (level === 'diploma' && specialization && specialization !== 'all') {
+      filteredNotes = notes.filter(n => n.diploma_specialization === specialization);
+    }
+    
+    const subjects = new Set<string>();
+    filteredNotes.forEach(note => {
+        if (note.subject) {
+            subjects.add(note.subject);
+        }
+    });
+    return Array.from(subjects).sort();
+  };
 
-  return { notes, loading, groupedNotes, getCurrentSubjects, reloadNotes };
+  return { notes, loading, groupedNotes, getCurrentSubjects, getAvailableSpecializations, reloadNotes };
 }

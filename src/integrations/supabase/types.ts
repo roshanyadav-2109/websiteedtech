@@ -235,6 +235,7 @@ export type Database = {
           branch: string
           created_at: string
           description: string | null
+          diploma_specialization: string | null
           download_count: number
           file_link: string | null
           id: string
@@ -249,6 +250,7 @@ export type Database = {
           branch: string
           created_at?: string
           description?: string | null
+          diploma_specialization?: string | null
           download_count?: number
           file_link?: string | null
           id?: string
@@ -263,6 +265,7 @@ export type Database = {
           branch?: string
           created_at?: string
           description?: string | null
+          diploma_specialization?: string | null
           download_count?: number
           file_link?: string | null
           id?: string
