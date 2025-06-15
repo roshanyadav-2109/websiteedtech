@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram, Youtube, Linkedin, Mail, MessageSquare } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Linkedin, Mail, MessageSquare, Send, MessageCircle } from "lucide-react";
 
 const Footer = () => {
   const handleOpenContactForm = () => {
@@ -21,20 +20,56 @@ const Footer = () => {
               Transforming education by providing high-quality resources and mentorship to students preparing for competitive exams.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a
+                href="https://www.instagram.com/unknown_iitians/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Instagram"
+              >
                 <Instagram size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a
+                href="https://t.me/bsdatascience_iitm"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Telegram"
+              >
+                <Send size={20} />
+              </a>
+              <a
+                href="https://www.youtube.com/@UnknownIITians"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="YouTube"
+              >
                 <Youtube size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a
+                href="https://www.linkedin.com/company/unknown-iitians/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="LinkedIn"
+              >
                 <Linkedin size={20} />
+              </a>
+              <a
+                href="https://whatsapp.com/channel/0029VayHsVwIiRorIdVX9n1l"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="WhatsApp Channel"
+              >
+                <MessageCircle size={20} />
               </a>
             </div>
           </div>
