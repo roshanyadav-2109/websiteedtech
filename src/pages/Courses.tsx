@@ -3,7 +3,6 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { 
   BookOpen, 
@@ -16,127 +15,46 @@ import {
 import { motion } from "framer-motion";
 import EnrollButton from "@/components/EnrollButton";
 import AdminAddButton from "@/components/admin/AdminAddButton";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const CourseCardSkeleton = () => (
+  <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-300">
+    <div className="h-2 bg-gray-200"></div>
+    <CardHeader className="pb-2">
+      <Skeleton className="h-6 w-3/4 mb-2" />
+      <div className="flex items-center text-sm text-gray-500">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-20 ml-4" />
+      </div>
+    </CardHeader>
+    <CardContent>
+      <Skeleton className="h-4 w-full mb-4" />
+      <Skeleton className="h-4 w-5/6" />
+    </CardContent>
+    <CardFooter className="border-t pt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+      <div className="mb-3 sm:mb-0">
+        <Skeleton className="h-6 w-20" />
+      </div>
+      <Skeleton className="h-10 w-28" />
+    </CardFooter>
+  </Card>
+);
 
 const Courses = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const { courses, contentLoading } = useBackend();
 
   const categories = [
     { id: "all", name: "All Courses" },
-    { id: "iitm-bs", name: "IITM BS" },
-    { id: "neet", name: "NEET" },
-    { id: "jee", name: "JEE" }
-  ];
-
-  const courses = [
-    {
-      id: 1,
-      title: "IITM BS Qualifier Crash Course",
-      description: "Comprehensive preparation for IITM BS Qualifier exam covering all required subjects with expert guidance.",
-      category: "iitm-bs",
-      price: "₹4,999",
-      discountedPrice: "₹2,999",
-      duration: "2 months",
-      students: 240,
-      features: ["Live Classes", "Study Material", "Doubt Sessions", "Mock Tests"],
-      bestseller: true,
-      enrollmentLink: "https://example.com/enroll/iitm-bs-qualifier"
-    },
-    {
-      id: 2,
-      title: "NEET Complete Biology",
-      description: "Master Biology for NEET with in-depth coverage of Botany and Zoology. Perfect for serious NEET aspirants.",
-      category: "neet",
-      price: "₹5,999",
-      discountedPrice: "₹3,999",
-      duration: "4 months",
-      students: 320,
-      features: ["Recorded Lectures", "Study Material", "Weekly Tests", "PYQ Analysis"],
-      bestseller: true,
-      enrollmentLink: "https://example.com/enroll/neet-biology"
-    },
-    {
-      id: 3,
-      title: "JEE Advanced Mathematics",
-      description: "Advanced level mathematics course designed specifically for JEE Advanced aspirants.",
-      category: "jee",
-      price: "₹6,999",
-      discountedPrice: "₹4,999",
-      duration: "5 months",
-      students: 185,
-      features: ["Live Classes", "Formula Booklet", "Daily Practice", "Mock Tests"],
-      bestseller: false,
-      enrollmentLink: "https://example.com/enroll/jee-math"
-    },
-    {
-      id: 4,
-      title: "IITM BS Data Science Foundation",
-      description: "Strong foundation in Mathematics, Statistics, and Programming for IITM BS Data Science degree.",
-      category: "iitm-bs",
-      price: "₹7,999",
-      discountedPrice: "₹5,999",
-      duration: "6 months",
-      students: 120,
-      features: ["Live Classes", "Coding Assignments", "Project Work", "Industry Connect"],
-      bestseller: false,
-      enrollmentLink: "https://example.com/enroll/iitm-ds-foundation"
-    },
-    {
-      id: 5,
-      title: "NEET Physics Mastery",
-      description: "Complete Physics preparation for NEET with concept clarity and problem-solving techniques.",
-      category: "neet",
-      price: "₹4,499",
-      discountedPrice: "₹2,999",
-      duration: "3 months",
-      students: 210,
-      features: ["Recorded Lectures", "Formula Handbook", "Weekly Tests", "Doubt Clearing"],
-      bestseller: false,
-      enrollmentLink: "https://example.com/enroll/neet-physics"
-    },
-    {
-      id: 6,
-      title: "JEE Mains Chemistry",
-      description: "Comprehensive Chemistry course covering Organic, Inorganic and Physical Chemistry for JEE Mains.",
-      category: "jee",
-      price: "₹4,999",
-      discountedPrice: "₹3,499",
-      duration: "4 months",
-      students: 245,
-      features: ["Live Classes", "Study Material", "Weekly Tests", "PYQ Discussion"],
-      bestseller: true,
-      enrollmentLink: "https://example.com/enroll/jee-chemistry"
-    },
-    {
-      id: 7,
-      title: "Placement Preparation - Coding",
-      description: "Data Structures, Algorithms and Problem Solving to crack technical interviews at top companies.",
-      category: "placement",
-      price: "₹8,999",
-      discountedPrice: "₹5,999",
-      duration: "3 months",
-      students: 310,
-      features: ["Live Classes", "100+ Practice Problems", "Mock Interviews", "Resume Building"],
-      bestseller: true,
-      enrollmentLink: "https://example.com/enroll/placement-coding"
-    },
-    {
-      id: 8,
-      title: "IITM BS Electronic Systems Pathway",
-      description: "Comprehensive course to help you succeed in the Electronic Systems stream of IITM BS program.",
-      category: "iitm-bs",
-      price: "₹6,999",
-      discountedPrice: "₹4,999",
-      duration: "5 months",
-      students: 95,
-      features: ["Live Classes", "Lab Sessions", "Projects", "Mock Tests"],
-      bestseller: false,
-      enrollmentLink: "https://example.com/enroll/iitm-es-pathway"
-    }
+    { id: "IITM BS", name: "IITM BS" },
+    { id: "NEET", name: "NEET" },
+    { id: "JEE", name: "JEE" }
   ];
 
   const filteredCourses = selectedCategory === "all" 
     ? courses 
-    : courses.filter(course => course.category === selectedCategory && course.category !== "placement");
+    : courses.filter(course => course.exam_category === selectedCategory);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -196,57 +114,72 @@ const Courses = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredCourses.map((course, index) => (
-                <motion.div
-                  key={course.id}
-                  variants={fadeInUp}
-                  initial="hidden"
-                  animate="visible"
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                >
-                  <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-300">
-                    {course.bestseller && (
-                      <div className="absolute top-0 right-0 z-10">
-                        <Badge className="m-2 bg-amber-500 hover:bg-amber-600">
-                          <Star className="h-3 w-3 mr-1 fill-current" /> Bestseller
-                        </Badge>
-                      </div>
-                    )}
-                    <div className={`h-2 ${course.bestseller ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-royal to-royal-dark'}`}></div>
-                    <CardHeader className="pb-2">
-                      <CardTitle>{course.title}</CardTitle>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="h-4 w-4 mr-1" /> 
-                        {course.duration}
-                        <Users className="h-4 w-4 ml-4 mr-1" /> 
-                        {course.students} students
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="text-gray-600 mb-4">{course.description}</CardDescription>
-                      <div className="grid grid-cols-2 gap-2">
-                        {course.features.map((feature, i) => (
-                          <div key={i} className="flex items-center text-sm">
-                            <CheckCircle className="h-3 w-3 mr-1 text-green-500" /> 
-                            {feature}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="border-t pt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                      <div className="mb-3 sm:mb-0">
-                        <span className="text-xl font-bold text-royal">{course.discountedPrice}</span>
-                        <span className="ml-2 text-gray-500 line-through">{course.price}</span>
-                      </div>
-                      <EnrollButton 
-                        courseId={course.id.toString()}
-                        enrollmentLink={course.enrollmentLink}
-                        className={`${course.bestseller ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' : 'bg-royal hover:bg-royal-dark'} text-white px-5 py-2`}
-                      />
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
+              {contentLoading ? (
+                Array.from({ length: 6 }).map((_, index) => <CourseCardSkeleton key={index} />)
+              ) : filteredCourses.length > 0 ? (
+                filteredCourses.map((course, index) => (
+                  <motion.div
+                    key={course.id}
+                    variants={fadeInUp}
+                    initial="hidden"
+                    animate="visible"
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <Card className="h-full overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-300">
+                      {course.bestseller && (
+                        <div className="absolute top-0 right-0 z-10">
+                          <Badge className="m-2 bg-amber-500 hover:bg-amber-600">
+                            <Star className="h-3 w-3 mr-1 fill-current" /> Bestseller
+                          </Badge>
+                        </div>
+                      )}
+                      <div className={`h-2 ${course.bestseller ? 'bg-gradient-to-r from-amber-400 to-amber-600' : 'bg-gradient-to-r from-royal to-royal-dark'}`}></div>
+                      <CardHeader className="pb-2">
+                        <CardTitle>{course.title}</CardTitle>
+                        <div className="flex items-center text-sm text-gray-500">
+                          <Calendar className="h-4 w-4 mr-1" /> 
+                          {course.duration}
+                          <Users className="h-4 w-4 ml-4 mr-1" /> 
+                          {course.students_enrolled || 0} students
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <CardDescription className="text-gray-600 mb-4">{course.description}</CardDescription>
+                        <div className="grid grid-cols-2 gap-2">
+                          {course.features?.map((feature, i) => (
+                            <div key={i} className="flex items-center text-sm">
+                              <CheckCircle className="h-3 w-3 mr-1 text-green-500" /> 
+                              {feature}
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                      <CardFooter className="border-t pt-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                        <div className="mb-3 sm:mb-0">
+                          {course.discounted_price && course.discounted_price < course.price ? (
+                            <>
+                              <span className="text-xl font-bold text-royal">₹{course.discounted_price}</span>
+                              <span className="ml-2 text-gray-500 line-through">₹{course.price}</span>
+                            </>
+                          ) : (
+                            <span className="text-xl font-bold text-royal">₹{course.price}</span>
+                          )}
+                        </div>
+                        <EnrollButton 
+                          courseId={course.id}
+                          enrollmentLink={course.enroll_now_link || undefined}
+                          className={`${course.bestseller ? 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700' : 'bg-royal hover:bg-royal-dark'} text-white px-5 py-2`}
+                        />
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-16 text-gray-500">
+                  <p className="text-lg">No courses found for this category.</p>
+                  <p>Please check back later or select a different category.</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
