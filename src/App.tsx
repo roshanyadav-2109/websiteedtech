@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BackendIntegratedWrapper } from "@/components/BackendIntegratedWrapper";
+import EmailPopup from "@/components/EmailPopup";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Courses from "./pages/Courses";
@@ -29,7 +30,6 @@ import EmployeeVerification from "./pages/EmployeeVerification";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import FAQ from "./pages/FAQ";
-import ContactPage from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +40,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <EmailPopup />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -64,7 +65,6 @@ const App = () => (
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/faq" element={<FAQ />} />
-              <Route path="/contact" element={<ContactPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

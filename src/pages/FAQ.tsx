@@ -1,9 +1,7 @@
-
 import React from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Link } from "react-router-dom";
 
 const FAQ = () => {
   const faqs = [
@@ -75,12 +73,12 @@ const FAQ = () => {
               <p className="text-gray-600 mb-6">
                 Can't find the answer you're looking for? Please reach out to our support team.
               </p>
-              <Link 
-                to="/contact"
+              <a 
+                href="mailto:help.unknowniitians@gmail.com"
                 className="inline-block bg-royal text-white px-8 py-3 rounded-lg hover:bg-royal-dark transition-colors"
               >
                 Contact Support
-              </Link>
+              </a>
             </div>
           </div>
         </section>
