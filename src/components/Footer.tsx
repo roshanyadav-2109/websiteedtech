@@ -4,10 +4,6 @@ import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Youtube, Linkedin, Mail, MessageSquare } from "lucide-react";
 
 const Footer = () => {
-  const handleOpenContactForm = () => {
-    window.dispatchEvent(new CustomEvent('openContactForm'));
-  };
-
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -85,10 +81,10 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <button onClick={handleOpenContactForm} className="hover:text-white transition-colors text-left w-full flex items-center">
+                <Link to="/contact" className="hover:text-white transition-colors text-left w-full flex items-center">
                   <MessageSquare size={18} className="mr-2" />
-                  <span>Contact Form</span>
-                </button>
+                  <span>Raise a Ticket</span>
+                </Link>
               </li>
               <li>
                 <p>IIT Madras Research Park,</p>

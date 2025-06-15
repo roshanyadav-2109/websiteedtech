@@ -11,7 +11,6 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import VideoSection from "@/components/VideoSection";
 import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
-import EmailPopup from "@/components/EmailPopup";
 
 const Index = () => {
   return (
@@ -27,7 +26,6 @@ const Index = () => {
       <VideoSection />
       <NewsletterSection />
       <Footer />
-      <EmailPopup />
     </>
   );
 };
