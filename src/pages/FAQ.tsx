@@ -1,4 +1,3 @@
-
 import React from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -28,7 +27,7 @@ const FAQ = () => {
     },
     {
       question: "How do I report an issue or get support?",
-      answer: "You can reach out to us at support@unknowniitians.com for any issues, feedback, or support requests. We typically respond within 24 hours."
+      answer: "You can reach out to us at help.unknowniitians@gmail.com for any issues, feedback, or support requests. We typically respond within 24 hours."
     },
     {
       question: "Is my personal information secure?",
@@ -75,7 +74,7 @@ const FAQ = () => {
                 Can't find the answer you're looking for? Please reach out to our support team.
               </p>
               <a 
-                href="mailto:support@unknowniitians.com"
+                href="mailto:help.unknowniitians@gmail.com"
                 className="inline-block bg-royal text-white px-8 py-3 rounded-lg hover:bg-royal-dark transition-colors"
               >
                 Contact Support

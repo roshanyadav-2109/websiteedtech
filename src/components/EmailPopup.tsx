@@ -1,98 +1,134 @@
 
-import React, { useEffect } from "react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Mail, X } from "lucide-react";
+
+const formSchema = z.object({
+  email: z.string().email({ message: "Invalid email address." }),
+  subject: z.string().min(2, { message: "Subject must be at least 2 characters." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+});
 
 const EmailPopup = () => {
-  useEffect(() => {
-    const emailIcon = document.getElementById('email-icon');
-    const description = document.getElementById('description');
-    const popupForm = document.getElementById('popup-form');
-    const closeButton = document.getElementById('close-btn');
-    const emailForm = document.getElementById('email-form') as HTMLFormElement;
-    const confirmation = document.getElementById('confirmation');
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    if (emailIcon && description && popupForm && closeButton && emailForm && confirmation) {
-      // Toggle pop-up form
-      emailIcon.addEventListener('click', function () {
-        if (popupForm.style.display === 'block') {
-          popupForm.style.display = 'none';
-          description.style.display = 'block';
-        } else {
-          popupForm.style.display = 'block';
-          description.style.display = 'none';
-        }
-      });
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      subject: "",
+      message: "",
+    },
+  });
 
-      // Close pop-up form
-      closeButton.addEventListener('click', function () {
-        popupForm.style.display = 'none';
-        description.style.display = 'block';
-      });
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    setShowConfirmation(false);
+    setError(null);
+    
+    const { error } = await supabase.functions.invoke('contact-us', {
+      body: values,
+    });
 
-      // Handle form submission
-      emailForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(emailForm);
-        fetch(emailForm.getAttribute('action') as string, {
-          method: 'POST',
-          body: formData,
-          mode: 'no-cors'
-        }).then(() => {
-          if (confirmation) {
-            confirmation.style.display = 'block';
-            emailForm.reset();
-            setTimeout(() => {
-              if (confirmation && popupForm && description) {
-                confirmation.style.display = 'none';
-                popupForm.style.display = 'none';
-                description.style.display = 'block';
-              }
-            }, 3000);
-          }
-        }).catch(() => {
-          alert('There was an error submitting the form. Please try again.');
-        });
-      });
+    setIsSubmitting(false);
+
+    if (error) {
+      setError('There was an error submitting the form. Please try again.');
+      console.error("Error invoking function:", error);
+    } else {
+      setShowConfirmation(true);
+      form.reset();
+      setTimeout(() => {
+        setShowConfirmation(false);
+        setIsOpen(false);
+      }, 3000);
     }
-
-    return () => {
-      // Clean up event listeners on component unmount
-      if (emailIcon) {
-        emailIcon.removeEventListener('click', () => {});
-      }
-      if (closeButton) {
-        closeButton.removeEventListener('click', () => {});
-      }
-      if (emailForm) {
-        emailForm.removeEventListener('submit', () => {});
-      }
-    };
-  }, []);
+  };
 
   return (
-    <div id="popup-container" className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
-      <div id="description" className="bg-golden text-black py-2 px-4 rounded-lg shadow-lg text-sm animate-fade-in">
-        Have queries? Raise a ticket!
-      </div>
-      <div id="email-icon" className="bg-royal text-white w-12 h-12 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-royal-dark transition-colors">
-        ✉️
-      </div>
-      <div id="popup-form" className="hidden bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
-        <button id="close-btn" className="bg-red-500 text-white border-none px-2 py-1 cursor-pointer float-right rounded-md hover:bg-red-600 transition-colors">
-          X
-        </button>
-        <form id="email-form" className="space-y-4 mt-10" action="https://docs.google.com/forms/d/e/1FAIpQLSeNapdlla2DdYy2NDKyb3IPUg6IozjE-5JKzYbkxkpXBQKxhg/formResponse" method="POST" target="hidden_iframe">
-          <input type="email" name="entry.196709427" placeholder="Your Email" required className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-royal" />
-          <input type="text" name="entry.1350931538" placeholder="Subject" required className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-royal" />
-          <textarea name="entry.267493428" placeholder="Your Message" rows={4} required className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-royal"></textarea>
-          <button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
-            Submit
-          </button>
-        </form>
-        <div id="confirmation" className="hidden bg-green-100 text-green-800 p-3 rounded-lg mt-4 text-center">
-          Thank you! Your message has been sent.
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+      {!isOpen && (
+        <div className="bg-golden text-black py-2 px-4 rounded-lg shadow-lg text-sm animate-fade-in">
+          Have queries? Raise a ticket!
         </div>
-        <iframe name="hidden_iframe" className="hidden"></iframe>
+      )}
+      <div 
+        className="bg-royal text-white w-14 h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-royal-dark transition-colors"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? <X size={24} /> : <Mail size={24} />}
       </div>
+      {isOpen && (
+        <div className="bg-white p-5 rounded-lg shadow-lg w-full max-w-sm">
+          <h2 className="text-xl font-bold mb-4 text-center">Contact Us</h2>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="subject"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subject</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Inquiry about..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Message</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Your message here..." rows={4} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
+                {isSubmitting ? 'Submitting...' : 'Submit'}
+              </Button>
+            </form>
+          </Form>
+          {showConfirmation && (
+            <div className="bg-green-100 text-green-800 p-3 rounded-lg mt-4 text-center">
+              Thank you! Your message has been sent.
+            </div>
+          )}
+          {error && (
+             <div className="bg-red-100 text-red-800 p-3 rounded-lg mt-4 text-center">
+              {error}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
