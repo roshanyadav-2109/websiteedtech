@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 
 interface Chapter {
     id: string;
@@ -9,6 +9,7 @@ interface Chapter {
     description?: string;
     file_link?: string;
     download_count?: number;
+    content_url?: string | null;
 }
 
 interface ChapterListProps {
@@ -27,15 +28,28 @@ const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onD
                             <h3 className="text-md font-semibold text-gray-900">{chapter.title}</h3>
                             {chapter.description && <p className="text-sm text-gray-500 mt-1">{chapter.description}</p>}
                         </div>
-                        <div className="flex items-center space-x-4 flex-shrink-0 self-end sm:self-center">
+                        <div className="flex items-center space-x-2 flex-shrink-0 self-end sm:self-center">
                             <div className="flex items-center text-sm text-gray-600">
                                 <Download className="h-4 w-4 mr-1.5" />
                                 <span>{downloadCounts[chapter.id] || chapter.download_count || 0}</span>
                             </div>
+                            {chapter.content_url && (
+                                <Button
+                                    onClick={() => window.open(chapter.content_url!, '_blank')}
+                                    variant="outline"
+                                    size="sm"
+                                    title="Preview notes"
+                                >
+                                    <Eye className="h-4 w-4 md:mr-2" />
+                                    <span className="hidden md:inline">Preview</span>
+                                </Button>
+                            )}
                             <Button
                                 onClick={() => onDownload(chapter.id, chapter.file_link || undefined)}
                                 className="bg-royal hover:bg-royal-dark text-white"
                                 size="sm"
+                                disabled={!chapter.file_link}
+                                title={!chapter.file_link ? "No file available for download" : "Download file"}
                             >
                                 <Download className="h-4 w-4 md:mr-2" />
                                 <span className="hidden md:inline">Download</span>
