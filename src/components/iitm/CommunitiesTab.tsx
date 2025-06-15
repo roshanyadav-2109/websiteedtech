@@ -115,7 +115,10 @@ const CommunitiesTab = () => {
 
   const { user } = useAuth();
 
+  // Real-time sync/initialize
   useEffect(() => {
+    let channel: any = null;
+
     const fetchUserProfile = async () => {
       if (!user) return;
 
@@ -158,6 +161,23 @@ const CommunitiesTab = () => {
 
     fetchUserProfile();
     fetchCommunities();
+
+    // Real-time subscription
+    channel = supabase
+      .channel('realtime-communities')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'communities' },
+        (payload) => {
+          // Refetch on any change for now (simple solution)
+          fetchCommunities();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+    };
   }, [user]);
 
   // Filtering logic: Only WhatsApp groups, then by branch, level, subject

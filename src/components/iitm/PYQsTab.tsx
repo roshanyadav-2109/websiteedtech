@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminAddButton from "@/components/admin/AdminAddButton";
 import { ShimmerButton } from "../ui/shimmer-button";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PYQ {
   id: string;
@@ -29,11 +30,37 @@ const PYQsTab = () => {
     "ds-f-q1-2023-2": 152,
     "ds-f-q2-2023-1": 143,
     "ds-f-et-2023-1": 198,
-    // ... keep existing code (download counts)
   });
   
+  const [pyqs, setPyqs] = useState<PYQ[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Supabase integration!
+  useEffect(() => {
+    const fetchPyqs = async () => {
+      setLoading(true);
+      let q = supabase.from('pyqs').select('*')
+        .eq('is_active', true)
+        .eq('branch', branch)
+        .eq('level', level);
+
+      if (level !== 'qualifier') {
+        q = q.eq('exam_type', examType);
+      }
+      let { data, error } = await q.order('created_at', { ascending: false });
+      if (error) {
+        setPyqs([]);
+        setLoading(false);
+        return;
+      }
+      setPyqs(data || []);
+      setLoading(false);
+    };
+    fetchPyqs();
+  }, [branch, level, examType]);
+  
   // Add "qualifier" as a level. Add some sample PYQ for display if needed.
-  const pyqs: PYQ[] = [
+  const hardcodedPyqs: PYQ[] = [
     // Data Science Foundation
     { id: "ds-f-q1-2023-prog1", title: "Quiz 1 Set A", description: "Python basics and algorithms", branch: "data-science", level: "foundation", examType: "quiz1", year: "2023" },
     { id: "ds-f-q1-2023-prog2", title: "Quiz 1 Set B", description: "Data structures in Python", branch: "data-science", level: "foundation", examType: "quiz1", year: "2023" },
@@ -50,8 +77,21 @@ const PYQsTab = () => {
     }));
   };
   
+  // Use fetched PYQs if available, otherwise fall back to hardcoded ones
+  const displayPyqs = pyqs.length > 0 ? 
+    pyqs.map(p => ({
+      id: p.id,
+      title: p.title,
+      description: p.description || "",
+      branch: p.branch || branch,
+      level: p.level || level,
+      examType: p.exam_type || examType,
+      year: p.year?.toString() || "2023"
+    })) : 
+    hardcodedPyqs;
+  
   // Filtering: For qualifier, ignore examType
-  const availableYears = [...new Set(pyqs
+  const availableYears = [...new Set(displayPyqs
     .filter(pyq =>
       pyq.branch === branch &&
       pyq.level === level &&
@@ -59,7 +99,7 @@ const PYQsTab = () => {
     )
     .map(pyq => pyq.year))];
 
-  const filteredPYQs = pyqs.filter(pyq =>
+  const filteredPYQs = displayPyqs.filter(pyq =>
     pyq.branch === branch &&
     pyq.level === level &&
     (level === "qualifier" ? true : pyq.examType === examType) &&
@@ -138,36 +178,42 @@ const PYQsTab = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        {filteredPYQs.map((pyq) => (
-          <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
-            <CardHeader>
-              <CardTitle className="text-lg">{pyq.title}</CardTitle>
-              <CardDescription>{pyq.description}</CardDescription>
-            </CardHeader>
-            <CardFooter className="flex justify-between">
-              <ShimmerButton
-                onClick={() => handleDownload(pyq.id)}
-                background="rgba(26, 86, 219, 0.8)"
-                borderRadius="var(--radius)"
-              >
-                <span className="flex items-center text-white">
-                    <Download className="h-4 w-4 mr-2" /> Download
-                </span>
-              </ShimmerButton>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500">{downloads[pyq.id] || 0}</span>
-                <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
-                  <div 
-                    className="bg-royal h-full rounded-full" 
-                    style={{ width: `${Math.min(100, ((downloads[pyq.id] || 0) / 100) * 100)}%` }}
-                  ></div>
+        {loading ? (
+          <div className="col-span-3 flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
+          </div>
+        ) : (
+          filteredPYQs.map((pyq) => (
+            <Card key={pyq.id} className="border-none shadow-md hover:shadow-lg transition-all">
+              <CardHeader>
+                <CardTitle className="text-lg">{pyq.title}</CardTitle>
+                <CardDescription>{pyq.description}</CardDescription>
+              </CardHeader>
+              <CardFooter className="flex justify-between">
+                <ShimmerButton
+                  onClick={() => handleDownload(pyq.id)}
+                  background="rgba(26, 86, 219, 0.8)"
+                  borderRadius="var(--radius)"
+                >
+                  <span className="flex items-center text-white">
+                      <Download className="h-4 w-4 mr-2" /> Download
+                  </span>
+                </ShimmerButton>
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-500">{downloads[pyq.id] || 0}</span>
+                  <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-royal h-full rounded-full" 
+                      style={{ width: `${Math.min(100, ((downloads[pyq.id] || 0) / 100) * 100)}%` }}
+                    ></div>
+                  </div>
                 </div>
-              </div>
-            </CardFooter>
-          </Card>
-        ))}
+              </CardFooter>
+            </Card>
+          ))
+        )}
         
-        {filteredPYQs.length === 0 && (
+        {!loading && filteredPYQs.length === 0 && (
           <div className="col-span-3 text-center py-8 text-gray-500">
             No papers available for this selection. Please try another filter combination.
           </div>

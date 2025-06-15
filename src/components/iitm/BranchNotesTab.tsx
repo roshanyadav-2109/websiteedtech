@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import {
   AccordionTrigger 
 } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Note {
   id: string;
@@ -23,6 +23,31 @@ interface Note {
 const BranchNotesTab = () => {
   const [branch, setBranch] = useState("data-science");
   const [level, setLevel] = useState("foundation");
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // NEW: Fetch notes from supabase (for this branch/level)
+  useEffect(() => {
+    const fetchNotes = async () => {
+      setLoading(true);
+      let { data, error } = await supabase
+        .from('notes')
+        .select('*')
+        .eq('is_active', true)
+        .eq('branch', branch)
+        .eq('level', level)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        setLoading(false);
+        setNotes([]);
+        return;
+      }
+      setNotes(data || []);
+      setLoading(false);
+    };
+    fetchNotes();
+  }, [branch, level]);
 
   // Add QUALIFIER level
   const levels = [
@@ -232,6 +257,27 @@ const BranchNotesTab = () => {
     return [];
   };
 
+  const getNotesForSubject = (subjectId: string, subjectTitle: string) => {
+    // Prefer Supabase data for this subject if present
+    let subjectNotes = notes.filter(
+      n => (n.subject?.toLowerCase() === subjectTitle.toLowerCase())
+    );
+    if (subjectNotes.length > 0) {
+      // Use downloaded week property or try to extract via title
+      return subjectNotes.map(n => ({
+        id: n.id,
+        title: n.title,
+        description: n.description || `${subjectTitle} study materials`,
+        week: n.title.match(/week (\d+)/i)
+          ? parseInt(n.title.match(/week (\d+)/i)[1], 10)
+          : 1,
+        downloads: n.download_count || 0,
+      }));
+    }
+    // fallback to old generated data
+    return generateSubjectNotes(subjectId, subjectTitle);
+  };
+
   const handleDownload = (noteId: string) => {
     // Actual download logic would go here
     console.log(`Downloading note: ${noteId}`);
@@ -279,7 +325,7 @@ const BranchNotesTab = () => {
         
         <div className="space-y-6">
           {currentSubjects.map((subject) => {
-            const subjectNotes = generateSubjectNotes(subject.id, subject.title);
+            const subjectNotes = getNotesForSubject(subject.id, subject.title);
             return (
               <Accordion type="single" collapsible key={subject.id} className="bg-white rounded-lg shadow-md">
                 <AccordionItem value={subject.id}>
