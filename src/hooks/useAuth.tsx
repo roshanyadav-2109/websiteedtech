@@ -90,12 +90,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setIsAdmin(false);
-    setIsSuperAdmin(false);
-    setUserRole(null);
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
+      setIsAdmin(false);
+      setIsSuperAdmin(false);
+      setUserRole(null);
+    } catch (error) {
+      console.error('useAuth: Error signing out:', error);
+    }
   };
 
   useEffect(() => {
@@ -107,6 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('useAuth: Error getting initial session:', error);
+          setIsLoading(false);
         } else {
           console.log('useAuth: Initial session:', session?.user?.email || 'No session');
           setSession(session);
@@ -114,9 +119,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsLoading(false);
           
           if (session?.user) {
-            // Defer admin check to not block the initial render
-            setTimeout(() => {
-              checkAdminStatus();
+            // Check admin status after setting user
+            setTimeout(async () => {
+              await checkAdminStatus();
             }, 100);
           }
         }
@@ -135,19 +140,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (!isLoading) {
-          setIsLoading(false);
-        }
-        
-        if (session?.user) {
-          // Defer admin check to not block the auth state change
-          setTimeout(() => {
-            checkAdminStatus();
-          }, 100);
-        } else {
+        if (event === 'SIGNED_OUT') {
           setIsAdmin(false);
           setIsSuperAdmin(false);
           setUserRole(null);
+        }
+        
+        if (session?.user && event === 'SIGNED_IN') {
+          // Check admin status after successful sign in
+          setTimeout(async () => {
+            await checkAdminStatus();
+          }, 100);
+        }
+        
+        if (!isLoading) {
+          setIsLoading(false);
         }
       }
     );
@@ -157,6 +164,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription.unsubscribe();
     };
   }, []);
+
+  // Re-check admin status when user changes
+  useEffect(() => {
+    if (user && !isLoading) {
+      checkAdminStatus();
+    }
+  }, [user?.email]);
 
   console.log('useAuth: Current state:', {
     userEmail: user?.email,

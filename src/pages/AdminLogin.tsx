@@ -50,7 +50,10 @@ const AdminLogin = () => {
         description: "Welcome to the admin panel",
       });
 
-      // The auth state change will handle the redirect
+      // Wait a moment for auth state to update, then navigate
+      setTimeout(() => {
+        navigate('/admin/dashboard');
+      }, 1000);
       
     } catch (error: any) {
       console.error('Login failed:', error);

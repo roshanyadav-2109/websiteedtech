@@ -21,14 +21,14 @@ import AdminManagementTab from "@/components/admin/AdminManagementTab";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("content-management");
-  const { isLoading, user } = useAuth();
+  const { isLoading, user, isAdmin } = useAuth();
 
-  console.log('AdminDashboard - Auth state:', { isLoading, user: user?.email });
+  console.log('AdminDashboard - Auth state:', { isLoading, user: user?.email, isAdmin });
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl">Loading...</p>
+        <p className="text-xl">Loading admin dashboard...</p>
       </div>
     );
   }
