@@ -1,8 +1,7 @@
-
 import { Level } from "../types/gradeTypes";
 
 export function calculateFoundationGrade(subjectKey: string, values: Record<string, number>): number {
-  const { GAA = 0, Qz1 = 0, Qz2 = 0, F = 0, Bonus = 0, GAAP = 0, OPPE1 = 0, OPPE2 = 0 } = values;
+  const { GAA = 0, Qz1 = 0, Qz2 = 0, F = 0, Bonus = 0, GAAP = 0, OPPE1 = 0, OPPE2 = 0, NPPE = 0, OPE = 0, BPTA = 0, VMT = 0, GRPA = 0 } = values;
   
   switch (subjectKey) {
     case "maths1": {
@@ -22,6 +21,29 @@ export function calculateFoundationGrade(subjectKey: string, values: Record<stri
     }
     case "python":
       return 0.05 * GAA + 0.1 * GAAP + 0.15 * Qz1 + 0.2 * OPPE1 + 0.2 * OPPE2 + 0.3 * F;
+    // Electronic Systems subjects
+    case "english_es1":
+    case "math_electronics1":
+    case "electronic_systems_thinking":
+    case "english_es2":
+    case "digital_systems":
+    case "electrical_electronic_circuits": {
+      const part1 = 0.1 * GAA + 0.6 * F + 0.2 * Math.max(Qz1, Qz2);
+      const part2 = 0.1 * GAA + 0.4 * F + 0.2 * Qz1 + 0.3 * Qz2;
+      return Math.max(part1, part2);
+    }
+    case "intro_c_programming": {
+      const part1 = 0.1 * GAA + 0.2 * Qz1 + 0.4 * F + 0.15 * OPPE1 + 0.15 * OPPE2;
+      const part2 = 0.1 * GAA + 0.2 * Qz1 + 0.4 * F + 0.20 * Math.max(OPPE1, OPPE2);
+      return Math.max(part1, part2);
+    }
+    case "intro_linux_programming":
+      return 0.1 * GAA + 0.05 * NPPE + 0.2 * Qz1 + 0.25 * OPE + 0.3 * F + 0.05 * BPTA + 0.05 * VMT;
+    case "embedded_c_programming": {
+      const part1 = 0.1 * GAA + 0.1 * GRPA + 0.5 * F + 0.2 * Math.max(Qz1, Qz2);
+      const part2 = 0.1 * GAA + 0.1 * GRPA + 0.4 * F + 0.2 * Qz1 + 0.2 * Qz2;
+      return Math.max(part1, part2);
+    }
     default:
       return 0.1 * GAA + 0.4 * F + 0.25 * Qz1 + 0.25 * Qz2;
   }
