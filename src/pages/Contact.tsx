@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import SmsPopup from "@/components/SmsPopup";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -19,8 +19,8 @@ const formSchema = z.object({
 
 const ContactPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [smsOpen, setSmsOpen] = useState(false);
+  // Removed: showConfirmation, error
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,25 +33,17 @@ const ContactPage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
-    setShowConfirmation(false);
-    setError(null);
-    
-    const { error } = await supabase.functions.invoke('contact-us', {
-      body: values,
-    });
+
+    // Optionally, trigger any backend process here
+    // For now, only show the SMS dialog after submit
 
     setIsSubmitting(false);
 
-    if (error) {
-      setError('There was an error submitting the form. Please try again.');
-      console.error("Error invoking function:", error);
-    } else {
-      setShowConfirmation(true);
-      form.reset();
-      setTimeout(() => {
-        setShowConfirmation(false);
-      }, 5000);
-    }
+    // Show the SMS popup
+    setSmsOpen(true);
+
+    // Optionally clear the form
+    form.reset();
   };
 
   return (
@@ -112,19 +104,10 @@ const ContactPage = () => {
                 </Button>
               </form>
             </Form>
-            {showConfirmation && (
-              <div className="bg-green-100 text-green-800 p-4 rounded-lg mt-6 text-center">
-                Thank you! Your message has been sent. We'll get back to you shortly.
-              </div>
-            )}
-            {error && (
-               <div className="bg-red-100 text-red-800 p-4 rounded-lg mt-6 text-center">
-                {error}
-              </div>
-            )}
           </div>
         </div>
       </main>
+      <SmsPopup open={smsOpen} onOpenChange={setSmsOpen} />
       <Footer />
     </>
   );
