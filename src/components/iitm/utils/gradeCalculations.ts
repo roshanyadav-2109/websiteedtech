@@ -1,4 +1,3 @@
-
 import { Level } from "../types/gradeTypes";
 
 export function calculateFoundationGrade(subjectKey: string, values: Record<string, number>): number {
@@ -53,7 +52,7 @@ export function calculateFoundationGrade(subjectKey: string, values: Record<stri
 }
 
 export function calculateDiplomaGrade(subjectKey: string, values: Record<string, number>): number {
-  const { GAA = 0, GA = 0, Qz1 = 0, Qz2 = 0, Qz3 = 0, F = 0, GAAP = 0, OPPE1 = 0, OPPE2 = 0, NPPE1 = 0, NPPE2 = 0, NPPE3 = 0 } = values;
+  const { GAA = 0, GA = 0, Qz1 = 0, Qz2 = 0, Qz3 = 0, F = 0, GAAP = 0, OPPE1 = 0, OPPE2 = 0, NPPE1 = 0, NPPE2 = 0, NPPE3 = 0, GrPA = 0, GAA1 = 0, GAA2 = 0, PE1 = 0, PE2 = 0, LE = 0, LV = 0, D = 0 } = values;
   
   switch (subjectKey) {
     case "programming_python":
@@ -65,6 +64,40 @@ export function calculateDiplomaGrade(subjectKey: string, values: Record<string,
       const nppeScores = [NPPE1, NPPE2, NPPE3].sort((a, b) => b - a);
       return 0.2 * GA + 0.15 * Qz1 + 0.15 * Qz2 + 0.15 * Qz3 + 0.15 * nppeScores[0] + 0.1 * nppeScores[1] + 0.1 * nppeScores[2];
     }
+
+    // ES Diploma Subjects
+    case "math_electronics2":
+    case "analog_electronic_systems":
+    case "sensors_applications": {
+        const part1 = 0.1 * GAA + 0.6 * F + 0.2 * Math.max(Qz1, Qz2);
+        const part2 = 0.1 * GAA + 0.4 * F + 0.2 * Qz1 + 0.3 * Qz2;
+        return Math.max(part1, part2);
+    }
+    case "signals_systems": {
+        const part1 = 0.5 * F + 0.2 * Math.max(Qz1, Qz2);
+        const part2 = 0.4 * F + 0.2 * Qz1 + 0.2 * Qz2;
+        return 0.1 * GAA + Math.max(part1, part2) + 0.1 * GrPA;
+    }
+    case "python_programming_es": {
+        const pe_max = Math.max(PE1, PE2);
+        const pe_min = Math.min(PE1, PE2);
+        const score = 0.1 * GAA1 + 0.1 * GAA2 + 0.1 * Qz1 + 0.4 * F + 0.25 * pe_max + 0.15 * pe_min;
+        return Math.min(100, score);
+    }
+    case "digital_signal_processing": {
+        const part1 = 0.55 * F + 0.1 * Math.max(Qz1, Qz2);
+        const part2 = 0.45 * F + 0.15 * Qz1 + 0.15 * Qz2;
+        return 0.1 * GAA + 0.1 * LE + 0.05 * LV + Math.max(part1, part2);
+    }
+    case "digital_system_design": {
+        const part1 = 0.5 * F + 0.2 * Math.max(Qz1, Qz2);
+        const part2 = 0.4 * F + 0.2 * Qz1 + 0.2 * Qz2;
+        return 0.1 * GAA + 0.1 * GrPA + Math.max(part1, part2);
+    }
+    case "control_engineering": {
+        return 0.1 * GAA + 0.45 * F + 0.2 * Qz1 + 0.2 * Qz2 + 0.05 * D;
+    }
+
     default:
       return 0.1 * GAA + 0.4 * F + 0.25 * Qz1 + 0.25 * Qz2;
   }

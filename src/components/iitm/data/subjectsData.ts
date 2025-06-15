@@ -318,6 +318,95 @@ export const ALL_SUBJECTS: Record<string, Subject[]> = {
       ]
     }
   ],
+  "diploma-electronic-systems": [
+    {
+      key: "math_electronics2",
+      name: "Math for Electronics - II",
+      fields: [
+        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+      key: "signals_systems",
+      name: "Signals and Systems",
+      fields: [
+        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+        { id: "GrPA", label: "Programming Assignments Avg (GrPA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+        key: "python_programming_es",
+        name: "Python Programming",
+        fields: [
+            { id: "GAA1", label: "Objective Assignments Avg (GAA1)", min: 0, max: 100 },
+            { id: "GAA2", label: "Programming Assignments Avg (GAA2)", min: 0, max: 100 },
+            { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+            { id: "PE1", label: "Programming Exam 1 (PE1)", min: 0, max: 100 },
+            { id: "PE2", label: "Programming Exam 2 (PE2)", min: 0, max: 100 },
+            { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+        ]
+    },
+    {
+      key: "analog_electronic_systems",
+      name: "Analog Electronic Systems",
+      fields: [
+        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+        key: "digital_signal_processing",
+        name: "Digital Signal Processing",
+        fields: [
+            { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+            { id: "LE", label: "Lab Experiments Average (LE)", min: 0, max: 100 },
+            { id: "LV", label: "Lab Viva Average (LV)", min: 0, max: 100 },
+            { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+            { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+            { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+        ]
+    },
+    {
+      key: "sensors_applications",
+      name: "Sensors and Applications",
+      fields: [
+        { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+        { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+        { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+        { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+      ]
+    },
+    {
+        key: "digital_system_design",
+        name: "Digital System Design",
+        fields: [
+            { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+            { id: "GRPA", label: "Programming Assignments Avg (GRPA)", min: 0, max: 100 },
+            { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+            { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+            { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+        ]
+    },
+    {
+        key: "control_engineering",
+        name: "Control Engineering",
+        fields: [
+            { id: "GAA", label: "Assignment Average (GAA)", min: 0, max: 100 },
+            { id: "Qz1", label: "Quiz 1 Score", min: 0, max: 100 },
+            { id: "Qz2", label: "Quiz 2 Score", min: 0, max: 100 },
+            { id: "D", label: "Design Assignment", min: 0, max: 100 },
+            { id: "F", label: "Final Exam Score", min: 0, max: 100 }
+        ]
+    }
+  ],
   degree: [
     {
       key: "software_testing",

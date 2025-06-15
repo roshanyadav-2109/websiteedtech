@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -481,10 +480,11 @@ const IITMToolsTab = () => {
           </CardHeader>
           <CardContent className="p-6">
             {/* Foundation: Both Data Science and Electronic Systems */}
-            {(branch === "data-science" || branch === "electronic-systems") && level === "foundation" ? (
+            {level === "foundation" && (branch === "data-science" || branch === "electronic-systems") ? (
               <FoundationMarksPredictor branch={branch} level={level} />
-            ) : branch === "data-science" && level === "diploma" ? (
-              <DiplomaMarksPredictor />
+            ) : /* Diploma: Both Data Science and Electronic Systems */
+            level === "diploma" && (branch === "data-science" || branch === "electronic-systems") ? (
+              <DiplomaMarksPredictor branch={branch} level={level} />
             ) : branch === "data-science" && level === "degree" ? (
               <DegreeMarksPredictor />
             ) : (
@@ -493,7 +493,9 @@ const IITMToolsTab = () => {
                 <br />
                 • <span className="font-semibold">Foundation level</span> of both <span className="font-semibold">BS Data Science</span> and <span className="font-semibold">BS Electronic Systems</span>
                 <br />
-                • <span className="font-semibold">Diploma and Degree levels</span> of <span className="font-semibold">BS Data Science</span>
+                • <span className="font-semibold">Diploma level</span> of both <span className="font-semibold">BS Data Science</span> and <span className="font-semibold">BS Electronic Systems</span>
+                <br />
+                • <span className="font-semibold">Degree level</span> of <span className="font-semibold">BS Data Science</span>
               </div>
             )}
           </CardContent>
