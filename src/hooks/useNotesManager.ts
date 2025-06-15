@@ -50,7 +50,7 @@ export const useNotesManager = () => {
     }
   };
 
-  const addNote = async (noteData: Omit<Note, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>) => {
+  const addNote = async (noteData: Omit<Note, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>): Promise<boolean> => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -74,16 +74,18 @@ export const useNotesManager = () => {
         description: "Note added successfully!",
       });
       await fetchNotes();
+      return true;
     } catch (error: any) {
       toast({
         title: "Add Error",
         description: error.message || "Failed to add note",
         variant: "destructive"
       });
+      return false;
     }
   };
 
-  const deleteNote = async (noteId: string) => {
+  const deleteNote = async (noteId: string): Promise<boolean> => {
     try {
       const { error } = await supabase
         .from('notes')
@@ -92,16 +94,18 @@ export const useNotesManager = () => {
       if (error) throw error;
       toast({ title: "Success", description: "Note deleted successfully" });
       await fetchNotes();
+      return true;
     } catch (error: any) {
       toast({
         title: "Delete Error",
         description: "Failed to delete note",
         variant: "destructive"
       });
+      return false;
     }
   };
 
-  const updateNote = async (noteId: string, updateData: Partial<Note>) => {
+  const updateNote = async (noteId: string, updateData: Partial<Note>): Promise<boolean> => {
     try {
       const { error } = await supabase
         .from('notes')
@@ -110,12 +114,14 @@ export const useNotesManager = () => {
       if (error) throw error;
       toast({ title: "Success", description: "Note updated successfully" });
       await fetchNotes();
+      return true;
     } catch (error: any) {
       toast({
         title: "Update Error",
         description: "Failed to update note",
         variant: "destructive"
       });
+      return false;
     }
   };
 

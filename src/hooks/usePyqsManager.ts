@@ -51,7 +51,7 @@ export const usePyqsManager = () => {
     }
   };
 
-  const addPyq = async (pyqData: Omit<PYQ, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>) => {
+  const addPyq = async (pyqData: Omit<PYQ, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>): Promise<boolean> => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -75,16 +75,18 @@ export const usePyqsManager = () => {
         description: "Previous year question added successfully!",
       });
       await fetchPyqs();
+      return true;
     } catch (error: any) {
       toast({
         title: "Add Error",
         description: error.message || "Failed to add previous year question",
         variant: "destructive"
       });
+      return false;
     }
   };
 
-  const deletePyq = async (pyqId: string) => {
+  const deletePyq = async (pyqId: string): Promise<boolean> => {
     try {
       const { error } = await supabase
         .from('pyqs')
@@ -93,16 +95,18 @@ export const usePyqsManager = () => {
       if (error) throw error;
       toast({ title: "Success", description: "Previous year question deleted successfully" });
       await fetchPyqs();
+      return true;
     } catch (error: any) {
       toast({
         title: "Delete Error",
         description: "Failed to delete previous year question",
         variant: "destructive"
       });
+      return false;
     }
   };
 
-  const updatePyq = async (pyqId: string, updateData: Partial<PYQ>) => {
+  const updatePyq = async (pyqId: string, updateData: Partial<PYQ>): Promise<boolean> => {
     try {
       const { error } = await supabase
         .from('pyqs')
@@ -111,12 +115,14 @@ export const usePyqsManager = () => {
       if (error) throw error;
       toast({ title: "Success", description: "Previous year question updated successfully" });
       await fetchPyqs();
+      return true;
     } catch (error: any) {
       toast({
         title: "Update Error",
         description: "Failed to update previous year question",
         variant: "destructive"
       });
+      return false;
     }
   };
 
