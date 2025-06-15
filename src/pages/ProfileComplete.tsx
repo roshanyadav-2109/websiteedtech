@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -119,16 +118,6 @@ const ProfileComplete = () => {
         });
         
       if (error) throw error;
-      
-      // Grant access to content based on exam type
-      const contentTypes = ["notes", "pyqs", "community"];
-      for (const contentType of contentTypes) {
-        await supabase.from('user_access').upsert({
-          user_id: user.id,
-          content_type: contentType,
-          exam_type: exam
-        });
-      }
       
       toast({
         title: "Profile updated!",
