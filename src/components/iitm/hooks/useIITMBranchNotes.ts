@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface Note {
@@ -25,7 +24,7 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [reloadFlag, setReloadFlag] = useState(0);
-  const reloadNotes = () => setReloadFlag((x) => x + 1);
+  const reloadNotes = useCallback(() => setReloadFlag((x) => x + 1), []);
 
   useEffect(() => {
     setLoading(true);
@@ -65,7 +64,7 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
 
   useEffect(() => {
     const channel = supabase
-      .channel('iitm-branch-notes-changes')
+      .channel('public:iitm_branch_notes')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'iitm_branch_notes' },
@@ -79,7 +78,7 @@ export function useIITMBranchNotes(branch: string, level: string): UseIITMBranch
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [reloadNotes]);
 
   const getAvailableSpecializations = () => {
     if (level !== 'diploma') return [];

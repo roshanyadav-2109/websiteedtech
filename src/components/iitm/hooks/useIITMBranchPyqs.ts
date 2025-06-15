@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface IITMPYQ {
@@ -31,7 +30,7 @@ export function useIITMBranchPyqs(branch: string, level: string, examType?: stri
   const [pyqs, setPyqs] = useState<IITMPYQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [reloadFlag, setReloadFlag] = useState(0);
-  const reloadPyqs = () => setReloadFlag((x) => x + 1);
+  const reloadPyqs = useCallback(() => setReloadFlag((x) => x + 1), []);
 
   useEffect(() => {
     setLoading(true);
@@ -84,12 +83,12 @@ export function useIITMBranchPyqs(branch: string, level: string, examType?: stri
 
   useEffect(() => {
     const channel = supabase
-      .channel('iitm-pyqs-changes')
+      .channel('public:pyqs')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'pyqs' },
         (payload) => {
-          console.log('Real-time change detected in pyqs:', payload);
+          console.log('Real-time change detected in pyqs (IITM hook):', payload);
           reloadPyqs();
         }
       )
@@ -98,7 +97,7 @@ export function useIITMBranchPyqs(branch: string, level: string, examType?: stri
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [reloadPyqs]);
 
   const getAvailableSpecializations = () => {
     if (level !== 'diploma') return [];
