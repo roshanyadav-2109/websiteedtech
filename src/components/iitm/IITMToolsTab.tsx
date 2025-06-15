@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -479,16 +480,20 @@ const IITMToolsTab = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Foundation: Data Science, Foundation */}
-            {branch === "data-science" && level === "foundation" ? (
-              <FoundationMarksPredictor />
+            {/* Foundation: Both Data Science and Electronic Systems */}
+            {(branch === "data-science" || branch === "electronic-systems") && level === "foundation" ? (
+              <FoundationMarksPredictor branch={branch} level={level} />
             ) : branch === "data-science" && level === "diploma" ? (
               <DiplomaMarksPredictor />
             ) : branch === "data-science" && level === "degree" ? (
               <DegreeMarksPredictor />
             ) : (
               <div className="text-center text-gray-600 text-lg pt-12 pb-16">
-                Marks predictor is only available for <span className="font-semibold">Foundation, Diploma, or Degree subjects</span> of <span className="font-semibold">BS Data Science branch</span>.
+                Marks predictor is available for:
+                <br />
+                • <span className="font-semibold">Foundation level</span> of both <span className="font-semibold">BS Data Science</span> and <span className="font-semibold">BS Electronic Systems</span>
+                <br />
+                • <span className="font-semibold">Diploma and Degree levels</span> of <span className="font-semibold">BS Data Science</span>
               </div>
             )}
           </CardContent>
