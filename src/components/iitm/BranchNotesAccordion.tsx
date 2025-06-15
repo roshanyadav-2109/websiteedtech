@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,7 +9,6 @@ export interface BranchNotesAccordionProps {
   groupedNotes: Record<string, Note[]>;
   level: string;
   handleDownload: (noteId: string) => void;
-  generatePlaceholderNotes: (subject: string) => Note[];
   currentSubjects: string[];
   loading: boolean;
 }
@@ -19,7 +17,6 @@ const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
   groupedNotes,
   level,
   handleDownload,
-  generatePlaceholderNotes,
   currentSubjects,
   loading,
 }) => {
@@ -35,9 +32,7 @@ const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
   return (
     <div className="space-y-6">
       {currentSubjects.map((subject) => {
-        const subjectNotes = groupedNotes[subject]?.length > 0
-          ? groupedNotes[subject]
-          : generatePlaceholderNotes(subject);
+        const subjectNotes = groupedNotes[subject] || [];
 
         return (
           <Accordion type="single" collapsible key={subject} className="bg-white rounded-lg shadow-md">

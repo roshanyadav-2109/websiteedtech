@@ -1,61 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Download, FileText } from "lucide-react";
-import { 
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger 
-} from "@/components/ui/accordion";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
-import { useBackend } from "@/components/BackendIntegratedWrapper";
-import { runPopulation } from "@/utils/populateIITMNotes";
-import BranchNotesAccordion from "./BranchNotesAccordion";
-import { useIITMBranchNotes } from "./hooks/useIITMBranchNotes";
-import AdminPopulateButton from "./AdminPopulateButton";
 
-interface Note {
-  id: string;
-  title: string;
-  description: string;
-  week: number;
-  downloads: number;
-  subject?: string | null;
-}
+import React, { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import BranchNotesAccordion from "./BranchNotesAccordion";
+import { useIITMBranchNotes, Note } from "./hooks/useIITMBranchNotes";
 
 const BranchNotesTab = () => {
   const [branch, setBranch] = useState("data-science");
   const [level, setLevel] = useState("foundation");
 
-  const { isAdmin } = useBackend();
   const {
-    notes,
     loading,
     groupedNotes,
     getCurrentSubjects,
-    reloadNotes
   } = useIITMBranchNotes(branch, level);
-
-  // Generate placeholder notes for subjects with no data
-  const generatePlaceholderNotes = (subject: string) => {
-    const maxWeeks = level === "qualifier" ? 4 : 12;
-    const placeholderNotes: Note[] = [];
-    for (let week = 1; week <= maxWeeks; week++) {
-      placeholderNotes.push({
-        id: `placeholder-${subject}-w${week}`,
-        title: `Week ${week} - ${subject}`,
-        description: `Week ${week} lecture notes and practice problems`,
-        week: week,
-        downloads: Math.floor(Math.random() * 50) + 10,
-        subject: subject
-      });
-    }
-    return placeholderNotes;
-  };
 
   const handleDownload = (noteId: string) => {
     console.log(`Downloading note: ${noteId}`);
@@ -110,16 +68,10 @@ const BranchNotesTab = () => {
           groupedNotes={groupedNotes}
           level={level}
           handleDownload={handleDownload}
-          generatePlaceholderNotes={generatePlaceholderNotes}
           currentSubjects={currentSubjects}
           loading={loading}
         />
       </div>
-      {isAdmin && (
-        <div className="flex justify-end mb-2">
-          <AdminPopulateButton loading={loading} onDone={reloadNotes} />
-        </div>
-      )}
     </div>
   );
 };

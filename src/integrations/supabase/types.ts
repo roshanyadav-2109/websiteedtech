@@ -230,6 +230,51 @@ export type Database = {
           },
         ]
       }
+      iitm_branch_notes: {
+        Row: {
+          branch: string
+          created_at: string
+          description: string | null
+          download_count: number
+          file_link: string | null
+          id: string
+          is_active: boolean
+          level: string
+          subject: string
+          title: string
+          updated_at: string
+          week_number: number
+        }
+        Insert: {
+          branch: string
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          file_link?: string | null
+          id?: string
+          is_active?: boolean
+          level: string
+          subject: string
+          title: string
+          updated_at?: string
+          week_number: number
+        }
+        Update: {
+          branch?: string
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          file_link?: string | null
+          id?: string
+          is_active?: boolean
+          level?: string
+          subject?: string
+          title?: string
+          updated_at?: string
+          week_number?: number
+        }
+        Relationships: []
+      }
       important_dates: {
         Row: {
           branch: string | null
