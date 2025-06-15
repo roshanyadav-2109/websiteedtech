@@ -205,6 +205,8 @@ const IITMToolsTab = () => {
     { name: "Course 3", credits: 3, grade: 10 },
   ]);
   const [cgpa, setCgpa] = useState(10);
+  const [previousCgpa, setPreviousCgpa] = useState("");
+  const [previousCredits, setPreviousCredits] = useState("");
 
   // Grade Calculator State
   const [totalMarks, setTotalMarks] = useState(100);
@@ -263,13 +265,19 @@ const IITMToolsTab = () => {
   };
 
   const calculateCGPA = () => {
-    let totalCredits = 0;
-    let totalPoints = 0;
+    let currentSemesterCredits = 0;
+    let currentSemesterPoints = 0;
 
     courses.forEach(course => {
-      totalCredits += course.credits;
-      totalPoints += (course.credits * course.grade);
+      currentSemesterCredits += course.credits;
+      currentSemesterPoints += (course.credits * course.grade);
     });
+
+    const prevCgpaNum = parseFloat(previousCgpa) || 0;
+    const prevCreditsNum = parseInt(previousCredits) || 0;
+
+    const totalPoints = (prevCgpaNum * prevCreditsNum) + currentSemesterPoints;
+    const totalCredits = prevCreditsNum + currentSemesterCredits;
 
     const calculatedCGPA = totalCredits ? (totalPoints / totalCredits) : 0;
     setCgpa(parseFloat(calculatedCGPA.toFixed(2)));
@@ -282,6 +290,8 @@ const IITMToolsTab = () => {
       { name: "Course 3", credits: 3, grade: 10 },
     ]);
     setCgpa(10);
+    setPreviousCgpa("");
+    setPreviousCredits("");
   };
 
   const calculateGrade = () => {
@@ -429,6 +439,32 @@ const IITMToolsTab = () => {
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-md bg-gray-50 border">
+                <div className="space-y-2">
+                  <Label htmlFor="previous-cgpa">Previous CGPA (Optional)</Label>
+                  <Input
+                    id="previous-cgpa"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="10"
+                    value={previousCgpa}
+                    onChange={(e) => setPreviousCgpa(e.target.value)}
+                    placeholder="e.g., 8.5"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="previous-credits">Total Credits Earned (Optional)</Label>
+                  <Input
+                    id="previous-credits"
+                    type="number"
+                    min="0"
+                    value={previousCredits}
+                    onChange={(e) => setPreviousCredits(e.target.value)}
+                    placeholder="e.g., 30"
+                  />
+                </div>
+              </div>
               {courses.map((course, index) => (
                 <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-md bg-gray-50">
                   <div className="space-y-2">
