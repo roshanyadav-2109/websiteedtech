@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Download, Eye } from "lucide-react";
+import { Download, Eye, Trash2 } from "lucide-react";
 import { ShimmerButton } from './ui/shimmer-button';
 
 interface Chapter {
@@ -17,15 +17,17 @@ interface ChapterListProps {
     chapters: Chapter[];
     downloadCounts: Record<string, number>;
     onDownload: (noteId: string, fileUrl?: string) => Promise<void>;
+    isAdmin?: boolean;
+    onDelete?: (noteId: string) => Promise<void>;
 }
 
-const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onDownload }) => {
+const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onDownload, isAdmin, onDelete }) => {
     return (
         <div className="space-y-4">
             <ul className="space-y-3">
                 {chapters.map((chapter) => (
                     <li key={chapter.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors">
-                        <div className="mb-4 sm:mb-0">
+                        <div className="mb-4 sm:mb-0 flex-grow mr-4">
                             <h3 className="text-md font-semibold text-gray-900">{chapter.title}</h3>
                             {chapter.description && <p className="text-sm text-gray-500 mt-1">{chapter.description}</p>}
                         </div>
@@ -58,6 +60,17 @@ const ChapterList: React.FC<ChapterListProps> = ({ chapters, downloadCounts, onD
                                     <span className="hidden md:inline">Download</span>
                                 </span>
                             </ShimmerButton>
+                            {isAdmin && onDelete && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onDelete(chapter.id)}
+                                    className="text-red-600 hover:text-red-800"
+                                    title="Delete note"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
                         </div>
                     </li>
                 ))}

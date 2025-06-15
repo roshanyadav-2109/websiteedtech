@@ -2,7 +2,7 @@
 import React from "react";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import ChapterList from "./ChapterList";
-import { jeeChapters, neetChapters } from "@/data/chaptersData";
+import AdminAddButton from "./admin/AdminAddButton";
 
 interface SubjectBlockProps {
   subject: string;
@@ -11,23 +11,20 @@ interface SubjectBlockProps {
 }
 
 const SubjectBlock = ({ subject, selectedClass, examType }: SubjectBlockProps) => {
-  const { notes, handleDownload, downloadCounts, contentLoading } = useBackend();
+  const { notes, handleDownload, downloadCounts, contentLoading, isAdmin, deleteNote } = useBackend();
   
-  // Get chapters from the data files
-  const chaptersData = examType === 'JEE' ? jeeChapters : neetChapters;
-  const staticChapters = chaptersData[subject]?.[selectedClass] || [];
-  
-  // Filter database notes for this subject and class
-  const examNotes = notes.filter(note => note.exam_type === examType);
-  const dbChapters = examNotes.filter(
-    note => note.subject === subject && note.class_level === selectedClass
+  const chapters = notes.filter(
+    note => note.exam_type === examType && note.subject === subject && note.class_level === selectedClass
   );
-
-  // Combine static chapters with database chapters, giving priority to database data
-  const allChapters = [...staticChapters, ...dbChapters];
 
   const handleDownloadClick = async (noteId: string, fileUrl?: string) => {
     await handleDownload(noteId, 'notes', fileUrl);
+  };
+
+  const handleDeleteClick = async (noteId: string) => {
+    if (window.confirm('Are you sure you want to delete this note?')) {
+      await deleteNote(noteId);
+    }
   };
   
   if (contentLoading) {
@@ -40,7 +37,23 @@ const SubjectBlock = ({ subject, selectedClass, examType }: SubjectBlockProps) =
 
   return (
     <div>
-      <ChapterList chapters={allChapters} downloadCounts={downloadCounts} onDownload={handleDownloadClick} />
+      <div className="flex justify-end mb-4">
+        <AdminAddButton
+          contentType="notes"
+          examType={examType}
+          prefilledSubject={subject}
+          classLevel={selectedClass}
+        >
+          Add Note
+        </AdminAddButton>
+      </div>
+      <ChapterList
+        chapters={chapters}
+        downloadCounts={downloadCounts}
+        onDownload={handleDownloadClick}
+        isAdmin={isAdmin}
+        onDelete={handleDeleteClick}
+      />
     </div>
   );
 };
