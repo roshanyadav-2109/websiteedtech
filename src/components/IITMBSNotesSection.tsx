@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2, Plus } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import { 
   Select, 
   SelectContent, 
@@ -84,12 +83,6 @@ const IITMBSNotesSection = ({ subject, notes: propNotes, downloads: propDownload
       <div className="my-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold capitalize">{subject}</h2>
-          {isAdmin && (
-            <Button className="admin-only bg-blue-600 hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Note
-            </Button>
-          )}
         </div>
         <div className="flex justify-center items-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
@@ -103,12 +96,6 @@ const IITMBSNotesSection = ({ subject, notes: propNotes, downloads: propDownload
     <div className="my-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold capitalize">{subject}</h2>
-        {isAdmin && (
-          <Button className="admin-only bg-blue-600 hover:bg-blue-700">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Note
-          </Button>
-        )}
       </div>
       
       <div className="mb-6 max-w-xs">

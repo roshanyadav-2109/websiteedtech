@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -12,7 +11,6 @@ import { Search } from "lucide-react";
 import NEETSubjectBlock from "@/components/NEETSubjectBlock";
 import NEETPYQTab from "@/components/NEETPYQTab";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
-import AdminAddButton from "@/components/admin/AdminAddButton";
 
 const NEETPrep = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,12 +103,6 @@ const NEETPrep = () => {
               <TabsContent value="notes">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
-                  <AdminAddButton 
-                    contentType="notes"
-                    examType="NEET"
-                  >
-                    Add Notes
-                  </AdminAddButton>
                 </div>
 
                 {/* Subject Filter Tabs */}
@@ -155,12 +147,6 @@ const NEETPrep = () => {
               <TabsContent value="pyqs">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Previous Year Questions</h2>
-                  <AdminAddButton 
-                    contentType="pyqs"
-                    examType="NEET"
-                  >
-                    Add PYQs
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("pyqs", <NEETPYQTab downloads={downloads} onDownload={handleDownload} />)}
               </TabsContent>
@@ -168,12 +154,6 @@ const NEETPrep = () => {
               <TabsContent value="study-groups">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Study Groups</h2>
-                  <AdminAddButton 
-                    contentType="communities"
-                    examType="NEET"
-                  >
-                    Add Study Group
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("study-groups", 
                   <div className="text-center py-8">
@@ -185,12 +165,6 @@ const NEETPrep = () => {
               <TabsContent value="news-updates">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">News Updates</h2>
-                  <AdminAddButton 
-                    contentType="news"
-                    examType="NEET"
-                  >
-                    Add News
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("news-updates", 
                   <div className="text-center py-8">
@@ -202,12 +176,6 @@ const NEETPrep = () => {
               <TabsContent value="important-dates">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold">Important Dates</h2>
-                  <AdminAddButton 
-                    contentType="dates"
-                    examType="NEET"
-                  >
-                    Add Date
-                  </AdminAddButton>
                 </div>
                 {renderTabContent("important-dates", 
                   <div className="text-center py-8">
