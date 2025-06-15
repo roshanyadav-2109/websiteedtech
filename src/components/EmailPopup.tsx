@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -98,7 +97,7 @@ const EmailPopup = () => {
       </div>
       <DialogContent className="max-w-xs p-0 rounded-xl overflow-hidden animate-scale-in border-0 shadow-premium">
         <DialogHeader className="relative">
-          {/* Gradient header with icon and close button */}
+          {/* Gradient header with icon and title */}
           <div className="bg-gradient-to-r from-royal to-royal-dark py-4 px-4 flex flex-col items-center relative">
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow scale-105 -mt-3 mb-0.5 border-2 border-golden">
               <Mail className="text-royal" size={18} />
@@ -109,10 +108,6 @@ const EmailPopup = () => {
             <DialogDescription className="text-white/90 text-xs font-medium pb-1">
               Fill the form & our team will reply soon!
             </DialogDescription>
-            <DialogClose className="absolute right-2 top-2 rounded-full p-1 hover:bg-royal-light focus:outline-none">
-              <X className="text-white" size={16} />
-              <span className="sr-only">Close</span>
-            </DialogClose>
           </div>
         </DialogHeader>
         <div className="bg-white px-4 py-4">
