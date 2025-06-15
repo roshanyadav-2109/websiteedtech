@@ -32,34 +32,41 @@ const BranchNotesTab = () => {
   useEffect(() => {
     const fetchNotes = async () => {
       setLoading(true);
-      let { data, error } = await supabase
-        .from('iitm_branch_notes')
-        .select('*')
-        .eq('is_active', true)
-        .eq('branch', branch)
-        .eq('level', level)
-        .order('subject', { ascending: true })
-        .order('week_number', { ascending: true });
+      try {
+        // Use type assertion to bypass TypeScript checking for the new table
+        const { data, error } = await (supabase as any)
+          .from('iitm_branch_notes')
+          .select('*')
+          .eq('is_active', true)
+          .eq('branch', branch)
+          .eq('level', level)
+          .order('subject', { ascending: true })
+          .order('week_number', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching notes:', error);
+        if (error) {
+          console.error('Error fetching notes:', error);
+          setLoading(false);
+          setNotes([]);
+          return;
+        }
+
+        // Map data to the Note interface
+        const mappedNotes: Note[] = (data || []).map((n: any) => ({
+          id: n.id,
+          title: n.title,
+          description: n.description || "",
+          week: n.week_number || 1,
+          downloads: n.download_count ?? 0,
+          subject: n.subject || null,
+        }));
+
+        setNotes(mappedNotes);
         setLoading(false);
+      } catch (err) {
+        console.error('Error fetching notes:', err);
         setNotes([]);
-        return;
+        setLoading(false);
       }
-
-      // Map data to the Note interface
-      const mappedNotes: Note[] = (data || []).map((n: any) => ({
-        id: n.id,
-        title: n.title,
-        description: n.description || "",
-        week: n.week_number || 1,
-        downloads: n.download_count ?? 0,
-        subject: n.subject || null,
-      }));
-
-      setNotes(mappedNotes);
-      setLoading(false);
     };
     fetchNotes();
   }, [branch, level]);

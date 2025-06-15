@@ -168,8 +168,8 @@ export const populateIITMNotes = async () => {
       for (const subject of subjects) {
         console.log(`Populating ${branch} - ${level} - ${subject}`);
         
-        // Check if notes already exist for this subject/branch/level
-        const { data: existingNotes } = await supabase
+        // Check if notes already exist for this subject/branch/level using type assertion
+        const { data: existingNotes } = await (supabase as any)
           .from('iitm_branch_notes')
           .select('id')
           .eq('branch', branch)
@@ -196,8 +196,8 @@ export const populateIITMNotes = async () => {
           });
         }
         
-        // Insert all weeks for this subject at once
-        const { error } = await supabase
+        // Insert all weeks for this subject at once using type assertion
+        const { error } = await (supabase as any)
           .from('iitm_branch_notes')
           .insert(notesToInsert);
         
