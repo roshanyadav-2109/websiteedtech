@@ -14,25 +14,21 @@ import NewsTab from "@/components/iitm/NewsTab";
 import ImportantDatesTab from "@/components/iitm/ImportantDatesTab";
 import PaidCoursesTab from "@/components/iitm/PaidCoursesTab";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
-import TelegramBanner from "@/components/iitm/TelegramBanner";
 
 const IITMBSPrep = () => {
   const [activeTab, setActiveTab] = useState("branch-notes");
 
   const renderTabContent = (tab: string, content: React.ReactNode) => {
     const protectedTabs = ["communities"];
-    
     if (protectedTabs.includes(tab)) {
       return <OptimizedAuthWrapper>{content}</OptimizedAuthWrapper>;
     }
-    
     return content;
   };
 
   return (
     <>
       <NavBar />
-      
       <main className="pt-20">
         <section className="bg-gradient-to-r from-royal to-royal-dark text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -42,13 +38,9 @@ const IITMBSPrep = () => {
             </p>
           </div>
         </section>
-
         {/* Main Content */}
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-8">
-              <TelegramBanner />
-            </div>
             <Tabs defaultValue="branch-notes" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="overflow-x-auto pb-2">
                 <TabsList className="w-full min-w-fit">
@@ -138,7 +130,6 @@ const IITMBSPrep = () => {
           </div>
         </section>
       </main>
-
       <Footer />
       <EmailPopup />
     </>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,18 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectGroup, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Users, ExternalLink } from "lucide-react";
 import { useAuth } from '@/hooks/useAuth';
-
-// Branch and Subject lists
-const BRANCHES = [
-  "Data Science and Applications",
-  "Electronic Systems",
-];
-const LEVELS = [
-  { value: "foundation", label: "Foundation" },
-  { value: "diploma", label: "Diploma" },
-];
-const FOUNDATION_SUBJECTS = ["Math 1", "Stats 1", "English 1", "CT", "Python"];
-const DIPLOMA_SUBJECTS = ["Math 2", "Stats 2", "English 2", "DBMS", "MLF", "BDM", "App Dev 1", "App Dev 2", "PDSA", "MAD 1", "MAD 2", "MLT", "MLP", "Tools in DS"];
 
 interface Community {
   id: string;
@@ -39,9 +26,76 @@ interface UserProfile {
   level: string;
 }
 
-const TELEGRAM_GROUP_LINK = "https://t.me/iitm_bs_community";
-const TELEGRAM_GROUP_NAME = "IITM BS Official Telegram";
-const TELEGRAM_GROUP_DESCRIPTION = "Join 5000+ IITM BS students, ask questions, and connect with peers!";
+// Branch and Subject lists
+const BRANCHES = [
+  "Data Science and Applications",
+  "Electronic Systems",
+];
+
+const LEVELS = [
+  { value: "foundation", label: "Foundation" },
+  { value: "diploma", label: "Diploma" }
+];
+
+// Updated subject lists based on branch & level
+const SUBJECT_MAP: Record<
+  string,
+  { foundation: string[]; diploma: string[] }
+> = {
+  "Data Science and Applications": {
+    foundation: [
+      "Mathematics for Data Science 1",
+      "English 1",
+      "Computational Thinking",
+      "Statistics for Data Science 1",
+      "Mathematics for Data Science 2",
+      "English 2",
+      "Introduction to Python Programming",
+      "Statistics for Data Science 2",
+    ],
+    diploma: [
+      "Machine Learning Foundations",
+      "Machine Learning Techniques",
+      "Machine Learning Practice",
+      "Business Data Management",
+      "Business Analytics",
+      "Tools in Data Science",
+      "Programming Data Structures and Algorithms using Python (PDSA)",
+      "Database Management System (DBMS)",
+      "Application Development - 1",
+      "Programming Concepts using Java",
+      "System Commands (Linux/Unix)",
+      "Application Development - 2",
+      "Machine Learning Practice Project",
+      "Business Data Management Project",
+      "Application Development 1 Project",
+      "Application Development 2 Project"
+    ]
+  },
+  "Electronic Systems": {
+    foundation: [
+      "English - I",
+      "Math for Electronics - I",
+      "Electronic Systems Thinking and Circuits",
+      "Introduction to C Programming",
+      "English - II",
+      "Introduction to Linux Programming",
+      "Digital Systems",
+      "Electrical and Electronic Circuits",
+      "Embedded C Programming"
+    ],
+    diploma: [
+      "Math for Electronics - II",
+      "Signals and Systems",
+      "Python Programming",
+      "Analog Electronic Systems",
+      "Digital Signal Processing",
+      "Sensors and Applications",
+      "Digital System Design",
+      "Control Engineering"
+    ]
+  }
+};
 
 const CommunitiesTab = () => {
   const [communities, setCommunities] = useState<Community[]>([]);
@@ -102,7 +156,6 @@ const CommunitiesTab = () => {
   // Filtering logic: Only WhatsApp groups, then by branch, level, subject
   const filteredCommunities = useMemo(() => {
     let items = communities.filter(c => c.group_type === "WhatsApp");
-
     if (selectedBranch) {
       items = items.filter(c => c.branch === selectedBranch);
     }
@@ -112,14 +165,14 @@ const CommunitiesTab = () => {
     if (selectedSubject) {
       items = items.filter(c => c.subject === selectedSubject);
     }
-
     return items;
   }, [communities, selectedBranch, selectedLevel, selectedSubject]);
 
-  // Subjects depend on level selection
-  const subjectOptions = selectedLevel === "diploma"
-    ? DIPLOMA_SUBJECTS
-    : FOUNDATION_SUBJECTS;
+  // Generate subject options based on branch and level
+  const subjectOptions =
+    selectedBranch && selectedLevel
+      ? SUBJECT_MAP[selectedBranch]?.[selectedLevel] || []
+      : [];
 
   if (isLoading) {
     return (
@@ -128,143 +181,108 @@ const CommunitiesTab = () => {
       </div>
     );
   }
-
   if (error) {
     return <div className="text-center py-8 text-red-500">{error}</div>;
   }
 
   return (
-    <div className="relative flex flex-col md:flex-row gap-6">
-      {/* Left content: WhatsApp communities + filters */}
-      <div className="flex-1 space-y-6">
-        {/* Filters Row */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Branch */}
-          <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Select Branch" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {BRANCHES.map((branch) => (
-                  <SelectItem key={branch} value={branch}>{branch}</SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          {/* Level */}
-          <Select value={selectedLevel} onValueChange={value => { setSelectedLevel(value); setSelectedSubject(""); }}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Select Level" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {LEVELS.map(({ value, label }) => (
-                  <SelectItem key={value} value={value}>{label}</SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          {/* Subject */}
-          <Select
-            value={selectedSubject}
-            onValueChange={setSelectedSubject}
-            disabled={!selectedLevel}
-          >
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Select Subject" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {subjectOptions.map(s => (
-                  <SelectItem key={s} value={s}>
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* WhatsApp Communities List */}
-        <div>
-          {filteredCommunities.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600">No WhatsApp communities found for the selected filters.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-              {filteredCommunities.map((community) => (
-                <Card key={community.id} className="border-none shadow-md hover:shadow-lg transition-all">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center">
-                        <div className="rounded-full bg-green-500/10 p-2 mr-3">
-                          <Users className="h-5 w-5 text-green-700" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">{community.name}</CardTitle>
-                          <CardDescription>WhatsApp Group</CardDescription>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {community.description && (
-                      <p className="text-sm text-gray-600 mb-2">{community.description}</p>
-                    )}
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {community.branch && <Badge variant="outline">{community.branch}</Badge>}
-                      {community.level && <Badge variant="outline">{community.level}</Badge>}
-                      {community.subject && <Badge variant="secondary">{community.subject}</Badge>}
-                    </div>
-                    {community.member_count > 0 && (
-                      <p className="text-xs text-gray-500">{community.member_count} members</p>
-                    )}
-                  </CardContent>
-                  <CardFooter>
-                    <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
-                      <a href={community.group_link} target="_blank" rel="noopener noreferrer">
-                        Join WhatsApp <ExternalLink className="h-4 w-4 ml-2" />
-                      </a>
-                    </Button>
-                  </CardFooter>
-                </Card>
+    <div className="flex flex-col space-y-6 w-full">
+      {/* Filters Row */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        {/* Branch */}
+        <Select value={selectedBranch} onValueChange={value => { setSelectedBranch(value); setSelectedLevel(""); setSelectedSubject(""); }}>
+          <SelectTrigger className="w-full sm:w-40">
+            <SelectValue placeholder="Select Branch" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {BRANCHES.map(branch => (
+                <SelectItem key={branch} value={branch}>{branch}</SelectItem>
               ))}
-            </div>
-          )}
-        </div>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        {/* Level */}
+        <Select value={selectedLevel} onValueChange={value => { setSelectedLevel(value); setSelectedSubject(""); }}>
+          <SelectTrigger className="w-full sm:w-40">
+            <SelectValue placeholder="Select Level" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {LEVELS.map(({ value, label }) => (
+                <SelectItem key={value} value={value}>{label}</SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        {/* Subject */}
+        <Select
+          value={selectedSubject}
+          onValueChange={setSelectedSubject}
+          disabled={!selectedBranch || !selectedLevel}
+        >
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Select Subject" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {subjectOptions.map(s => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Telegram group fixed card (right/side) */}
-      <div className="w-full md:w-80 flex-shrink-0">
-        <Card className="bg-[#3498db]/10 border-[#3498db] border-2 shadow-lg sticky top-4">
-          <CardHeader>
-            <div className="flex items-center">
-              <img 
-                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://t.me/iitm_bs_community"
-                alt="Telegram QR"
-                className="w-20 h-20 rounded-lg mr-4"
-              />
-              <div>
-                <CardTitle className="!text-base">{TELEGRAM_GROUP_NAME}</CardTitle>
-                <CardDescription>
-                  <span className="block mt-1">{TELEGRAM_GROUP_DESCRIPTION}</span>
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardFooter>
-            <Button 
-              asChild
-              className="w-full bg-[#0088cc] hover:bg-[#0088cc]/90 text-white font-bold mt-2"
-            >
-              <a href={TELEGRAM_GROUP_LINK} target="_blank" rel="noopener noreferrer">
-                Join Telegram
-              </a>
-            </Button>
-          </CardFooter>
-        </Card>
+      {/* WhatsApp Communities List */}
+      <div>
+        {filteredCommunities.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600">No WhatsApp communities found for the selected filters.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            {filteredCommunities.map((community) => (
+              <Card key={community.id} className="border-none shadow-md hover:shadow-lg transition-all">
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center">
+                      <div className="rounded-full bg-green-500/10 p-2 mr-3">
+                        <Users className="h-5 w-5 text-green-700" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{community.name}</CardTitle>
+                        <CardDescription>WhatsApp Group</CardDescription>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {community.description && (
+                    <p className="text-sm text-gray-600 mb-2">{community.description}</p>
+                  )}
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {community.branch && <Badge variant="outline">{community.branch}</Badge>}
+                    {community.level && <Badge variant="outline">{community.level}</Badge>}
+                    {community.subject && <Badge variant="secondary">{community.subject}</Badge>}
+                  </div>
+                  {community.member_count > 0 && (
+                    <p className="text-xs text-gray-500">{community.member_count} members</p>
+                  )}
+                </CardContent>
+                <CardFooter>
+                  <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
+                    <a href={community.group_link} target="_blank" rel="noopener noreferrer">
+                      Join WhatsApp <ExternalLink className="h-4 w-4 ml-2" />
+                    </a>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
