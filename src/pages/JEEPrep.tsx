@@ -7,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubjectBlock from "@/components/SubjectBlock";
 import JEEPYQTab from "@/components/JEEPYQTab";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
-import AdminAddButton from "@/components/admin/AdminAddButton";
 
 const JEEPrep = () => {
   const [activeTab, setActiveTab] = useState("notes");
@@ -80,17 +79,7 @@ const JEEPrep = () => {
               </div>
 
               <TabsContent value="notes">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Subject-wise Notes</h2>
-                  <AdminAddButton
-                      contentType="notes"
-                      examType="JEE"
-                      prefilledSubject={activeSubject}
-                      prefilledClass={activeClass}
-                  >
-                      Add Note
-                  </AdminAddButton>
-                </div>
+                <h2 className="text-2xl font-bold mb-4">Subject-wise Notes</h2>
                 
                 {/* Subject Filter Tabs */}
                 <div className="mb-6">

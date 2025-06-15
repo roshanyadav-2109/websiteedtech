@@ -11,7 +11,7 @@ interface AdminAddButtonProps {
   prefilledSubject?: string;
   branch?: string;
   level?: string;
-  prefilledClass?: string;
+  classLevel?: string;
 }
 
 const AdminAddButton: React.FC<AdminAddButtonProps> = ({
@@ -21,7 +21,7 @@ const AdminAddButton: React.FC<AdminAddButtonProps> = ({
   prefilledSubject,
   branch,
   level,
-  prefilledClass
+  classLevel
 }) => {
   const { isAdmin } = useBackend();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -50,7 +50,7 @@ const AdminAddButton: React.FC<AdminAddButtonProps> = ({
         prefilledSubject={prefilledSubject}
         branch={branch}
         level={level}
-        classLevel={prefilledClass}
+        classLevel={classLevel}
       />
     </>
   );

@@ -1,14 +1,11 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Trash2 } from "lucide-react";
+import { Download, Trash2, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import AuthWrapper from "@/components/AuthWrapper";
 import { ShimmerButton } from "./ui/shimmer-button";
-import AdminAddButton from "./admin/AdminAddButton";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 
 const NEETPYQTab = () => {
   const [year, setYear] = useState("2024");
@@ -45,7 +42,9 @@ const NEETPYQTab = () => {
   };
 
   const handleDeleteClick = async (pyqId: string) => {
-    await deletePyq(pyqId);
+    if (window.confirm('Are you sure you want to delete this PYQ?')) {
+      await deletePyq(pyqId);
+    }
   };
 
   const currentDownloads = downloadCounts;
@@ -53,27 +52,22 @@ const NEETPYQTab = () => {
   return (
     <AuthWrapper>
       <div className="space-y-6">
-        <div className="flex justify-between items-end">
-          <div className="grid grid-cols-1 gap-4 max-w-xs">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-              <Select value={year} onValueChange={setYear}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  {years.map((y) => (
-                    <SelectItem key={y} value={y}>
-                      {y}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="grid grid-cols-1 gap-4 max-w-xs">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+            <Select value={year} onValueChange={setYear}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((y) => (
+                  <SelectItem key={y} value={y}>
+                    {y}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <AdminAddButton contentType="pyqs" examType="NEET">
-              Add PYQ
-          </AdminAddButton>
         </div>
         
         {contentLoading ? (
@@ -98,34 +92,14 @@ const NEETPYQTab = () => {
                       )}
                     </div>
                     {isAdmin && (
-                      <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                              <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="admin-only text-red-600 hover:text-red-800"
-                              >
-                                  <Trash2 className="h-4 w-4" />
-                              </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                              <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                      This action cannot be undone. This will permanently delete the PYQ "{pyq.title}".
-                                  </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                      onClick={() => handleDeleteClick(pyq.id)}
-                                      className="bg-red-600 hover:bg-red-700"
-                                  >
-                                      Delete
-                                  </AlertDialogAction>
-                              </AlertDialogFooter>
-                          </AlertDialogContent>
-                      </AlertDialog>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(pyq.id)}
+                        className="admin-only text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     )}
                   </div>
                 </CardHeader>
