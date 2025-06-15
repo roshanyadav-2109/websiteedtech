@@ -97,6 +97,13 @@ const SUBJECT_MAP: Record<
   }
 };
 
+// Centralized Telegram group data
+const TELEGRAM_GROUP = {
+  name: "IITM BS Main Telegram Group",
+  link: "https://t.me/IITM_BS_Official", // Replace with actual group link if different.
+  description: "Join the central Telegram group to connect & discuss with students across all levels and branches of the IITM BS degree."
+};
+
 const CommunitiesTab = () => {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -187,6 +194,24 @@ const CommunitiesTab = () => {
 
   return (
     <div className="flex flex-col space-y-6 w-full">
+      {/* Telegram Group Card */}
+      <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border mb-2">
+        <div>
+          <h2 className="text-lg font-semibold text-blue-800 flex items-center gap-2">
+            <span>📢</span> {TELEGRAM_GROUP.name}
+          </h2>
+          <p className="text-sm text-blue-700 mt-1">{TELEGRAM_GROUP.description}</p>
+        </div>
+        <a
+          href={TELEGRAM_GROUP.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2 font-medium shadow transition"
+        >
+          Join Telegram
+        </a>
+      </div>
+
       {/* Filters Row */}
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Branch */}
