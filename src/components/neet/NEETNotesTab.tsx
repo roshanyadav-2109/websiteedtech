@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SubjectBlock from "@/components/SubjectBlock";
@@ -34,6 +33,7 @@ const NEETNotesTab = () => {
         </Tabs>
       </div>
 
+      {/* Class Filter Tabs */}
       <div className="mb-6">
         <Tabs value={activeClass} onValueChange={setActiveClass}>
           <div className="overflow-x-auto pb-2">
