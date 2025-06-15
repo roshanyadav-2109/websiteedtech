@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useNotesManager } from './useNotesManager';
+import { usePyqsManager } from './usePyqsManager';
 
 interface Note {
   id: string;
@@ -40,288 +42,37 @@ interface PYQ {
   created_at: string;
 }
 
+// This hook now combines useNotesManager & usePyqsManager for compatibility with BackendIntegratedWrapper
 export const useContentManagement = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [pyqs, setPyqs] = useState<PYQ[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    notes,
+    loading: notesLoading,
+    addNote,
+    deleteNote,
+    updateNote,
+    fetchNotes,
+  } = useNotesManager();
 
-  const loadNotes = async () => {
-    try {
-      console.log('Loading notes...');
-      const { data, error } = await supabase
-        .from('notes')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error loading notes:', error);
-        toast({
-          title: "Load Error",
-          description: "Failed to load notes",
-          variant: "destructive"
-        });
-      } else {
-        console.log('Loaded notes:', data?.length || 0);
-        setNotes(data || []);
-      }
-    } catch (error) {
-      console.error('Error loading notes:', error);
-    }
-  };
-
-  const loadPyqs = async () => {
-    try {
-      console.log('Loading PYQs...');
-      const { data, error } = await supabase
-        .from('pyqs')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error loading pyqs:', error);
-        toast({
-          title: "Load Error",
-          description: "Failed to load previous year questions",
-          variant: "destructive"
-        });
-      } else {
-        console.log('Loaded PYQs:', data?.length || 0);
-        setPyqs(data || []);
-      }
-    } catch (error) {
-      console.error('Error loading pyqs:', error);
-    }
-  };
-
-  const addNote = async (noteData: Omit<Note, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>) => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please login to add content",
-        variant: "destructive"
-      });
-      return false;
-    }
-    
-    try {
-      console.log('Adding note:', noteData);
-      const { error } = await supabase
-        .from('notes')
-        .insert([{
-          ...noteData,
-          created_by: user.id,
-          download_count: 0,
-          is_active: true,
-        }]);
-      
-      if (error) {
-        console.error('Error adding note:', error);
-        toast({
-          title: "Add Error",
-          description: error.message || "Failed to add note",
-          variant: "destructive"
-        });
-        return false;
-      } else {
-        console.log('Note added successfully');
-        toast({
-          title: "Success",
-          description: "Note added successfully and is now visible to all users",
-        });
-        await loadNotes(); // Refresh the list
-        return true;
-      }
-    } catch (error) {
-      console.error('Error adding note:', error);
-      return false;
-    }
-  };
-
-  const addPyq = async (pyqData: Omit<PYQ, 'id' | 'download_count' | 'upload_date' | 'created_by' | 'is_active' | 'created_at'>) => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please login to add content",
-        variant: "destructive"
-      });
-      return false;
-    }
-    
-    try {
-      console.log('Adding PYQ:', pyqData);
-      const { error } = await supabase
-        .from('pyqs')
-        .insert([{
-          ...pyqData,
-          created_by: user.id,
-          download_count: 0,
-          is_active: true,
-        }]);
-      
-      if (error) {
-        console.error('Error adding pyq:', error);
-        toast({
-          title: "Add Error",
-          description: error.message || "Failed to add previous year question",
-          variant: "destructive"
-        });
-        return false;
-      } else {
-        console.log('PYQ added successfully');
-        toast({
-          title: "Success",
-          description: "Previous year question added successfully and is now visible to all users",
-        });
-        await loadPyqs(); // Refresh the list
-        return true;
-      }
-    } catch (error) {
-      console.error('Error adding pyq:', error);
-      return false;
-    }
-  };
-
-  const deleteNote = async (noteId: string) => {
-    try {
-      const { error } = await supabase
-        .from('notes')
-        .update({ is_active: false })
-        .eq('id', noteId);
-
-      if (error) {
-        console.error('Error deleting note:', error);
-        toast({
-          title: "Delete Error",
-          description: "Failed to delete note",
-          variant: "destructive"
-        });
-        return false;
-      } else {
-        toast({
-          title: "Success",
-          description: "Note deleted successfully",
-        });
-        await loadNotes();
-        return true;
-      }
-    } catch (error) {
-      console.error('Error deleting note:', error);
-      return false;
-    }
-  };
-
-  const deletePyq = async (pyqId: string) => {
-    try {
-      const { error } = await supabase
-        .from('pyqs')
-        .update({ is_active: false })
-        .eq('id', pyqId);
-
-      if (error) {
-        console.error('Error deleting pyq:', error);
-        toast({
-          title: "Delete Error",
-          description: "Failed to delete previous year question",
-          variant: "destructive"
-        });
-        return false;
-      } else {
-        toast({
-          title: "Success",
-          description: "Previous year question deleted successfully",
-        });
-        await loadPyqs();
-        return true;
-      }
-    } catch (error) {
-      console.error('Error deleting pyq:', error);
-      return false;
-    }
-  };
-
-  const updateNote = async (noteId: string, updateData: Partial<Note>) => {
-    try {
-      const { error } = await supabase
-        .from('notes')
-        .update(updateData)
-        .eq('id', noteId);
-
-      if (error) {
-        console.error('Error updating note:', error);
-        toast({
-          title: "Update Error",
-          description: "Failed to update note",
-          variant: "destructive"
-        });
-        return false;
-      } else {
-        toast({
-          title: "Success",
-          description: "Note updated successfully",
-        });
-        await loadNotes();
-        return true;
-      }
-    } catch (error) {
-      console.error('Error updating note:', error);
-      return false;
-    }
-  };
-
-  const updatePyq = async (pyqId: string, updateData: Partial<PYQ>) => {
-    try {
-      const { error } = await supabase
-        .from('pyqs')
-        .update(updateData)
-        .eq('id', pyqId);
-
-      if (error) {
-        console.error('Error updating pyq:', error);
-        toast({
-          title: "Update Error",
-          description: "Failed to update previous year question",
-          variant: "destructive"
-        });
-        return false;
-      } else {
-        toast({
-          title: "Success",
-          description: "Previous year question updated successfully",
-        });
-        await loadPyqs();
-        return true;
-      }
-    } catch (error) {
-      console.error('Error updating pyq:', error);
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      await Promise.all([loadNotes(), loadPyqs()]);
-      setLoading(false);
-    };
-
-    loadData();
-  }, []);
+  const {
+    pyqs,
+    loading: pyqsLoading,
+    addPyq,
+    deletePyq,
+    updatePyq,
+    fetchPyqs,
+  } = usePyqsManager();
 
   return {
     notes,
     pyqs,
-    loading,
+    loading: notesLoading || pyqsLoading,
     addNote,
     addPyq,
     deleteNote,
     deletePyq,
     updateNote,
     updatePyq,
-    refreshNotes: loadNotes,
-    refreshPyqs: loadPyqs
+    refreshNotes: fetchNotes,
+    refreshPyqs: fetchPyqs,
   };
 };
