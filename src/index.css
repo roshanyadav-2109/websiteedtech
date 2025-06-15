@@ -83,6 +83,22 @@
 }
 
 @layer utilities {
+  .highlighted-keyword {
+    @apply font-semibold text-royal relative;
+    animation: highlight-animation 2.5s ease-in-out infinite;
+  }
+
+  @keyframes highlight-animation {
+    0%, 100% {
+      @apply text-royal;
+      text-shadow: none;
+    }
+    50% {
+      @apply text-golden;
+      text-shadow: 0 0 10px hsl(var(--primary) / 0.3);
+    }
+  }
+
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
