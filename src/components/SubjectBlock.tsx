@@ -11,7 +11,7 @@ interface SubjectBlockProps {
 }
 
 const SubjectBlock = ({ subject, selectedClass, examType }: SubjectBlockProps) => {
-  const { notes, contentLoading } = useBackend();
+  const { notes, handleDownload, downloadCounts, contentLoading } = useBackend();
   
   // Get chapters from the data files
   const chaptersData = examType === 'JEE' ? jeeChapters : neetChapters;
@@ -26,6 +26,10 @@ const SubjectBlock = ({ subject, selectedClass, examType }: SubjectBlockProps) =
   // Combine static chapters with database chapters, giving priority to database data
   const allChapters = [...staticChapters, ...dbChapters];
 
+  const handleDownloadClick = async (noteId: string, fileUrl?: string) => {
+    await handleDownload(noteId, 'notes', fileUrl);
+  };
+  
   if (contentLoading) {
     return (
         <div className="flex justify-center items-center py-8">
@@ -36,7 +40,7 @@ const SubjectBlock = ({ subject, selectedClass, examType }: SubjectBlockProps) =
 
   return (
     <div>
-      <ChapterList chapters={allChapters} />
+      <ChapterList chapters={allChapters} downloadCounts={downloadCounts} onDownload={handleDownloadClick} />
     </div>
   );
 };

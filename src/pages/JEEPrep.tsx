@@ -12,6 +12,16 @@ const JEEPrep = () => {
   const [activeTab, setActiveTab] = useState("notes");
   const [activeSubject, setActiveSubject] = useState("Physics");
   const [activeClass, setActiveClass] = useState("class11");
+  const [downloads, setDownloads] = useState<Record<string, number>>({});
+
+  const handleDownload = (id: string) => {
+    setDownloads(prev => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1
+    }));
+    console.log(`Downloading: ${id}`);
+    // Here you would implement the actual download logic
+  };
 
   const renderTabContent = (tab: string, content: React.ReactNode) => {
     const protectedTabs = ["study-groups", "pyqs"];
@@ -112,7 +122,7 @@ const JEEPrep = () => {
 
               <TabsContent value="pyqs">
                 <h2 className="text-2xl font-bold mb-4">Previous Year Questions</h2>
-                {renderTabContent("pyqs", <JEEPYQTab />)}
+                {renderTabContent("pyqs", <JEEPYQTab downloads={downloads} onDownload={handleDownload} />)}
               </TabsContent>
 
               <TabsContent value="study-groups">
