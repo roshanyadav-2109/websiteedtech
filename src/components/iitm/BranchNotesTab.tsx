@@ -18,6 +18,7 @@ interface Note {
   description: string;
   week: number;
   downloads: number;
+  subject?: string | null; // Supabase includes this
 }
 
 const BranchNotesTab = () => {
@@ -26,7 +27,7 @@ const BranchNotesTab = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // NEW: Fetch notes from supabase (for this branch/level)
+  // Fetch notes from Supabase and map to correct type
   useEffect(() => {
     const fetchNotes = async () => {
       setLoading(true);
@@ -43,7 +44,23 @@ const BranchNotesTab = () => {
         setNotes([]);
         return;
       }
-      setNotes(data || []);
+      // Map Supabase data to Note[]
+      const mappedNotes = (data || []).map((n: any) => {
+        // Extract week number from title if possible
+        let weekNum = 1;
+        const match = n.title?.match(/week\s*(\d+)/i);
+        if (match) weekNum = parseInt(match[1], 10);
+
+        return {
+          id: n.id,
+          title: n.title,
+          description: n.description || "",
+          week: weekNum,
+          downloads: n.download_count || 0,
+          subject: n.subject || null,
+        };
+      });
+      setNotes(mappedNotes);
       setLoading(false);
     };
     fetchNotes();
@@ -263,16 +280,7 @@ const BranchNotesTab = () => {
       n => (n.subject?.toLowerCase() === subjectTitle.toLowerCase())
     );
     if (subjectNotes.length > 0) {
-      // Use downloaded week property or try to extract via title
-      return subjectNotes.map(n => ({
-        id: n.id,
-        title: n.title,
-        description: n.description || `${subjectTitle} study materials`,
-        week: n.title.match(/week (\d+)/i)
-          ? parseInt(n.title.match(/week (\d+)/i)[1], 10)
-          : 1,
-        downloads: n.download_count || 0,
-      }));
+      return subjectNotes;
     }
     // fallback to old generated data
     return generateSubjectNotes(subjectId, subjectTitle);

@@ -35,7 +35,7 @@ const PYQsTab = () => {
   const [pyqs, setPyqs] = useState<PYQ[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Supabase integration!
+  // Supabase integration and mapping
   useEffect(() => {
     const fetchPyqs = async () => {
       setLoading(true);
@@ -53,7 +53,17 @@ const PYQsTab = () => {
         setLoading(false);
         return;
       }
-      setPyqs(data || []);
+      // Map Supabase data to PYQ type
+      const mapped = (data || []).map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description || "",
+        branch: p.branch || branch,
+        level: p.level || level,
+        examType: p.exam_type || examType,
+        year: p.year?.toString() || "2023",
+      }));
+      setPyqs(mapped);
       setLoading(false);
     };
     fetchPyqs();
@@ -85,7 +95,7 @@ const PYQsTab = () => {
       description: p.description || "",
       branch: p.branch || branch,
       level: p.level || level,
-      examType: p.exam_type || examType,
+      examType: p.examType || examType,
       year: p.year?.toString() || "2023"
     })) : 
     hardcodedPyqs;
