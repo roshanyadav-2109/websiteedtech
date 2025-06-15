@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,6 +28,7 @@ import { Mail, X } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
+  phone: z.string().optional(),
   subject: z.string().min(2, { message: "Subject must be at least 2 characters." }),
   message: z.string().min(10, { message: "Message must be at least 10 characters." }),
 });
@@ -49,6 +51,7 @@ const EmailPopup = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
+      phone: "",
       subject: "",
       message: "",
     },
@@ -123,6 +126,24 @@ const EmailPopup = () => {
                       <Input
                         placeholder="you@example.com"
                         autoComplete="email"
+                        className="bg-gray-50 focus:bg-white h-8 text-xs"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700 text-xs">Phone (Optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Your phone number"
+                        autoComplete="tel"
                         className="bg-gray-50 focus:bg-white h-8 text-xs"
                         {...field}
                       />

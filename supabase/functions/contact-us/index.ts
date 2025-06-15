@@ -14,6 +14,7 @@ interface ContactFormPayload {
   email: string;
   subject: string;
   message: string;
+  phone?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -22,7 +23,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, subject, message }: ContactFormPayload = await req.json();
+    const { email, subject, message, phone }: ContactFormPayload = await req.json();
 
     const { data, error } = await resend.emails.send({
       from: "Unknown IITians <onboarding@resend.dev>",
@@ -32,6 +33,7 @@ const handler = async (req: Request): Promise<Response> => {
       html: `
         <h1>New Contact Form Submission</h1>
         <p><strong>From:</strong> ${email}</p>
+        ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ""}
         <p><strong>Subject:</strong> ${subject}</p>
         <hr>
         <p>${message.replace(/\n/g, "<br>")}</p>
