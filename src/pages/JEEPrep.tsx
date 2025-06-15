@@ -7,6 +7,9 @@ import SubjectBlock from "@/components/SubjectBlock";
 import JEEPYQTab from "@/components/JEEPYQTab";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
+import StudyGroupsTab from "@/components/StudyGroupsTab";
+import NewsUpdatesTab from "@/components/NewsUpdatesTab";
+import ImportantDatesTab from "@/components/ImportantDatesTab";
 
 const JEEPrep = () => {
   const { notes, contentLoading } = useBackend();
@@ -93,7 +96,7 @@ const JEEPrep = () => {
                     Study Groups
                   </TabsTrigger>
                   <TabsTrigger value="news-updates" className="rounded-md flex-shrink-0">
-                    News Updates
+                    News & Updates
                   </TabsTrigger>
                   <TabsTrigger value="important-dates" className="rounded-md flex-shrink-0">
                     Important Dates
@@ -156,29 +159,17 @@ const JEEPrep = () => {
 
               <TabsContent value="study-groups">
                 <h2 className="text-2xl font-bold mb-4">Study Groups</h2>
-                {renderTabContent("study-groups", 
-                  <div className="text-center py-8">
-                    <p className="text-gray-600">Study groups feature coming soon...</p>
-                  </div>
-                )}
+                {renderTabContent("study-groups", <StudyGroupsTab examType="JEE" />)}
               </TabsContent>
 
               <TabsContent value="news-updates">
-                <h2 className="text-2xl font-bold mb-4">News Updates</h2>
-                {renderTabContent("news-updates", 
-                  <div className="text-center py-8">
-                    <p className="text-gray-600">News updates feature coming soon...</p>
-                  </div>
-                )}
+                <h2 className="text-2xl font-bold mb-4">News & Updates</h2>
+                {renderTabContent("news-updates", <NewsUpdatesTab examType="JEE" />)}
               </TabsContent>
 
               <TabsContent value="important-dates">
                 <h2 className="text-2xl font-bold mb-4">Important Dates</h2>
-                {renderTabContent("important-dates", 
-                  <div className="text-center py-8">
-                    <p className="text-gray-600">Important dates feature coming soon...</p>
-                  </div>
-                )}
+                {renderTabContent("important-dates", <ImportantDatesTab examType="JEE" />)}
               </TabsContent>
             </Tabs>
           </div>

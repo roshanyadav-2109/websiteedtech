@@ -4,22 +4,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
 import NEETNotesTab from "./NEETNotesTab";
 import NEETPYQTab from "@/components/NEETPYQTab";
-
-const StudyGroupsContent = () => (
-    <div className="text-center py-8">
-        <p className="text-gray-600">Study groups feature coming soon...</p>
-    </div>
-);
-const NewsUpdatesContent = () => (
-    <div className="text-center py-8">
-        <p className="text-gray-600">News updates feature coming soon...</p>
-    </div>
-);
-const ImportantDatesContent = () => (
-    <div className="text-center py-8">
-        <p className="text-gray-600">Important dates feature coming soon...</p>
-    </div>
-);
+import StudyGroupsTab from "@/components/StudyGroupsTab";
+import NewsUpdatesTab from "@/components/NewsUpdatesTab";
+import ImportantDatesTab from "@/components/ImportantDatesTab";
 
 const NEETTabs = () => {
   const [activeTab, setActiveTab] = useState("notes");
@@ -40,7 +27,7 @@ const NEETTabs = () => {
                 Study Groups
               </TabsTrigger>
               <TabsTrigger value="news-updates" className="rounded-md flex-shrink-0">
-                News Updates
+                News & Updates
               </TabsTrigger>
               <TabsTrigger value="important-dates" className="rounded-md flex-shrink-0">
                 Important Dates
@@ -66,22 +53,22 @@ const NEETTabs = () => {
                 <h2 className="text-2xl font-bold">Study Groups</h2>
             </div>
             <OptimizedAuthWrapper>
-                <StudyGroupsContent />
+                <StudyGroupsTab examType="NEET" />
             </OptimizedAuthWrapper>
           </TabsContent>
           
           <TabsContent value="news-updates">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">News Updates</h2>
+                <h2 className="text-2xl font-bold">News & Updates</h2>
             </div>
-            <NewsUpdatesContent />
+            <NewsUpdatesTab examType="NEET" />
           </TabsContent>
 
           <TabsContent value="important-dates">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Important Dates</h2>
             </div>
-            <ImportantDatesContent />
+            <ImportantDatesTab examType="NEET" />
           </TabsContent>
         </Tabs>
       </div>
