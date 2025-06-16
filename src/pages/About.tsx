@@ -4,8 +4,123 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
 import PartnershipsSection from "@/components/PartnershipsSection";
+import { Timeline } from "@/components/ui/timeline";
 
 const About = () => {
+  const timelineData = [
+    {
+      title: "2024",
+      content: (
+        <div>
+          <h4 className="text-xl font-bold text-royal mb-4">The Foundation Year</h4>
+          
+          <div className="mb-8">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">Mid-Year Milestone</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Launched YouTube Channel:</strong> Established our digital presence to provide free educational resources</p>
+              <p><strong>Focus Area:</strong> Specialized content for IIT Madras BS Degree students</p>
+              <p><strong>Mission:</strong> Making quality education accessible to aspiring students</p>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">End of Year Achievement</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Website Launch:</strong> Developed our official website using a Free CRM Portal</p>
+              <p><strong>Resource Hub:</strong> Created a comprehensive platform offering free resources for IIT Madras BS Degree</p>
+              <p><strong>Community Building:</strong> Started building a student community around our platform</p>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "2025",
+      content: (
+        <div>
+          <h4 className="text-xl font-bold text-royal mb-4">Expansion & Growth</h4>
+          
+          <div className="mb-8">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">Early 2025 - Global Outreach</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Worldwide Support:</strong> Extended our services to support IIT Madras BS Degree students across the globe</p>
+              <p><strong>Strategic Partnerships:</strong> Collaborated with startups to integrate students into the startup and tech ecosystem</p>
+              <p><strong>Career Development:</strong> Created pathways for students to explore entrepreneurial opportunities</p>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">Key Launches</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Mentorship Batches:</strong> Launched comprehensive mentorship programs</p>
+              <p><strong>Outstanding Response:</strong> Received overwhelming positive feedback from the student community</p>
+              <p><strong>Personalized Guidance:</strong> Provided one-on-one mentorship for academic and career growth</p>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">Mid-2025 - Major Expansion</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Full-Length Batches:</strong> Launched comprehensive preparation courses for IIT Madras BS Qualifier</p>
+              <p><strong>Team Growth:</strong> Expanded our team and provided employment opportunities to qualified individuals</p>
+              <p><strong>Diversified Offerings:</strong> Extended services to Class 11 & 12 Science stream students preparing for JEE and NEET</p>
+              <p><strong>Free Resource Expansion:</strong> Made quality educational resources available to a broader student base</p>
+            </div>
+          </div>
+
+          <div className="bg-golden/10 rounded-lg p-4 mb-6">
+            <h5 className="text-lg font-bold text-golden mb-2">🎯 MAJOR MILESTONE: BECAME A REGISTERED COMPANY</h5>
+            <p className="text-gray-700">Officially established as a legitimate business entity, marking our transformation from a startup initiative to a formal organization</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Future",
+      content: (
+        <div>
+          <h4 className="text-xl font-bold text-royal mb-4">Vision & Goals</h4>
+          
+          <div className="mb-8">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">Educational Excellence</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Dual Approach:</strong> Continue providing both free and premium educational resources</p>
+              <p><strong>Quality Assurance:</strong> Maintain high standards in all educational offerings</p>
+              <p><strong>Accessibility:</strong> Ensure resources remain accessible to students from all backgrounds</p>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">Career & Placement Support</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Placement Assistance:</strong> Develop comprehensive placement support programs</p>
+              <p><strong>Industry Connections:</strong> Build strong networks with leading companies and organizations</p>
+              <p><strong>Career Guidance:</strong> Provide end-to-end career development support</p>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">Entrepreneurship & Innovation</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Startup Ecosystem:</strong> Encourage and support students in their entrepreneurial ventures</p>
+              <p><strong>Opportunity Creation:</strong> Provide platforms and chances for students to showcase their talents</p>
+              <p><strong>Employment Generation:</strong> Focus on creating more employment opportunities within the education sector</p>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h5 className="text-lg font-semibold text-gray-800 mb-3">Long-term Impact</h5>
+            <div className="space-y-2 text-gray-600">
+              <p><strong>Student Empowerment:</strong> Enable students to achieve their academic and career aspirations</p>
+              <p><strong>Community Building:</strong> Foster a strong network of successful alumni and current students</p>
+              <p><strong>Educational Revolution:</strong> Contribute to transforming the educational landscape in India</p>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
       <NavBar />
@@ -52,84 +167,8 @@ const About = () => {
           </div>
         </section>
 
-        {/* Journey Timeline - Improved Design */}
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">
-              Journey of Unknown IITians
-            </h2>
-            <p className="text-center text-gray-600 max-w-2xl mx-auto mb-16">
-              Embarking and writing new chapters with every new step we take...
-            </p>
-
-            <div className="relative max-w-4xl mx-auto">
-              {/* Vertical line */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-royal/10 via-royal to-golden/80 z-0 rounded-full"></div>
-
-              {/* Timeline items */}
-              {[
-                {
-                  date: "September 2024",
-                  title: "YouTube Launch",
-                  description: "Launched the YouTube channel with free educational contents."
-                },
-                {
-                  date: "October 2024",
-                  title: "First Milestone",
-                  description: "Reached 50k viewers with a positive feedback."
-                },
-                {
-                  date: "1st December 2024",
-                  title: "Mentorship Program",
-                  description: "Completed Premium Mentorship Batch with ⭐⭐⭐⭐⭐ 4.8 rating."
-                },
-                {
-                  date: "30th December 2024",
-                  title: "Website Launch",
-                  description: "Launched the website with free resources."
-                },
-                {
-                  date: "January 2025",
-                  title: "Specialized Content",
-                  description: "Focused the website on IIT-M BS degree resources."
-                },
-                {
-                  date: "February 2025",
-                  title: "Strategic Partnerships",
-                  description: "Partnered with startups to provide the students with skill-building opportunities."
-                },
-                {
-                  date: "April 2025",
-                  title: "Expanded Resources",
-                  description: "Added free JEE/NEET resources to the website."
-                },
-                {
-                  date: "Future Goals",
-                  title: "Looking Ahead",
-                  description: "Continue providing free resources for all & enable the students pursue their interest instead of traditional career options."
-                }
-              ].map((item, index) => (
-                <div key={index} className={`flex ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} mb-12 items-center`}>
-                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-12 text-right' : 'pl-12 text-left'}`}>
-                    <div className={`bg-white p-6 rounded-xl shadow-md ${index % 2 === 0 ? 'ml-auto' : 'mr-auto'} max-w-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}>
-                      <h3 className={`font-bold text-lg mb-1 ${index === 7 ? 'text-golden' : 'text-royal'}`}>
-                        {item.date}
-                      </h3>
-                      <h4 className="font-semibold text-gray-800 mb-2">{item.title}</h4>
-                      <p className="text-gray-600">{item.description}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="relative w-0 flex items-center justify-center">
-                    <div className={`absolute w-8 h-8 rounded-full ${index === 7 ? 'bg-golden' : 'bg-royal'} border-4 border-white z-10 transform -translate-x-1/2 shadow-md`}></div>
-                  </div>
-                  
-                  <div className="w-1/2"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Journey Timeline */}
+        <Timeline data={timelineData} />
 
         <PartnershipsSection />
 
