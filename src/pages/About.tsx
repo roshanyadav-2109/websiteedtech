@@ -68,8 +68,8 @@ const About = () => {
             </div>
           </div>
 
-          <div className="bg-golden/10 rounded-lg p-4 mb-6">
-            <h5 className="text-lg font-bold text-golden mb-2">🎯 MAJOR MILESTONE: BECAME A REGISTERED COMPANY</h5>
+          <div className="bg-gradient-to-r from-royal/10 to-golden/10 rounded-lg p-6 mb-6 border border-royal/20">
+            <h5 className="text-lg font-bold text-royal mb-3">MAJOR MILESTONE: BECAME A REGISTERED COMPANY</h5>
             <p className="text-gray-700">Officially established as a legitimate business entity, marking our transformation from a startup initiative to a formal organization</p>
           </div>
         </div>
