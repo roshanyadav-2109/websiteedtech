@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
 export interface IITMNoteData {
@@ -17,8 +18,18 @@ export interface IITMNoteData {
 export const useIITMBranchNotesManager = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { isAdmin } = useAuth();
 
   const addIITMNote = useCallback(async (noteData: IITMNoteData): Promise<boolean> => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can add IITM notes.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     setLoading(true);
     try {
       const { error } = await supabase
@@ -62,9 +73,18 @@ export const useIITMBranchNotesManager = () => {
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, isAdmin]);
 
   const updateIITMNote = useCallback(async (noteId: string, updateData: Partial<IITMNoteData>): Promise<boolean> => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can update IITM notes.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     setLoading(true);
     try {
       const { error } = await supabase
@@ -108,9 +128,18 @@ export const useIITMBranchNotesManager = () => {
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, isAdmin]);
 
   const deleteIITMNote = useCallback(async (noteId: string): Promise<boolean> => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can delete IITM notes.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     setLoading(true);
     try {
       const { error } = await supabase
@@ -144,12 +173,13 @@ export const useIITMBranchNotesManager = () => {
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, isAdmin]);
 
   return {
     addIITMNote,
     updateIITMNote,
     deleteIITMNote,
-    loading
+    loading,
+    canManageNotes: isAdmin
   };
 };

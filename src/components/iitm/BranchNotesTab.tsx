@@ -15,6 +15,7 @@ const BranchNotesTab = () => {
     groupedNotes,
     getCurrentSubjects,
     getAvailableSpecializations,
+    reloadNotes,
   } = useIITMBranchNotes(branch, level);
 
   useEffect(() => {
@@ -99,6 +100,7 @@ const BranchNotesTab = () => {
           handleDownload={handleDownload}
           currentSubjects={currentSubjects}
           loading={loading}
+          onNotesChange={reloadNotes}
         />
       </div>
     </div>

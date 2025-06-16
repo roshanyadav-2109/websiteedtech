@@ -1,9 +1,12 @@
+
 import React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, Trash2, Edit } from "lucide-react";
 import { Note } from "./hooks/useIITMBranchNotes";
+import { useAuth } from "@/hooks/useAuth";
+import { useIITMBranchNotesManager } from "./hooks/useIITMBranchNotesManager";
 
 export interface BranchNotesAccordionProps {
   groupedNotes: Record<string, Note[]>;
@@ -11,6 +14,7 @@ export interface BranchNotesAccordionProps {
   handleDownload: (noteId: string) => void;
   currentSubjects: string[];
   loading: boolean;
+  onNotesChange?: () => void;
 }
 
 const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
@@ -19,7 +23,22 @@ const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
   handleDownload,
   currentSubjects,
   loading,
+  onNotesChange,
 }) => {
+  const { isAdmin } = useAuth();
+  const { deleteIITMNote } = useIITMBranchNotesManager();
+
+  const handleDeleteNote = async (noteId: string, noteTitle: string) => {
+    if (!isAdmin) return;
+    
+    if (window.confirm(`Are you sure you want to delete "${noteTitle}"?`)) {
+      const success = await deleteIITMNote(noteId);
+      if (success && onNotesChange) {
+        onNotesChange();
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-8">
@@ -49,10 +68,22 @@ const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
                           <div className="rounded-full bg-royal/10 p-2 mr-3">
                             <FileText className="h-4 w-4 text-royal" />
                           </div>
-                          <div>
+                          <div className="flex-1">
                             <CardTitle className="text-base">{note.title}</CardTitle>
                             <CardDescription className="text-xs">{note.description}</CardDescription>
                           </div>
+                          {isAdmin && (
+                            <div className="flex items-center space-x-1 ml-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteNote(note.id, note.title)}
+                                className="admin-only text-red-600 hover:text-red-800 h-6 w-6 p-0"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </CardHeader>
                       <CardFooter className="flex justify-between pt-0">
