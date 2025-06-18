@@ -31,7 +31,7 @@ const NavBar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
               <img
-                src="/lovable-uploads/LOGO OFFICIAL.png" 
+                src="/lovable-uploads/LOGO%20OFFICIAL.png" 
                 alt="Unknown IITians Logo" 
                 className="h-10 w-auto" // You might want h-10 or h-12 for navbar
               />
