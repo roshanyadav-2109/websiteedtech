@@ -30,7 +30,11 @@ const NavBar = () => {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-royal">Unknown IITians</span>
+              <img
+                src="/lovable-uploads/LOGO OFFICIAL.png" 
+                alt="Unknown IITians Logo" 
+                className="h-10 w-auto" // You might want h-10 or h-12 for navbar
+              />
             </Link>
           </div>
 
