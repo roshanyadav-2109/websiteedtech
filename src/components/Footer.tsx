@@ -12,10 +12,11 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <h2 className="text-white text-xl font-bold mb-4">
-              <span className="text-white">Unknown</span>{" "}
-              <span className="text-golden">IITians</span>
-            </h2>
+            <img
+              src="/lovable-uploads/logo_ui_new.png"
+              alt="unknown iitians logo"
+              className="h-12 w-auto mb-4" // Adjust height as needed for footer
+            />
             <p className="mb-4">
               Transforming education by providing high-quality resources and mentorship to students preparing for competitive exams.
             </p>
