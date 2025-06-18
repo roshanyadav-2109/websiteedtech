@@ -18,7 +18,7 @@ const Footer = () => {
               className="h-12 w-auto mb-4" // Adjust height as needed for footer
             />
             <p className="mb-4">
-              Transforming education by providing high-quality resources and mentorship to students preparing for competitive exams.
+              Where true learning meets smart decision-making, we create limitless possibilities for every student's unique educational journey, empowering them to discover their passions and build meaningful careers.
             </p>
             <div className="flex space-x-4">
               <a
