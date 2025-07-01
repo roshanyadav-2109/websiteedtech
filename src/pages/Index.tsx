@@ -1,32 +1,30 @@
 
 import React from "react";
-import NavBar from "@/components/NavBar";
+import TransparentNavBar from "@/components/TransparentNavBar";
 import HeroCarousel from "@/components/HeroCarousel";
 import WelcomeSection from "@/components/WelcomeSection";
 import CategoriesSection from "@/components/CategoriesSection";
 import WhyChooseUsSection from "@/components/WhyChooseUsSection";
-import ResourceHubSection from "@/components/ResourceHubSection";
+import ResourceHubSectionUpdated from "@/components/ResourceHubSectionUpdated";
 import PartnershipsSection from "@/components/PartnershipsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import VideoSection from "@/components/VideoSection";
-import NewsletterSection from "@/components/NewsletterSection";
-import Footer from "@/components/Footer";
+import FooterWithNewsletter from "@/components/FooterWithNewsletter";
 import EmailPopup from "@/components/EmailPopup";
 
 const Index = () => {
   return (
     <>
-      <NavBar />
+      <TransparentNavBar />
       <HeroCarousel />
       <WelcomeSection />
       <CategoriesSection />
       <WhyChooseUsSection />
-      <ResourceHubSection />
+      <ResourceHubSectionUpdated />
       <PartnershipsSection />
       <TestimonialsSection />
       <VideoSection />
-      <NewsletterSection />
-      <Footer />
+      <FooterWithNewsletter />
       <EmailPopup />
     </>
   );
