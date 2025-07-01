@@ -33,16 +33,24 @@ const DistinguishedRecomendees = () => {
 
   const fetchRecommendations = async () => {
     try {
+      console.log('Fetching recommendations...');
       const { data, error } = await supabase
         .from('recommendations')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching recommendations:', error);
+        throw error;
+      }
+      
+      console.log('Fetched recommendations:', data);
       setRecommendations(data || []);
     } catch (error) {
       console.error('Error fetching recommendations:', error);
+      // Set empty array to prevent white screen
+      setRecommendations([]);
     } finally {
       setLoading(false);
     }
@@ -138,7 +146,7 @@ const DistinguishedRecomendees = () => {
                   </div>
                 )}
 
-                {recommendations.length === 0 && (
+                {recommendations.length === 0 && !loading && (
                   <div className="text-center py-16">
                     <p className="text-gray-500 text-lg">No recommendations available at the moment.</p>
                   </div>
