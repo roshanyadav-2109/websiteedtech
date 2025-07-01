@@ -30,6 +30,7 @@ import EmployeeVerification from "./pages/EmployeeVerification";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import FAQ from "./pages/FAQ";
+import DistinguishedRecomendees from "./pages/DistinguishedRecomendees";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/faq" element={<FAQ />} />
+              <Route path="/distinguished-recomendees" element={<DistinguishedRecomendees />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
