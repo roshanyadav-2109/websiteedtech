@@ -10,7 +10,6 @@ import PartnershipsSection from "@/components/PartnershipsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import VideoSection from "@/components/VideoSection";
 import FooterWithNewsletter from "@/components/FooterWithNewsletter";
-import EmailPopup from "@/components/EmailPopup";
 
 const Index = () => {
   return (
@@ -25,7 +24,6 @@ const Index = () => {
       <TestimonialsSection />
       <VideoSection />
       <FooterWithNewsletter />
-      <EmailPopup />
     </>
   );
 };
