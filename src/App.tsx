@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { BackendIntegratedWrapper } from "@/components/BackendIntegratedWrapper";
 import EmailPopup from "@/components/EmailPopup";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Courses from "./pages/Courses";
@@ -31,52 +30,48 @@ import EmployeeVerification from "./pages/EmployeeVerification";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import FAQ from "./pages/FAQ";
-import DistinguishedRecomendees from "./pages/DistinguishedRecomendees";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BackendIntegratedWrapper>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <EmailPopup />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/courses" element={<Courses />} />
-                <Route path="/exam-preparation" element={<ExamPreparation />} />
-                <Route path="/exam-preparation/jee" element={<JEEPrep />} />
-                <Route path="/exam-preparation/neet" element={<NEETPrep />} />
-                <Route path="/exam-preparation/iitm-bs" element={<IITMBSPrep />} />
-                <Route path="/career" element={<Career />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/profile/complete" element={<ProfileComplete />} />
-                <Route path="/auth/callback" element={<GoogleCallback />} />
-                <Route path="/auth/student/callback" element={<StudentGoogleCallback />} />
-                <Route path="/auth/admin/callback" element={<AdminGoogleCallback />} />
-                <Route path="/student/login" element={<StudentLogin />} />
-                <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/intern-verification" element={<InternVerification />} />
-                <Route path="/employee-verification" element={<EmployeeVerification />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/distinguished-recomendees" element={<DistinguishedRecomendees />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </BackendIntegratedWrapper>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <BackendIntegratedWrapper>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <EmailPopup />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/exam-preparation" element={<ExamPreparation />} />
+              <Route path="/exam-preparation/jee" element={<JEEPrep />} />
+              <Route path="/exam-preparation/neet" element={<NEETPrep />} />
+              <Route path="/exam-preparation/iitm-bs" element={<IITMBSPrep />} />
+              <Route path="/career" element={<Career />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile/complete" element={<ProfileComplete />} />
+              <Route path="/auth/callback" element={<GoogleCallback />} />
+              <Route path="/auth/student/callback" element={<StudentGoogleCallback />} />
+              <Route path="/auth/admin/callback" element={<AdminGoogleCallback />} />
+              <Route path="/student/login" element={<StudentLogin />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/intern-verification" element={<InternVerification />} />
+              <Route path="/employee-verification" element={<EmployeeVerification />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </BackendIntegratedWrapper>
+    </AuthProvider>
+  </QueryClientProvider>
 );
 
 export default App;

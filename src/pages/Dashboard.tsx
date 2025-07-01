@@ -1,20 +1,22 @@
 
 import React from "react";
 import NavBar from "@/components/NavBar";
-import FooterWithNewsletter from "@/components/FooterWithNewsletter";
-import EnhancedPersonalizedDashboard from "@/components/enhanced/EnhancedPersonalizedDashboard";
+import Footer from "@/components/Footer";
+import PersonalizedDashboard from "@/components/dashboard/PersonalizedDashboard";
 import OptimizedAuthWrapper from "@/components/OptimizedAuthWrapper";
 
 const Dashboard = () => {
   return (
     <>
       <NavBar />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-20">
-        <OptimizedAuthWrapper>
-          <EnhancedPersonalizedDashboard />
-        </OptimizedAuthWrapper>
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <OptimizedAuthWrapper>
+            <PersonalizedDashboard />
+          </OptimizedAuthWrapper>
+        </div>
       </div>
-      <FooterWithNewsletter />
+      <Footer />
     </>
   );
 };
