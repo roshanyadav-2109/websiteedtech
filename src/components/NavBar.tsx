@@ -41,42 +41,42 @@ const NavBar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-royal transition-colors">
-              Home
+              HOME
             </Link>
             <Link to="/about" className="text-gray-700 hover:text-royal transition-colors">
-              About
+              ABOUT
             </Link>
             <Link to="/courses" className="text-gray-700 hover:text-royal transition-colors">
-              Courses
+              COURSES
             </Link>
             
             {/* Exam Prep Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="text-gray-700 hover:text-royal transition-colors flex items-center">
-                  Exam Prep
+                  EXAM PREP
                   <ChevronDown className="ml-1 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation">All Exams</Link>
+                  <Link to="/exam-preparation">ALL EXAMS</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/jee">JEE Preparation</Link>
+                  <Link to="/exam-preparation/jee">JEE PREPARATION</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/neet">NEET Preparation</Link>
+                  <Link to="/exam-preparation/neet">NEET PREPARATION</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/iitm-bs">IITM BS Preparation</Link>
+                  <Link to="/exam-preparation/iitm-bs">IITM BS PREPARATION</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             
             <Link to="/career" className="text-gray-700 hover:text-royal transition-colors">
-              Career
+              CAREER
             </Link>
             
             {/* User Authentication */}
