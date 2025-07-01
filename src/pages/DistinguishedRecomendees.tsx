@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
-import AdminAddButton from "@/components/admin/AdminAddButton";
-import { Loader2, Star } from "lucide-react";
+import { Loader2, Star, Plus } from "lucide-react";
 
 interface Recommendation {
   id: string;
@@ -75,11 +74,10 @@ const DistinguishedRecomendees = () => {
               Hear from professionals, educators, and industry leaders who recommend our programs and services.
             </p>
             {isAdmin && (
-              <AdminAddButton
-                contentType="recommendations"
-              >
+              <Button className="bg-golden hover:bg-golden/90 text-royal font-semibold">
+                <Plus className="h-4 w-4 mr-2" />
                 Add New Recommendation
-              </AdminAddButton>
+              </Button>
             )}
           </div>
         </section>
