@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Award, Building, MapPin } from 'lucide-react';
+import { Star, Award, Building, MapPin, Briefcase } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
