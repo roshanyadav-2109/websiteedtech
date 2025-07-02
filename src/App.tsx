@@ -30,8 +30,6 @@ import EmployeeVerification from "./pages/EmployeeVerification";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import FAQ from "./pages/FAQ";
-import DistinguishedRecommendees from "./pages/DistinguishedRecommendees";
-import CGPACalculator from "./pages/CGPACalculator";
 
 const queryClient = new QueryClient();
 
@@ -67,8 +65,6 @@ const App = () => (
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/faq" element={<FAQ />} />
-              <Route path="/distinguished-recommendees" element={<DistinguishedRecommendees />} />
-              <Route path="/cgpa-calculator" element={<CGPACalculator />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
