@@ -26,63 +26,70 @@ const NavBar = () => {
   return (
     <nav className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Logo and Brand */}
-          <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center">
               <img
                 src="/lovable-uploads/UI_logo.png" 
                 alt="Unknown IITians Logo" 
-                className="h-10 w-auto" // You might want h-10 or h-12 for navbar
+                className="h-10 w-auto"
               />
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-royal transition-colors">
-              Home
-            </Link>
-            <Link to="/about" className="text-gray-700 hover:text-royal transition-colors">
-              About
-            </Link>
-            <Link to="/courses" className="text-gray-700 hover:text-royal transition-colors">
-              Courses
-            </Link>
-            
-            {/* Exam Prep Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-gray-700 hover:text-royal transition-colors flex items-center">
-                  Exam Prep
-                  <ChevronDown className="ml-1 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation">All Exams</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/jee">JEE Preparation</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/neet">NEET Preparation</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/iitm-bs">IITM BS Preparation</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            <Link to="/career" className="text-gray-700 hover:text-royal transition-colors">
-              Career
-            </Link>
-            
-            {/* User Authentication */}
+          {/* Centered Desktop Navigation */}
+          <div className="hidden md:flex items-center justify-center flex-1 px-8">
+            <div className="flex items-center space-x-8">
+              <Link to="/" className="text-gray-700 hover:text-royal transition-colors font-medium">
+                Home
+              </Link>
+              <Link to="/about" className="text-gray-700 hover:text-royal transition-colors font-medium">
+                About
+              </Link>
+              <Link to="/courses" className="text-gray-700 hover:text-royal transition-colors font-medium">
+                Courses
+              </Link>
+              
+              {/* Exam Prep Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="text-gray-700 hover:text-royal transition-colors flex items-center font-medium">
+                    Exam Prep
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link to="/exam-preparation">All Exams</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/exam-preparation/jee">JEE Preparation</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/exam-preparation/neet">NEET Preparation</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/exam-preparation/iitm-bs">IITM BS Preparation</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <Link to="/career" className="text-gray-700 hover:text-royal transition-colors font-medium">
+                Career
+              </Link>
+              <Link to="/employee-verification" className="text-gray-700 hover:text-royal transition-colors font-medium">
+                Verify Employee
+              </Link>
+            </div>
+          </div>
+
+          {/* Right side - Auth */}
+          <div className="hidden md:flex items-center">
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link to="/dashboard" className="text-gray-700 hover:text-royal transition-colors">
+                <Link to="/dashboard" className="text-gray-700 hover:text-royal transition-colors font-medium">
                   Dashboard
                 </Link>
                 <DropdownMenu>
@@ -117,7 +124,7 @@ const NavBar = () => {
               </div>
             ) : (
               <Link to="/auth">
-                <Button className="bg-royal hover:bg-royal-dark text-white">
+                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium px-6 py-2 rounded-lg shadow-sm transition-all duration-200">
                   Sign In
                 </Button>
               </Link>
@@ -139,49 +146,52 @@ const NavBar = () => {
         {isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
-              <Link to="/" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link to="/" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                 Home
               </Link>
-              <Link to="/about" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link to="/about" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                 About
               </Link>
-              <Link to="/courses" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link to="/courses" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                 Courses
               </Link>
-              <Link to="/exam-preparation" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link to="/exam-preparation" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                 Exam Preparation
               </Link>
-              <Link to="/exam-preparation/jee" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link to="/exam-preparation/jee" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4 font-medium">
                 JEE Prep
               </Link>
-              <Link to="/exam-preparation/neet" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link to="/exam-preparation/neet" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4 font-medium">
                 NEET Prep
               </Link>
-              <Link to="/exam-preparation/iitm-bs" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link to="/exam-preparation/iitm-bs" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4 font-medium">
                 IITM BS Prep
               </Link>
-              <Link to="/career" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link to="/career" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                 Career
+              </Link>
+              <Link to="/employee-verification" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
+                Verify Employee
               </Link>
               
               {user ? (
                 <>
-                  <Link to="/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal">
+                  <Link to="/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                     Dashboard
                   </Link>
-                  <Link to="/admin/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal">
+                  <Link to="/admin/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                     Admin Panel
                   </Link>
                   <button
                     onClick={handleSignOut}
-                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-royal"
+                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-royal font-medium"
                   >
                     Sign Out
                   </button>
                 </>
               ) : (
                 <Link to="/auth" className="block px-3 py-2">
-                  <Button className="w-full bg-royal hover:bg-royal-dark text-white">
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium">
                     Sign In
                   </Button>
                 </Link>
