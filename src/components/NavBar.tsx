@@ -82,6 +82,9 @@ const NavBar = () => {
               <Link to="/employee-verification" className="text-gray-700 hover:text-royal transition-colors font-medium">
                 Verify Employee
               </Link>
+              <Link to="/cgpa-calculator" className="text-gray-700 hover:text-royal transition-colors font-medium">
+                CGPA Calculator
+              </Link>
             </div>
           </div>
 
@@ -111,9 +114,6 @@ const NavBar = () => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard">Dashboard</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/admin/dashboard">Admin Panel</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
@@ -173,14 +173,14 @@ const NavBar = () => {
               <Link to="/employee-verification" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                 Verify Employee
               </Link>
+              <Link to="/cgpa-calculator" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
+                CGPA Calculator
+              </Link>
               
               {user ? (
                 <>
                   <Link to="/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
                     Dashboard
-                  </Link>
-                  <Link to="/admin/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal font-medium">
-                    Admin Panel
                   </Link>
                   <button
                     onClick={handleSignOut}

@@ -1,45 +1,70 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
 const NewsletterSection = () => {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add newsletter subscription logic here
-    console.log("Newsletter subscription submitted");
+    if (!email) return;
+
+    setIsLoading(true);
+    
+    // Simulate API call - replace with actual backend integration
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast({
+        title: "Subscribed successfully!",
+        description: "Thank you for subscribing to our newsletter.",
+      });
+      setEmail("");
+    } catch (error) {
+      toast({
+        title: "Subscription failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <section className="py-20 bg-gradient-to-r from-royal/10 to-royal/5 text-gray-900">
+    <div className="bg-gradient-to-r from-royal/10 to-royal/5 py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Stay Updated with Unknown IITians</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-10">
-            Subscribe to our newsletter to receive the latest resources, exam tips, and exclusive offers.
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">Stay Updated</h3>
+          <p className="text-gray-600 mb-6">
+            Subscribe to our newsletter for the latest resources and updates.
           </p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
             <div className="flex-grow relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
               <Input 
                 type="email" 
                 placeholder="Your email address" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                className="pl-10 h-12 w-full border-royal/20 focus:border-royal"
+                className="h-11 w-full border-royal/20 focus:border-royal"
               />
             </div>
-            <Button type="submit" className="bg-gradient-to-r from-royal to-royal-dark hover:from-royal-dark hover:to-royal text-white px-6 h-12 rounded-md">
-              Subscribe
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="bg-gradient-to-r from-royal to-royal-dark hover:from-royal-dark hover:to-royal text-white px-6 h-11 rounded-md whitespace-nowrap"
+            >
+              {isLoading ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
