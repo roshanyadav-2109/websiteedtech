@@ -7,8 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -24,65 +22,82 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50 border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Logo and Brand */}
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
               <img
                 src="/lovable-uploads/UI_logo.png" 
                 alt="Unknown IITians Logo" 
-                className="h-10 w-auto" // You might want h-10 or h-12 for navbar
+                className="h-10 w-auto"
               />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-royal transition-colors">
+            <Link 
+              to="/" 
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
               Home
             </Link>
-            <Link to="/about" className="text-gray-700 hover:text-royal transition-colors">
+            <Link 
+              to="/about" 
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
               About
             </Link>
-            <Link to="/courses" className="text-gray-700 hover:text-royal transition-colors">
+            <Link 
+              to="/courses" 
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
               Courses
             </Link>
             
             {/* Exam Prep Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-gray-700 hover:text-royal transition-colors flex items-center">
-                  Exam Prep
-                  <ChevronDown className="ml-1 h-4 w-4" />
+                <Button 
+                  variant="ghost" 
+                  className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium flex items-center space-x-1 h-auto p-0"
+                >
+                  <span>Exam Prep</span>
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="bg-white border shadow-lg rounded-lg">
                 <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation">All Exams</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/jee">JEE Preparation</Link>
+                  <Link to="/exam-preparation" className="w-full">All Exams</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/neet">NEET Preparation</Link>
+                  <Link to="/exam-preparation/jee" className="w-full">JEE Preparation</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/exam-preparation/iitm-bs">IITM BS Preparation</Link>
+                  <Link to="/exam-preparation/neet" className="w-full">NEET Preparation</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/exam-preparation/iitm-bs" className="w-full">IITM BS Preparation</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <Link to="/career" className="text-gray-700 hover:text-royal transition-colors">
+            <Link 
+              to="/career" 
+              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+            >
               Career
             </Link>
             
             {/* User Authentication */}
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link to="/dashboard" className="text-gray-700 hover:text-royal transition-colors">
+                <Link 
+                  to="/dashboard" 
+                  className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
+                >
                   Dashboard
                 </Link>
                 <DropdownMenu>
@@ -94,22 +109,18 @@ const NavBar = () => {
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.user_metadata?.full_name || 'User'}</p>
-                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                  <DropdownMenuContent className="w-56 bg-white border shadow-lg rounded-lg" align="end" forceMount>
+                    <div className="px-4 py-3 border-b">
+                      <p className="text-sm font-medium text-gray-900">{user.user_metadata?.full_name || 'User'}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                    </div>
                     <DropdownMenuItem asChild>
-                      <Link to="/dashboard">Dashboard</Link>
+                      <Link to="/dashboard" className="w-full">Dashboard</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/admin/dashboard">Admin Panel</Link>
+                      <Link to="/admin/dashboard" className="w-full">Admin Panel</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut}>
+                    <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
                       Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -117,7 +128,7 @@ const NavBar = () => {
               </div>
             ) : (
               <Link to="/auth">
-                <Button className="bg-royal hover:bg-royal-dark text-white">
+                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-full font-medium transition-all duration-200 shadow-sm hover:shadow-md">
                   Sign In
                 </Button>
               </Link>
@@ -128,7 +139,7 @@ const NavBar = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 hover:text-royal focus:outline-none focus:text-royal"
+              className="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600 transition-colors duration-200"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -137,54 +148,99 @@ const NavBar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
-              <Link to="/" className="block px-3 py-2 text-gray-700 hover:text-royal">
+          <div className="md:hidden border-t bg-white">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Link 
+                to="/" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+                onClick={() => setIsOpen(false)}
+              >
                 Home
               </Link>
-              <Link to="/about" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link 
+                to="/about" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+                onClick={() => setIsOpen(false)}
+              >
                 About
               </Link>
-              <Link to="/courses" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link 
+                to="/courses" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+                onClick={() => setIsOpen(false)}
+              >
                 Courses
               </Link>
-              <Link to="/exam-preparation" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link 
+                to="/exam-preparation" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+                onClick={() => setIsOpen(false)}
+              >
                 Exam Preparation
               </Link>
-              <Link to="/exam-preparation/jee" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link 
+                to="/exam-preparation/jee" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium ml-4"
+                onClick={() => setIsOpen(false)}
+              >
                 JEE Prep
               </Link>
-              <Link to="/exam-preparation/neet" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link 
+                to="/exam-preparation/neet" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium ml-4"
+                onClick={() => setIsOpen(false)}
+              >
                 NEET Prep
               </Link>
-              <Link to="/exam-preparation/iitm-bs" className="block px-3 py-2 text-gray-700 hover:text-royal ml-4">
+              <Link 
+                to="/exam-preparation/iitm-bs" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium ml-4"
+                onClick={() => setIsOpen(false)}
+              >
                 IITM BS Prep
               </Link>
-              <Link to="/career" className="block px-3 py-2 text-gray-700 hover:text-royal">
+              <Link 
+                to="/career" 
+                className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+                onClick={() => setIsOpen(false)}
+              >
                 Career
               </Link>
               
               {user ? (
                 <>
-                  <Link to="/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal">
+                  <Link 
+                    to="/dashboard" 
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+                    onClick={() => setIsOpen(false)}
+                  >
                     Dashboard
                   </Link>
-                  <Link to="/admin/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal">
+                  <Link 
+                    to="/admin/dashboard" 
+                    className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md font-medium"
+                    onClick={() => setIsOpen(false)}
+                  >
                     Admin Panel
                   </Link>
                   <button
-                    onClick={handleSignOut}
-                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-royal"
+                    onClick={() => {
+                      handleSignOut();
+                      setIsOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 text-red-600 hover:bg-gray-50 rounded-md font-medium"
                   >
                     Sign Out
                   </button>
                 </>
               ) : (
-                <Link to="/auth" className="block px-3 py-2">
-                  <Button className="w-full bg-royal hover:bg-royal-dark text-white">
-                    Sign In
-                  </Button>
-                </Link>
+                <div className="px-3 py-2">
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-full font-medium">
+                      Sign In
+                    </Button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
