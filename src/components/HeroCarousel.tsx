@@ -19,6 +19,7 @@ const carouselImages = [
 
 const HeroCarousel = () => {
   const [current, setCurrent] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const length = carouselImages.length;
 
   const nextSlide = () => {
@@ -46,16 +47,24 @@ const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative w-full h-[300px] sm:h-[350px] mt-16">
+    <div 
+      className="relative w-full h-[300px] sm:h-[350px] mt-16 overflow-hidden"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Navigation buttons */}
       <button
-        className="absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
+        className={`absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-500 ${
+          isHovered ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+        }`}
         onClick={prevSlide}
       >
         <ChevronLeft size={24} />
       </button>
       <button
-        className="absolute right-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
+        className={`absolute right-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-500 ${
+          isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+        }`}
         onClick={nextSlide}
       >
         <ChevronRight size={24} />
@@ -65,15 +74,19 @@ const HeroCarousel = () => {
       {carouselImages.map((image, index) => (
         <div
           key={index}
-          className={`absolute w-full h-full transition-opacity duration-500 ease-in-out ${
-            index === current ? "opacity-100" : "opacity-0"
+          className={`absolute w-full h-full transition-all duration-1000 ease-in-out transform ${
+            index === current 
+              ? "opacity-100 translate-x-0 scale-100" 
+              : index < current 
+                ? "opacity-0 -translate-x-full scale-95" 
+                : "opacity-0 translate-x-full scale-95"
           }`}
           style={{ zIndex: index === current ? 1 : 0 }}
         >
           <img
             src={image.src}
             alt={image.alt}
-            className="object-cover w-full h-full"
+            className="object-cover w-full h-full transition-transform duration-1000"
           />
           <div className="absolute inset-0 bg-black/20"></div>
         </div>
