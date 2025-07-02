@@ -1,269 +1,235 @@
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Search, CheckCircle, XCircle, Clock, User, Briefcase, Calendar } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
-
-interface Employee {
-  id: string;
-  employee_code: string;
-  full_name: string;
-  position: string;
-  is_active: boolean;
-  end_date?: string;
-  created_at: string;
-}
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import EmailPopup from "@/components/EmailPopup";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { CheckCircle, XCircle } from "lucide-react";
 
 const EmployeeVerification = () => {
-  const [verificationNumber, setVerificationNumber] = useState('');
-  const [employeeName, setEmployeeName] = useState('');
-  const [employee, setEmployee] = useState<Employee | null>(null);
+  const navigate = useNavigate();
+  const [employeeId, setEmployeeId] = useState("");
+  const [name, setName] = useState("");
+  const [verificationResult, setVerificationResult] = useState<null | { verified: boolean, message: string, details?: any }>(null);
   const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const { toast } = useToast();
 
-  const handleVerification = async () => {
-    if (!verificationNumber.trim() || !employeeName.trim()) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter both verification number and employee name.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleVerify = (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
-    setSearched(true);
-
-    try {
-      const { data, error } = await supabase
-        .from('employees')
-        .select('*')
-        .eq('employee_code', verificationNumber.trim())
-        .ilike('full_name', `%${employeeName.trim()}%`)
-        .single();
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          setEmployee(null);
+    
+    // Simulate API call with timeout
+    setTimeout(() => {
+      // Mock verification logic - in a real app this would check against a database
+      if (employeeId && name) {
+        // Mock successful verification
+        if (employeeId.startsWith("UI") && employeeId.length >= 5) {
+          setVerificationResult({
+            verified: true,
+            message: "Verification successful",
+            details: {
+              name: name,
+              employeeId: employeeId,
+              position: "Content Developer",
+              department: "Educational Resources",
+              joinDate: "June 2024",
+              endDate: "September 2024",
+              status: "Completed"
+            }
+          });
         } else {
-          throw error;
+          setVerificationResult({
+            verified: false,
+            message: "No records found for the provided ID and name combination."
+          });
         }
       } else {
-        setEmployee(data);
+        setVerificationResult({
+          verified: false,
+          message: "Please enter both employee ID and name."
+        });
       }
-    } catch (error) {
-      console.error('Error verifying employee:', error);
-      toast({
-        title: "Verification Error",
-        description: "An error occurred while verifying the employee. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
+      
       setLoading(false);
-    }
-  };
-
-  const handleReset = () => {
-    setVerificationNumber('');
-    setEmployeeName('');
-    setEmployee(null);
-    setSearched(false);
+    }, 1200);
   };
 
   return (
     <>
       <NavBar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-16">
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-2xl mx-auto">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+      
+      <main className="pt-20">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-r from-royal to-royal-dark text-white py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-6">Employee Verification Portal</h1>
+            <p className="text-xl max-w-3xl mx-auto">
+              Verify the employment history of Unknown IITians staff members
+            </p>
+          </div>
+        </section>
+
+        {/* Verification Type Selection */}
+        <section className="py-8 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button
+                className="bg-royal hover:bg-royal-dark text-white py-6 px-8 text-lg"
+                onClick={() => {/* Current page */}}
+              >
                 Employee Verification
-              </h1>
-              <p className="text-lg text-gray-600">
-                Verify employment status and position details
-              </p>
+              </Button>
+              <Button
+                variant="outline"
+                className="border-royal text-royal hover:bg-royal hover:text-white py-6 px-8 text-lg"
+                onClick={() => navigate('/intern-verification')}
+              >
+                Intern Verification
+              </Button>
             </div>
+          </div>
+        </section>
 
-            {/* Verification Form */}
-            <Card className="mb-8 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Search className="h-5 w-5 text-blue-600" />
-                  Verification Details
-                </CardTitle>
-                <CardDescription>
-                  Enter the employee verification number and full name to check employment status
-                </CardDescription>
+        {/* Verification Form */}
+        <section className="py-16 bg-white">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Card className="border-none shadow-premium overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-royal/5 to-royal/10 pb-6">
+                <CardTitle className="text-2xl text-center">Verify Employment Status</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <label htmlFor="verification-number" className="text-sm font-medium text-gray-700">
-                    Verification Number
-                  </label>
-                  <Input
-                    id="verification-number"
-                    placeholder="Enter employee verification number"
-                    value={verificationNumber}
-                    onChange={(e) => setVerificationNumber(e.target.value)}
-                    className="h-12"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="employee-name" className="text-sm font-medium text-gray-700">
-                    Employee Full Name
-                  </label>
-                  <Input
-                    id="employee-name"
-                    placeholder="Enter employee full name"
-                    value={employeeName}
-                    onChange={(e) => setEmployeeName(e.target.value)}
-                    className="h-12"
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <Button 
-                    onClick={handleVerification}
-                    disabled={loading}
-                    className="flex-1 h-12 bg-blue-600 hover:bg-blue-700"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Verifying...
-                      </>
-                    ) : (
-                      <>
-                        <Search className="h-4 w-4 mr-2" />
-                        Verify Employee
-                      </>
-                    )}
-                  </Button>
+              <CardContent className="p-8">
+                <form onSubmit={handleVerify} className="space-y-6">
+                  <div className="space-y-2">
+                    <label htmlFor="employee-id" className="block text-sm font-medium text-gray-700">
+                      Employee ID
+                    </label>
+                    <Input
+                      id="employee-id"
+                      placeholder="Enter Employee ID (e.g., UI12345)"
+                      value={employeeId}
+                      onChange={(e) => setEmployeeId(e.target.value)}
+                      required
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500">Enter the ID in the format UI12345</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="employee-name" className="block text-sm font-medium text-gray-700">
+                      Full Name
+                    </label>
+                    <Input
+                      id="employee-name"
+                      placeholder="Enter Full Name as in records"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500">Enter the full name exactly as provided in employment documents</p>
+                  </div>
                   
                   <Button 
-                    variant="outline" 
-                    onClick={handleReset}
-                    className="h-12 px-6"
+                    type="submit"
+                    disabled={loading} 
+                    className="w-full bg-royal hover:bg-royal-dark text-white py-2 h-12"
                   >
-                    Reset
+                    {loading ? "Verifying..." : "Verify Employee"}
                   </Button>
+                </form>
+                
+                {verificationResult && (
+                  <div className={`mt-8 p-6 rounded-lg ${
+                    verificationResult.verified 
+                      ? 'bg-green-50 border border-green-100' 
+                      : 'bg-red-50 border border-red-100'
+                  }`}>
+                    <div className="flex items-center mb-4">
+                      {verificationResult.verified ? (
+                        <CheckCircle className="h-6 w-6 text-green-600 mr-2" />
+                      ) : (
+                        <XCircle className="h-6 w-6 text-red-600 mr-2" />
+                      )}
+                      <h3 className={`font-bold text-lg ${
+                        verificationResult.verified ? 'text-green-800' : 'text-red-800'
+                      }`}>
+                        {verificationResult.verified ? 'Verification Successful' : 'Verification Failed'}
+                      </h3>
+                    </div>
+                    
+                    <p className={`mb-4 ${
+                      verificationResult.verified ? 'text-green-700' : 'text-red-700'
+                    }`}>
+                      {verificationResult.message}
+                    </p>
+                    
+                    {verificationResult.verified && verificationResult.details && (
+                      <div className="mt-6 space-y-4">
+                        <h4 className="font-semibold text-gray-900">Employment Details:</h4>
+                        <div className="bg-white rounded-md p-4 border border-gray-200">
+                          <table className="min-w-full">
+                            <tbody className="divide-y divide-gray-200">
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Name:</td>
+                                <td className="py-2">{verificationResult.details.name}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Employee ID:</td>
+                                <td className="py-2">{verificationResult.details.employeeId}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Position:</td>
+                                <td className="py-2">{verificationResult.details.position}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Department:</td>
+                                <td className="py-2">{verificationResult.details.department}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Join Date:</td>
+                                <td className="py-2">{verificationResult.details.joinDate}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">End Date:</td>
+                                <td className="py-2">{verificationResult.details.endDate}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Status:</td>
+                                <td className="py-2">
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    {verificationResult.details.status}
+                                  </span>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div className="mt-4 text-center">
+                          <Button className="bg-royal hover:bg-royal-dark text-white">
+                            Download Verification Certificate
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-8 text-center text-gray-600 text-sm">
+                  <p>If you need further assistance, please contact:</p>
+                  <p className="font-medium mt-1">hr@unknowniitians.com</p>
                 </div>
               </CardContent>
             </Card>
-
-            {/* Results */}
-            {searched && (
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    {employee ? (
-                      <>
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                        Verification Successful
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="h-5 w-5 text-red-600" />
-                        Employee Not Found
-                      </>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {employee ? (
-                    <div className="space-y-6">
-                      {/* Employee Details */}
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                          <User className="h-5 w-5 text-blue-600" />
-                          <div>
-                            <p className="text-sm text-gray-600">Full Name</p>
-                            <p className="font-semibold text-gray-900">{employee.full_name}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                          <Briefcase className="h-5 w-5 text-blue-600" />
-                          <div>
-                            <p className="text-sm text-gray-600">Position</p>
-                            <p className="font-semibold text-gray-900">{employee.position}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                          <Clock className="h-5 w-5 text-blue-600" />
-                          <div>
-                            <p className="text-sm text-gray-600">Employment Status</p>
-                            <Badge 
-                              variant={employee.is_active ? "default" : "destructive"}
-                              className="mt-1"
-                            >
-                              {employee.is_active ? "Active" : "Inactive"}
-                            </Badge>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                          <Calendar className="h-5 w-5 text-blue-600" />
-                          <div>
-                            <p className="text-sm text-gray-600">
-                              {employee.is_active ? "Start Date" : "End Date"}
-                            </p>
-                            <p className="font-semibold text-gray-900">
-                              {employee.is_active 
-                                ? new Date(employee.created_at).toLocaleDateString()
-                                : employee.end_date 
-                                ? new Date(employee.end_date).toLocaleDateString()
-                                : "N/A"
-                              }
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Verification Code */}
-                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-sm text-green-700 mb-1">Verification Code</p>
-                        <p className="font-mono font-bold text-green-800">{employee.employee_code}</p>
-                      </div>
-                      
-                      {!employee.is_active && (
-                        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                          <p className="text-sm text-red-700">
-                            <strong>Note:</strong> This employee is no longer active with the organization.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <XCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        No Employee Found
-                      </h3>
-                      <p className="text-gray-600">
-                        No employee found with the provided verification number and name combination. 
-                        Please check the details and try again.
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
           </div>
-        </div>
-      </div>
+        </section>
+
+      </main>
+
       <Footer />
+      <EmailPopup />
     </>
   );
 };

@@ -2,155 +2,153 @@
 import React from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import { Card, CardContent } from "@/components/ui/card";
 
 const PrivacyPolicy = () => {
   return (
     <>
       <NavBar />
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-8">Privacy Policy</h1>
-            <div className="prose prose-lg max-w-none">
-              <p className="text-gray-600 mb-6">
-                <strong>Effective Date:</strong> January 1, 2024
-              </p>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
-                <p className="text-gray-700 mb-4">
-                  Unknown IITians ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
-                </p>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Information We Collect</h2>
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">Personal Data</h3>
-                <p className="text-gray-700 mb-4">
-                  We may collect personally identifiable information, such as:
-                </p>
-                <ul className="list-disc ml-6 text-gray-700 mb-4">
-                  <li>Name and contact information</li>
-                  <li>Email address</li>
-                  <li>Phone number</li>
-                  <li>Educational background and academic information</li>
-                  <li>Payment information (processed securely through third-party providers)</li>
-                </ul>
-                
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">Usage Data</h3>
-                <p className="text-gray-700 mb-4">
-                  We may also collect information about how the service is accessed and used, including:
-                </p>
-                <ul className="list-disc ml-6 text-gray-700 mb-4">
-                  <li>IP address and browser type</li>
-                  <li>Pages visited and time spent on our website</li>
-                  <li>Device information and operating system</li>
-                  <li>Referral sources and search terms used</li>
-                </ul>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">3. How We Use Your Information</h2>
-                <p className="text-gray-700 mb-4">
-                  We use the collected information for various purposes:
-                </p>
-                <ul className="list-disc ml-6 text-gray-700 mb-4">
-                  <li>To provide and maintain our educational services</li>
-                  <li>To notify you about changes to our service</li>
-                  <li>To provide customer support</li>
-                  <li>To gather analysis or valuable information to improve our service</li>
-                  <li>To monitor the usage of our service</li>
-                  <li>To detect, prevent and address technical issues</li>
-                  <li>To send you marketing communications (with your consent)</li>
-                </ul>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">4. Information Sharing and Disclosure</h2>
-                <p className="text-gray-700 mb-4">
-                  We do not sell, trade, or otherwise transfer your personal information to third parties except as described in this Privacy Policy:
-                </p>
-                <ul className="list-disc ml-6 text-gray-700 mb-4">
-                  <li><strong>Service Providers:</strong> We may share your information with trusted third-party service providers who assist us in operating our website and providing our services</li>
-                  <li><strong>Legal Requirements:</strong> We may disclose your information if required to do so by law or in response to valid requests by public authorities</li>
-                  <li><strong>Business Transfers:</strong> In the event of a merger, acquisition, or sale of assets, your information may be transferred</li>
-                </ul>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">5. Data Security</h2>
-                <p className="text-gray-700 mb-4">
-                  We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. This includes:
-                </p>
-                <ul className="list-disc ml-6 text-gray-700 mb-4">
-                  <li>Encryption of sensitive data in transit and at rest</li>
-                  <li>Regular security assessments and updates</li>
-                  <li>Limited access to personal information on a need-to-know basis</li>
-                  <li>Secure payment processing through certified third-party providers</li>
-                </ul>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">6. Your Privacy Rights</h2>
-                <p className="text-gray-700 mb-4">
-                  You have certain rights regarding your personal information:
-                </p>
-                <ul className="list-disc ml-6 text-gray-700 mb-4">
-                  <li><strong>Access:</strong> Request copies of your personal data</li>
-                  <li><strong>Rectification:</strong> Request correction of inaccurate or incomplete data</li>
-                  <li><strong>Erasure:</strong> Request deletion of your personal data under certain circumstances</li>
-                  <li><strong>Portability:</strong> Request transfer of your data to another service</li>
-                  <li><strong>Objection:</strong> Object to our processing of your personal data</li>
-                </ul>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">7. Cookies and Tracking Technologies</h2>
-                <p className="text-gray-700 mb-4">
-                  We use cookies and similar tracking technologies to enhance your experience on our website. Cookies are small data files stored on your device. You can control cookie preferences through your browser settings.
-                </p>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Third-Party Links</h2>
-                <p className="text-gray-700 mb-4">
-                  Our website may contain links to third-party websites. We are not responsible for the privacy practices or content of these external sites. We encourage you to review the privacy policies of any third-party sites you visit.
-                </p>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Children's Privacy</h2>
-                <p className="text-gray-700 mb-4">
-                  Our services are not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected personal information from a child under 13, we will take steps to delete such information.
-                </p>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">10. Changes to This Privacy Policy</h2>
-                <p className="text-gray-700 mb-4">
-                  We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Effective Date" at the top of this policy.
-                </p>
-              </section>
-
-              <section className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">11. Contact Us</h2>
-                <p className="text-gray-700 mb-4">
-                  If you have any questions about this Privacy Policy or our privacy practices, please contact us:
-                </p>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-700">
-                    <strong>Unknown IITians</strong><br />
-                    Email: privacy@unknowniitians.com<br />
-                    Phone: +91-XXXXXXXXXX<br />
-                    Address: [Your Business Address]<br />
-                    Website: www.unknowniitians.com
+      <main className="pt-20 bg-slate-50 min-h-screen">
+        <section className="bg-gradient-to-r from-royal to-royal-dark text-white py-16 shadow">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-3">
+              Privacy Policy for <span className="text-golden">UNKNOWN IITIANS</span>
+            </h1>
+            <p className="text-lg text-red-300 font-semibold mb-3">
+              ⚠️ Important Notice: By using this website, you agree to our Privacy Policy and Terms of Use.&nbsp;
+              Please review our Privacy Policy to understand how we collect, use, and protect your personal information.
+              Unauthorized use of our materials is prohibited.
+            </p>
+            <p className="text-sm text-gray-200">Effective Date: 01 January 2025</p>
+          </div>
+        </section>
+        <section className="py-12 bg-slate-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Card className="shadow-premium">
+              <CardContent className="py-8 px-6 sm:p-10">
+                <div className="prose prose-lg max-w-none">
+                  <h2 className="font-bold text-2xl text-royal mb-4">Introduction</h2>
+                  <p>
+                    Welcome to UNKNOWN IITIANS ("we," "us," or "our"). We respect your privacy and are committed to protecting the personal information you share with us. This Privacy Policy outlines how we collect, use, and protect your personal data when you visit and use our website ("Site"), where we provide notes, lectures, and other educational materials.
+                  </p>
+                  <p>
+                    By using our Site, you agree to the terms of this Privacy Policy. If you do not agree with this policy, please refrain from using our services.
+                  </p>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">1. Information We Collect</h2>
+                  <ul>
+                    <li>
+                      <b>Personal Identification Information:</b> When you register for an account, subscribe to newsletters, or contact us, we may collect personal details such as your name, email address, phone number, and other necessary contact information.
+                    </li>
+                    <li>
+                      <b>Non-Personal Identification Information:</b> We may collect non-identifiable information automatically, such as IP addresses, browser types, device information, and browsing patterns. This information helps us understand how users interact with our website and improve our services.
+                    </li>
+                    <li>
+                      <b>Payment Information:</b> If you purchase paid content (such as premium notes or lectures), we may collect payment details such as credit card information. Payments are processed securely through third-party payment processors, and we do not store sensitive payment data.
+                    </li>
+                  </ul>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">2. How We Use Your Information</h2>
+                  <ul>
+                    <li>
+                      <b>To Provide and Improve Services:</b> We use your personal and non-personal information to deliver educational content, update you on new notes and lectures, improve the user experience, and tailor the content to your needs.
+                    </li>
+                    <li>
+                      <b>To Communicate:</b> We may use your contact details to send you updates, newsletters, and promotional offers related to our services, provided you have given consent to receive such communications.
+                    </li>
+                    <li>
+                      <b>To Process Transactions:</b> If you make a purchase, we will use your payment details to process the transaction securely. We do not store payment information, and all transactions are handled by trusted third-party payment processors.
+                    </li>
+                    <li>
+                      <b>To Protect and Improve Site Security:</b> We monitor usage data to help secure our website and protect your personal data from unauthorized access.
+                    </li>
+                  </ul>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">3. How We Protect Your Information</h2>
+                  <p>
+                    We take appropriate technical and organizational measures to safeguard your personal information. These include secure servers, encryption technologies, and secure payment processing systems. However, no data transmission over the internet is completely secure, and while we strive to protect your data, we cannot guarantee absolute security.
+                  </p>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">4. Cookies and Tracking Technologies</h2>
+                  <p>
+                    We may use cookies and similar tracking technologies to enhance the user experience on our Site. Cookies are small files stored on your device that help us analyze website traffic, customize your experience, and remember your preferences.
+                  </p>
+                  <p>
+                    You can control cookie settings through your browser, but please note that disabling cookies may affect the functionality of certain features on our Site.
+                  </p>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">5. Third-Party Links</h2>
+                  <p>
+                    Our website may contain links to third-party websites, such as payment processors or external content providers. These websites have their own privacy policies, and we are not responsible for their practices. Please review their privacy policies before submitting any personal data.
+                  </p>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">6. Sharing Your Information</h2>
+                  <ul>
+                    <li>
+                      <b>With Service Providers:</b> We may share your information with trusted third-party service providers who assist us in running our website, processing payments, or improving our services. These providers are obligated to keep your information confidential.
+                    </li>
+                    <li>
+                      <b>For Legal Compliance:</b> We may disclose your personal information if required by law or in response to valid requests by public authorities, such as government agencies or law enforcement.
+                    </li>
+                    <li>
+                      <b>In Case of Business Transfer:</b> If we are involved in a merger, acquisition, or sale of assets, your personal data may be transferred as part of that transaction. We will notify you in advance of any such transfer.
+                    </li>
+                  </ul>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">7. Your Data Rights</h2>
+                  <ul>
+                    <li>
+                      <b>Access:</b> You can request a copy of the personal information we hold about you.
+                    </li>
+                    <li>
+                      <b>Correction:</b> If any of your personal information is incorrect or incomplete, you can request that we update it.
+                    </li>
+                    <li>
+                      <b>Deletion:</b> You can request that we delete your personal data, subject to legal obligations or legitimate business interests.
+                    </li>
+                    <li>
+                      <b>Opt-Out of Marketing Communications:</b> You can opt out of receiving promotional emails by following the unsubscribe link in our emails or contacting us directly.
+                    </li>
+                  </ul>
+                  <p>
+                    To exercise any of these rights, please contact us at <a className="text-royal underline" href="mailto:unknowniitians@gmail.com">unknowniitians@gmail.com</a>.
+                  </p>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">8. Children’s Privacy</h2>
+                  <p>
+                    Our website is not intended for children under the age of 13. We do not knowingly collect personal information from children. If we discover that we have inadvertently collected personal information from a child under 13, we will take steps to delete that information.
+                  </p>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">9. Copyright and Unauthorized Use of Materials</h2>
+                  <p>
+                    All educational content, notes, lectures, and other materials provided on our Site are the intellectual property of UNKNOWN IITIANS, unless otherwise specified. These materials are protected by copyright and other intellectual property laws. You may not copy, reproduce, distribute, or otherwise use any of our materials for commercial purposes without prior written permission from us.
+                  </p>
+                  <p>
+                    Unauthorized use of our materials, including copying or distributing our content without permission, is prohibited. If you would like to use any of our materials for educational or other purposes, please contact us at <a className="text-royal underline" href="mailto:unknowniitians@gmail.com">unknowniitians@gmail.com</a> for permission.
+                  </p>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">10. Changes to This Privacy Policy</h2>
+                  <p>
+                    We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. Any updates will be posted on this page with the revised "Effective Date." We encourage you to review this Privacy Policy periodically to stay informed about how we are protecting your data.
+                  </p>
+                  
+                  <h2 className="font-bold text-2xl text-royal mt-8 mb-4">11. Contact Us</h2>
+                  <p>
+                    If you have any questions or concerns regarding this Privacy Policy or how we handle your personal data, please contact us at:
+                  </p>
+                  <div className="pl-4 mb-2">
+                    <b>UNKNOWN IITIANS</b><br />
+                    Email: <a className="text-royal underline" href="mailto:help.unknowniitians@gmail.com">help.unknowniitians@gmail.com</a>
+                  </div>
+                  <p>
+                    This Privacy Policy is intended to provide a clear understanding of how we handle your personal data and the use of our intellectual property. By using our services, you consent to the practices described herein.
                   </p>
                 </div>
-              </section>
-            </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
       <Footer />
     </>
   );

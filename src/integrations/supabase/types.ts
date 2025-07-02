@@ -635,51 +635,6 @@ export type Database = {
         }
         Relationships: []
       }
-      recommendations: {
-        Row: {
-          category: string | null
-          company: string
-          created_at: string | null
-          created_by: string | null
-          id: string
-          image_url: string | null
-          is_active: boolean | null
-          name: string
-          position: string
-          rating: number | null
-          recommendation_text: string
-          updated_at: string | null
-        }
-        Insert: {
-          category?: string | null
-          company: string
-          created_at?: string | null
-          created_by?: string | null
-          id?: string
-          image_url?: string | null
-          is_active?: boolean | null
-          name: string
-          position: string
-          rating?: number | null
-          recommendation_text: string
-          updated_at?: string | null
-        }
-        Update: {
-          category?: string | null
-          company?: string
-          created_at?: string | null
-          created_by?: string | null
-          id?: string
-          image_url?: string | null
-          is_active?: boolean | null
-          name?: string
-          position?: string
-          rating?: number | null
-          recommendation_text?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       study_groups: {
         Row: {
           branch: string | null

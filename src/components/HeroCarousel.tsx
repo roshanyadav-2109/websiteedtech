@@ -19,7 +19,6 @@ const carouselImages = [
 
 const HeroCarousel = () => {
   const [current, setCurrent] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
   const length = carouselImages.length;
 
   const nextSlide = () => {
@@ -37,56 +36,44 @@ const HeroCarousel = () => {
   // Auto-advance the carousel
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!isHovered) {
-        nextSlide();
-      }
+      nextSlide();
     }, 5000);
     return () => clearInterval(interval);
-  }, [current, isHovered]);
+  }, [current]);
 
   if (!carouselImages.length) {
     return null;
   }
 
   return (
-    <div 
-      className="relative w-full h-[300px] sm:h-[350px] mt-16 overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Navigation buttons - Only visible on hover */}
+    <div className="relative w-full h-[300px] sm:h-[350px] mt-16">
+      {/* Navigation buttons */}
       <button
-        className={`absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-500 ease-in-out ${
-          isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-        }`}
+        className="absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
         onClick={prevSlide}
       >
-        <ChevronLeft size={24} className="text-white" />
+        <ChevronLeft size={24} />
       </button>
       <button
-        className={`absolute right-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-500 ease-in-out ${
-          isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
-        }`}
+        className="absolute right-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
         onClick={nextSlide}
       >
-        <ChevronRight size={24} className="text-white" />
+        <ChevronRight size={24} />
       </button>
 
       {/* Carousel images */}
       {carouselImages.map((image, index) => (
         <div
           key={index}
-          className={`absolute w-full h-full transition-all duration-700 ease-in-out ${
-            index === current 
-              ? "opacity-100 scale-100" 
-              : "opacity-0 scale-105"
+          className={`absolute w-full h-full transition-opacity duration-500 ease-in-out ${
+            index === current ? "opacity-100" : "opacity-0"
           }`}
           style={{ zIndex: index === current ? 1 : 0 }}
         >
           <img
             src={image.src}
             alt={image.alt}
-            className="object-cover w-full h-full transition-transform duration-700 ease-in-out"
+            className="object-cover w-full h-full"
           />
           <div className="absolute inset-0 bg-black/20"></div>
         </div>
@@ -99,9 +86,7 @@ const HeroCarousel = () => {
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === current 
-                ? "bg-white scale-125 shadow-lg" 
-                : "bg-white/50 hover:bg-white/70"
+              index === current ? "bg-white scale-125" : "bg-white/50"
             }`}
           ></button>
         ))}
