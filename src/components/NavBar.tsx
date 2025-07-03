@@ -101,6 +101,10 @@ const NavBar = () => {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard">Dashboard</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       Log out
                     </DropdownMenuItem>
@@ -157,12 +161,17 @@ const NavBar = () => {
               </Link>
               
               {user ? (
-                <button
-                  onClick={handleSignOut}
-                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-royal"
-                >
-                  Sign Out
-                </button>
+                <>
+                  <Link to="/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal">
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-royal"
+                  >
+                    Sign Out
+                  </button>
+                </>
               ) : (
                 <Link to="/auth" className="block px-3 py-2">
                   <Button className="w-full bg-royal hover:bg-royal-dark text-white">
