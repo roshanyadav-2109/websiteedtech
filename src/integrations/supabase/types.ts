@@ -404,6 +404,8 @@ export type Database = {
       news_updates: {
         Row: {
           branch: string | null
+          button_text: string | null
+          button_url: string | null
           category: string | null
           content: string
           created_at: string
@@ -423,6 +425,8 @@ export type Database = {
         }
         Insert: {
           branch?: string | null
+          button_text?: string | null
+          button_url?: string | null
           category?: string | null
           content: string
           created_at?: string
@@ -442,6 +446,8 @@ export type Database = {
         }
         Update: {
           branch?: string | null
+          button_text?: string | null
+          button_url?: string | null
           category?: string | null
           content?: string
           created_at?: string

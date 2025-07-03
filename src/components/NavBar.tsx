@@ -84,9 +84,6 @@ const NavBar = () => {
           <div className="hidden md:flex items-center absolute right-0">
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link to="/dashboard" className="text-gray-700 hover:text-royal transition-colors">
-                  Dashboard
-                </Link>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -103,10 +100,6 @@ const NavBar = () => {
                         <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                       </div>
                     </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/dashboard">Dashboard</Link>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       Log out
@@ -164,17 +157,12 @@ const NavBar = () => {
               </Link>
               
               {user ? (
-                <>
-                  <Link to="/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal">
-                    Dashboard
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="block w-full text-left px-3 py-2 text-gray-700 hover:text-royal"
-                  >
-                    Sign Out
-                  </button>
-                </>
+                <button
+                  onClick={handleSignOut}
+                  className="block w-full text-left px-3 py-2 text-gray-700 hover:text-royal"
+                >
+                  Sign Out
+                </button>
               ) : (
                 <Link to="/auth" className="block px-3 py-2">
                   <Button className="w-full bg-royal hover:bg-royal-dark text-white">

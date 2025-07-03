@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +26,8 @@ interface News {
   is_important: boolean;
   is_active: boolean;
   created_at: string;
+  button_text: string | null;
+  button_url: string | null;
 }
 
 const NewsManagerTab = () => {
@@ -50,6 +51,8 @@ const NewsManagerTab = () => {
     date_time: '',
     is_featured: false,
     is_important: false,
+    button_text: '',
+    button_url: '',
   });
 
   const fetchNews = async () => {
@@ -90,6 +93,8 @@ const NewsManagerTab = () => {
       date_time: datetime,
       is_featured: false,
       is_important: false,
+      button_text: '',
+      button_url: '',
     });
     setEditingNews(null);
   };
@@ -112,6 +117,8 @@ const NewsManagerTab = () => {
         is_important: formData.is_important,
         is_active: true,
         publish_date: new Date().toISOString(),
+        button_text: formData.button_text || null,
+        button_url: formData.button_url || null,
       };
 
       if (editingNews) {
@@ -160,6 +167,8 @@ const NewsManagerTab = () => {
       date_time: dateTime,
       is_featured: newsItem.is_featured || false,
       is_important: newsItem.is_important || false,
+      button_text: newsItem.button_text || '',
+      button_url: newsItem.button_url || '',
     });
     setIsDialogOpen(true);
   };
@@ -321,6 +330,27 @@ const NewsManagerTab = () => {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="button_text">Button Text (Optional)</Label>
+                  <Input
+                    id="button_text"
+                    value={formData.button_text}
+                    onChange={(e) => setFormData({ ...formData, button_text: e.target.value })}
+                    placeholder="e.g., Register Now, Apply Here"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="button_url">Button URL (Optional)</Label>
+                  <Input
+                    id="button_url"
+                    value={formData.button_url}
+                    onChange={(e) => setFormData({ ...formData, button_url: e.target.value })}
+                    placeholder="https://example.com"
+                  />
+                </div>
+              </div>
+
               <div className="flex gap-4">
                 <div className="flex items-center space-x-2">
                   <input
@@ -403,6 +433,7 @@ const NewsManagerTab = () => {
                         {newsItem.tag && <Badge variant="secondary">{newsItem.tag}</Badge>}
                         {newsItem.is_featured && <Badge className="bg-yellow-500">Featured</Badge>}
                         {newsItem.is_important && <Badge className="bg-red-500">Important</Badge>}
+                        {newsItem.button_text && <Badge variant="outline">Has Button</Badge>}
                       </CardTitle>
                       <CardDescription>
                         {newsItem.description}
@@ -437,6 +468,13 @@ const NewsManagerTab = () => {
                       <div className="text-sm text-gray-600 whitespace-pre-wrap">
                         {newsItem.content}
                       </div>
+                      {newsItem.button_text && newsItem.button_url && (
+                        <div className="p-3 bg-gray-50 rounded-md">
+                          <p className="text-sm font-medium mb-1">Button Configuration:</p>
+                          <p className="text-sm text-gray-600">Text: {newsItem.button_text}</p>
+                          <p className="text-sm text-gray-600">URL: {newsItem.button_url}</p>
+                        </div>
+                      )}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500">
                         {newsItem.branch && <div><span className="font-medium">Branch:</span> {newsItem.branch}</div>}
                         {newsItem.level && <div><span className="font-medium">Level:</span> {newsItem.level}</div>}

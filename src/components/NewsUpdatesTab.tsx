@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 
 interface News {
   id: string;
@@ -17,6 +17,8 @@ interface News {
   date_time: string;
   is_featured: boolean;
   is_important: boolean;
+  button_text: string | null;
+  button_url: string | null;
 }
 
 interface NewsUpdatesTabProps {
@@ -108,6 +110,25 @@ const NewsUpdatesTab = ({ examType }: NewsUpdatesTabProps) => {
                         </span>
                       )}
                     </CardDescription>
+                    {newsItem.button_text && newsItem.button_url && (
+                      <div className="mt-3">
+                        <Button 
+                          asChild 
+                          className="bg-royal hover:bg-royal-dark text-white"
+                          size="sm"
+                        >
+                          <a 
+                            href={newsItem.button_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2"
+                          >
+                            {newsItem.button_text}
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <CollapsibleTrigger asChild>
                     <Button variant="ghost" size="sm">
