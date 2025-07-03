@@ -19,6 +19,7 @@ const carouselImages = [
 
 const HeroCarousel = () => {
   const [current, setCurrent] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const length = carouselImages.length;
 
   const nextSlide = () => {
@@ -46,27 +47,40 @@ const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative w-full h-[300px] sm:h-[350px] mt-16">
-      {/* Navigation buttons */}
-      <button
-        className="absolute left-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
-        onClick={prevSlide}
-      >
-        <ChevronLeft size={24} />
-      </button>
-      <button
-        className="absolute right-4 top-1/2 z-10 transform -translate-y-1/2 bg-white/30 backdrop-blur-sm hover:bg-white/50 rounded-full p-2 transition-all duration-300"
-        onClick={nextSlide}
-      >
-        <ChevronRight size={24} />
-      </button>
+    <div 
+      className="relative w-full h-[300px] sm:h-[350px] mt-16"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Vignette overlay when hovered */}
+      {isHovered && (
+        <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20 z-10 pointer-events-none" />
+      )}
+      
+      {/* Navigation buttons - only visible on hover */}
+      {isHovered && (
+        <>
+          <button
+            className="absolute left-4 top-1/2 z-20 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm hover:bg-white/90 rounded-full p-3 transition-all duration-300 shadow-lg"
+            onClick={prevSlide}
+          >
+            <ChevronLeft size={24} className="text-gray-800" />
+          </button>
+          <button
+            className="absolute right-4 top-1/2 z-20 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm hover:bg-white/90 rounded-full p-3 transition-all duration-300 shadow-lg"
+            onClick={nextSlide}
+          >
+            <ChevronRight size={24} className="text-gray-800" />
+          </button>
+        </>
+      )}
 
       {/* Carousel images */}
       {carouselImages.map((image, index) => (
         <div
           key={index}
-          className={`absolute w-full h-full transition-opacity duration-500 ease-in-out ${
-            index === current ? "opacity-100" : "opacity-0"
+          className={`absolute w-full h-full transition-all duration-700 ease-in-out ${
+            index === current ? "opacity-100 scale-100" : "opacity-0 scale-105"
           }`}
           style={{ zIndex: index === current ? 1 : 0 }}
         >
@@ -75,18 +89,20 @@ const HeroCarousel = () => {
             alt={image.alt}
             className="object-cover w-full h-full"
           />
-          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute inset-0 bg-black/10"></div>
         </div>
       ))}
 
-      {/* Navigation dots */}
-      <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+      {/* Navigation dots - positioned below carousel */}
+      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
         {carouselImages.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === current ? "bg-white scale-125" : "bg-white/50"
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              index === current 
+                ? "bg-royal scale-125 shadow-md" 
+                : "bg-gray-400 hover:bg-gray-600"
             }`}
           ></button>
         ))}

@@ -1,141 +1,203 @@
-import React from "react";
+
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Instagram, Youtube, Linkedin, Mail, MessageSquare, Send, MessageCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
 
 const Footer = () => {
-  const handleOpenContactForm = () => {
-    window.dispatchEvent(new CustomEvent('openContactForm'));
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      toast({
+        title: "Subscribed!",
+        description: "Thank you for subscribing to our newsletter.",
+      });
+      setEmail("");
+      setIsSubmitting(false);
+    }, 1000);
   };
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
-            <img
-              src="/lovable-uploads/logo_ui_new.png"
-              alt="unknown iitians logo"
-              className="h-12 w-auto mb-4" // Adjust height as needed for footer
-            />
-            <p className="mb-4">
-              Where true learning meets smart decision-making, we create limitless possibilities for every student's unique educational journey, empowering them to discover their passions and build meaningful careers.
+          
+          {/* About Section */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <img
+                src="/lovable-uploads/UI_logo.png"
+                alt="Unknown IITians"
+                className="h-10 w-auto filter brightness-0 invert"
+              />
+            </div>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Empowering students with quality education and comprehensive exam preparation resources for JEE, NEET, and IITM BS programs.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="https://www.instagram.com/unknown_iitians/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Instagram"
-              >
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Facebook size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Twitter size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Instagram size={20} />
               </a>
-              <a
-                href="https://t.me/bsdatascience_iitm"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Telegram"
-              >
-                <Send size={20} />
-              </a>
-              <a
-                href="https://www.youtube.com/@UnknownIITians"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="YouTube"
-              >
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
                 <Youtube size={20} />
-              </a>
-              <a
-                href="https://www.linkedin.com/company/unknown-iitians/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin size={20} />
-              </a>
-              <a
-                href="https://whatsapp.com/channel/0029VayHsVwIiRorIdVX9n1l"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="WhatsApp Channel"
-              >
-                <MessageCircle size={20} />
               </a>
             </div>
           </div>
 
-          <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Quick Links</h3>
+          {/* Quick Links */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="hover:text-white transition-colors">Home</Link>
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  About Us
+                </Link>
               </li>
               <li>
-                <Link to="/courses" className="hover:text-white transition-colors">Courses</Link>
+                <Link to="/courses" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Courses
+                </Link>
               </li>
               <li>
-                <Link to="/exam-preparation" className="hover:text-white transition-colors">Exam Preparation</Link>
+                <Link to="/exam-preparation" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Exam Preparation
+                </Link>
               </li>
               <li>
-                <Link to="/career" className="hover:text-white transition-colors">Career</Link>
+                <Link to="/career" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Career
+                </Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-white transition-colors">About Us</Link>
+                <Link to="/employee-verification" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Employee Verification
+                </Link>
+              </li>
+              <li>
+                <Link to="/intern-verification" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Intern Verification
+                </Link>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Resources</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/exam-preparation/jee" className="hover:text-white transition-colors">JEE Resources</Link>
-              </li>
-              <li>
-                <Link to="/exam-preparation/neet" className="hover:text-white transition-colors">NEET Resources</Link>
-              </li>
-              <li>
-                <Link to="/exam-preparation/iitm-bs" className="hover:text-white transition-colors">IITM BS Resources</Link>
-              </li>
-            </ul>
+          {/* Contact Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Contact Us</h3>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <Mail size={16} className="text-royal flex-shrink-0" />
+                <span className="text-gray-300 text-sm">contact@unknowniitians.com</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Phone size={16} className="text-royal flex-shrink-0" />
+                <span className="text-gray-300 text-sm">+91 9876543210</span>
+              </div>
+              <div className="flex items-start space-x-3">
+                <MapPin size={16} className="text-royal flex-shrink-0 mt-1" />
+                <span className="text-gray-300 text-sm">
+                  123 Education Street<br />
+                  Mumbai, Maharashtra 400001
+                </span>
+              </div>
+            </div>
+
+            {/* Compact Newsletter Section */}
+            <div className="pt-4 border-t border-gray-700">
+              <h4 className="text-sm font-medium mb-2 text-royal">Stay Updated</h4>
+              <form onSubmit={handleNewsletterSubmit} className="space-y-2">
+                <Input
+                  type="email"
+                  placeholder="Your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 text-sm h-8"
+                />
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-royal hover:bg-royal-dark text-xs h-8"
+                >
+                  {isSubmitting ? "Subscribing..." : "Subscribe"}
+                </Button>
+              </form>
+            </div>
           </div>
 
-          <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start">
-                <Mail size={18} className="mr-2 mt-1" />
-                <a href="mailto:help.unknowniitians@gmail.com" className="hover:text-white transition-colors">
-                  help.unknowniitians@gmail.com
+          {/* Legal & Support */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Legal & Support</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/privacy-policy" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms-of-service" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <a href="mailto:support@unknowniitians.com" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Support
                 </a>
               </li>
               <li>
-                <button onClick={handleOpenContactForm} className="hover:text-white transition-colors text-left w-full flex items-center">
-                  <MessageSquare size={18} className="mr-2" />
-                  <span>Contact Form</span>
-                </button>
-              </li>
-              <li>
-                <p>IIT Madras Research Park,</p>
-                <p>Chennai, Tamil Nadu, India</p>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center space-x-1">
+                  <MessageCircle size={14} />
+                  <span>Live Chat</span>
+                </a>
               </li>
             </ul>
           </div>
+
         </div>
 
-        <div className="border-t border-gray-800 mt-10 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; {new Date().getFullYear()} Unknown IITians. All rights reserved.</p>
-            <div className="mt-4 md:mt-0 flex flex-wrap gap-4">
-              <Link to="/privacy-policy" className="text-sm hover:text-white transition-colors">Privacy Policy</Link>
-              <Link to="/terms-of-service" className="text-sm hover:text-white transition-colors">Terms of Service</Link>
-              <Link to="/intern-verification" className="text-sm hover:text-white transition-colors">Intern Verification</Link>
-              <Link to="/faq" className="text-sm hover:text-white transition-colors">FAQ</Link>
+        {/* Bottom Section */}
+        <div className="border-t border-gray-700 mt-8 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-gray-400 text-sm">
+              © 2024 Unknown IITians. All rights reserved.
+            </p>
+            <div className="flex space-x-6">
+              <Link to="/privacy-policy" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Privacy
+              </Link>
+              <Link to="/terms-of-service" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Terms
+              </Link>
+              <a href="mailto:contact@unknowniitians.com" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Contact
+              </a>
             </div>
           </div>
         </div>

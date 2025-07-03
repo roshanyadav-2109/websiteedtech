@@ -1,7 +1,7 @@
+
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import EmailPopup from "@/components/EmailPopup";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,59 +36,78 @@ const InternVerification = () => {
       return;
     }
 
-    // Query employee by code and full name
-    const { data, error } = await supabase
-      .from("employees")
-      .select("*")
-      .eq("employee_code", employeeId)
-      .eq("full_name", name)
-      .maybeSingle();
+    try {
+      // Query employee by code and full name
+      const { data, error } = await supabase
+        .from("employees")
+        .select("*")
+        .eq("employee_code", employeeId)
+        .eq("full_name", name)
+        .maybeSingle();
 
-    if (error) {
+      if (error) {
+        setVerificationResult({
+          verified: false,
+          message: "Error occurred. Please try again later."
+        });
+        toast({ title: "Verification Error", description: error.message, variant: "destructive" });
+      } else if (!data) {
+        setVerificationResult({
+          verified: false,
+          message: "No records found for the provided ID and name combination."
+        });
+        toast({
+          title: "Verification Failed",
+          description: "We couldn't find a match for your credentials.",
+          variant: "destructive",
+        });
+      } else {
+        // Show current status and details
+        let statusText = "";
+        if (data.status === 'active') {
+          statusText = "Active";
+        } else if (data.status === 'completed') {
+          statusText = "Completed";
+        } else {
+          statusText = "Terminated";
+        }
+
+        setVerificationResult({
+          verified: true,
+          message: data.status === 'active' 
+            ? `${data.employee_type === 'intern' ? 'Intern' : 'Employee'} record found. The ${data.employee_type} is currently ACTIVE.` 
+            : `${data.employee_type === 'intern' ? 'Intern' : 'Employee'} record found. The ${data.employee_type} status is ${statusText.toUpperCase()}.`,
+          details: {
+            name: data.full_name,
+            employeeId: data.employee_code,
+            position: data.position,
+            department: data.department,
+            employeeType: data.employee_type,
+            startDate: data.start_date ? new Date(data.start_date).toLocaleDateString() : "N/A",
+            endDate: data.end_date ? new Date(data.end_date).toLocaleDateString() : "N/A",
+            status: statusText,
+            isActive: data.is_active
+          }
+        });
+        toast({
+          title: "Verification Successful",
+          description: "Record matched in employee database.",
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
       setVerificationResult({
         verified: false,
-        message: "Error occurred. Please try again later."
-      });
-      toast({ title: "Verification Error", description: error.message, variant: "destructive" });
-    } else if (!data) {
-      setVerificationResult({
-        verified: false,
-        message: "No records found for the provided ID and name combination."
+        message: "An unexpected error occurred. Please try again."
       });
       toast({
-        title: "Verification Failed",
-        description: "We couldn't find a match for your credentials.",
+        title: "Error",
+        description: "An unexpected error occurred.",
         variant: "destructive",
       });
-    } else {
-      // Show current status and details
-      let status = "";
-      if (data.is_active) {
-        status = "Active";
-      } else if (!data.is_active && data.end_date) {
-        status = "Inactive";
-      } else {
-        status = "Inactive";
-      }
-      setVerificationResult({
-        verified: true,
-        message: status === "Active" 
-          ? "Employee record found. The employee is currently ACTIVE." 
-          : `Employee record found. The employee was ACTIVE till ${data.end_date ? new Date(data.end_date).toLocaleDateString() : "N/A"}.`,
-        details: {
-          name: data.full_name,
-          employeeId: data.employee_code,
-          position: data.position,
-          status,
-          endDate: data.end_date ? new Date(data.end_date).toLocaleDateString() : "N/A"
-        }
-      });
-      toast({
-        title: "Verification Successful",
-        description: "Record matched in employee database.",
-        variant: "default",
-      });
     }
+    
     setLoading(false);
   };
 
@@ -128,13 +147,13 @@ const InternVerification = () => {
                     </label>
                     <Input
                       id="employee-id"
-                      placeholder="Enter Employee ID (e.g., UI12345)"
+                      placeholder="Enter Employee ID (e.g., UI12345 or INT001)"
                       value={employeeId}
                       onChange={(e) => setEmployeeId(e.target.value)}
                       required
                       className="w-full"
                     />
-                    <p className="text-xs text-gray-500">Enter the ID in the format UI12345</p>
+                    <p className="text-xs text-gray-500">Enter the ID in the format UI12345 for employees or INT001 for interns</p>
                   </div>
                   
                   <div className="space-y-2">
@@ -205,22 +224,34 @@ const InternVerification = () => {
                                 <td className="py-2">{verificationResult.details.position}</td>
                               </tr>
                               <tr>
-                                <td className="py-2 pr-4 font-medium text-gray-700">Status:</td>
-                                <td className="py-2">
-                                  {verificationResult.details.status === "Active" ? (
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                      Active
-                                    </span>
-                                  ) : (
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
-                                      Inactive
-                                    </span>
-                                  )}
-                                </td>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Department:</td>
+                                <td className="py-2">{verificationResult.details.department}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Type:</td>
+                                <td className="py-2 capitalize">{verificationResult.details.employeeType}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Start Date:</td>
+                                <td className="py-2">{verificationResult.details.startDate}</td>
                               </tr>
                               <tr>
                                 <td className="py-2 pr-4 font-medium text-gray-700">End Date:</td>
                                 <td className="py-2">{verificationResult.details.endDate}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Status:</td>
+                                <td className="py-2">
+                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                    verificationResult.details.status === 'Active'
+                                      ? 'bg-green-100 text-green-800'
+                                      : verificationResult.details.status === 'Completed'
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {verificationResult.details.status}
+                                  </span>
+                                </td>
                               </tr>
                             </tbody>
                           </table>
@@ -353,7 +384,6 @@ const InternVerification = () => {
       </main>
 
       <Footer />
-      <EmailPopup />
     </>
   );
 };

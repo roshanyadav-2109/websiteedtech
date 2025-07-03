@@ -159,32 +159,44 @@ export type Database = {
       employees: {
         Row: {
           created_at: string | null
+          department: string | null
           employee_code: string
+          employee_type: string | null
           end_date: string | null
           full_name: string
           id: string
           is_active: boolean
           position: string
+          start_date: string | null
+          status: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          department?: string | null
           employee_code: string
+          employee_type?: string | null
           end_date?: string | null
           full_name: string
           id?: string
           is_active?: boolean
           position: string
+          start_date?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          department?: string | null
           employee_code?: string
+          employee_type?: string | null
           end_date?: string | null
           full_name?: string
           id?: string
           is_active?: boolean
           position?: string
+          start_date?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -635,6 +647,51 @@ export type Database = {
         }
         Relationships: []
       }
+      recommendations: {
+        Row: {
+          category: string | null
+          company: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          position: string
+          rating: number | null
+          recommendation_text: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          company: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          position: string
+          rating?: number | null
+          recommendation_text: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          company?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          position?: string
+          rating?: number | null
+          recommendation_text?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       study_groups: {
         Row: {
           branch: string | null
@@ -680,6 +737,51 @@ export type Database = {
           name?: string
           subjects?: string[] | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          is_approved: boolean | null
+          is_featured: boolean | null
+          name: string
+          position: string | null
+          rating: number | null
+          testimonial_text: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          name: string
+          position?: string | null
+          rating?: number | null
+          testimonial_text: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          name?: string
+          position?: string | null
+          rating?: number | null
+          testimonial_text?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

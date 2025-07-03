@@ -26,20 +26,20 @@ const NavBar = () => {
   return (
     <nav className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Logo and Brand */}
-          <div className="flex items-center">
+        <div className="flex justify-center items-center h-16 relative">
+          {/* Logo - positioned on the left side of center group */}
+          <div className="flex items-center absolute left-0">
             <Link to="/" className="flex-shrink-0 flex items-center">
               <img
                 src="/lovable-uploads/UI_logo.png" 
                 alt="Unknown IITians Logo" 
-                className="h-10 w-auto" // You might want h-10 or h-12 for navbar
+                className="h-10 w-auto"
               />
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* Center Navigation Group */}
+          <div className="hidden md:flex items-center justify-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-royal transition-colors">
               Home
             </Link>
@@ -78,8 +78,10 @@ const NavBar = () => {
             <Link to="/career" className="text-gray-700 hover:text-royal transition-colors">
               Career
             </Link>
-            
-            {/* User Authentication */}
+          </div>
+
+          {/* User Authentication - positioned on the right side */}
+          <div className="hidden md:flex items-center absolute right-0">
             {user ? (
               <div className="flex items-center space-x-4">
                 <Link to="/dashboard" className="text-gray-700 hover:text-royal transition-colors">
@@ -105,9 +107,6 @@ const NavBar = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard">Dashboard</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/admin/dashboard">Admin Panel</Link>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       Log out
@@ -125,7 +124,7 @@ const NavBar = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center absolute right-0">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-700 hover:text-royal focus:outline-none focus:text-royal"
@@ -168,9 +167,6 @@ const NavBar = () => {
                 <>
                   <Link to="/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal">
                     Dashboard
-                  </Link>
-                  <Link to="/admin/dashboard" className="block px-3 py-2 text-gray-700 hover:text-royal">
-                    Admin Panel
                   </Link>
                   <button
                     onClick={handleSignOut}

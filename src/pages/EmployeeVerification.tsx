@@ -3,11 +3,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import EmailPopup from "@/components/EmailPopup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckCircle, XCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
 
 const EmployeeVerification = () => {
   const navigate = useNavigate();
@@ -16,44 +17,97 @@ const EmployeeVerification = () => {
   const [verificationResult, setVerificationResult] = useState<null | { verified: boolean, message: string, details?: any }>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleVerify = (e: React.FormEvent) => {
+  const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate API call with timeout
-    setTimeout(() => {
-      // Mock verification logic - in a real app this would check against a database
-      if (employeeId && name) {
-        // Mock successful verification
-        if (employeeId.startsWith("UI") && employeeId.length >= 5) {
-          setVerificationResult({
-            verified: true,
-            message: "Verification successful",
-            details: {
-              name: name,
-              employeeId: employeeId,
-              position: "Content Developer",
-              department: "Educational Resources",
-              joinDate: "June 2024",
-              endDate: "September 2024",
-              status: "Completed"
-            }
-          });
-        } else {
-          setVerificationResult({
-            verified: false,
-            message: "No records found for the provided ID and name combination."
-          });
-        }
-      } else {
+
+    if (!employeeId || !name) {
+      setVerificationResult({
+        verified: false,
+        message: "Please enter both employee ID and name."
+      });
+      toast({
+        title: "Incomplete Information",
+        description: "Please enter both employee ID and name.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Query employee by code and full name
+      const { data, error } = await supabase
+        .from("employees")
+        .select("*")
+        .eq("employee_code", employeeId)
+        .eq("full_name", name)
+        .maybeSingle();
+
+      if (error) {
         setVerificationResult({
           verified: false,
-          message: "Please enter both employee ID and name."
+          message: "Error occurred. Please try again later."
+        });
+        toast({ title: "Verification Error", description: error.message, variant: "destructive" });
+      } else if (!data) {
+        setVerificationResult({
+          verified: false,
+          message: "No records found for the provided ID and name combination."
+        });
+        toast({
+          title: "Verification Failed",
+          description: "We couldn't find a match for your credentials.",
+          variant: "destructive",
+        });
+      } else {
+        // Show current status and details
+        let statusText = "";
+        if (data.status === 'active') {
+          statusText = "Active";
+        } else if (data.status === 'completed') {
+          statusText = "Completed";
+        } else {
+          statusText = "Terminated";
+        }
+
+        setVerificationResult({
+          verified: true,
+          message: data.status === 'active' 
+            ? "Employee record found. The employee is currently ACTIVE." 
+            : `Employee record found. The employee status is ${statusText.toUpperCase()}.`,
+          details: {
+            name: data.full_name,
+            employeeId: data.employee_code,
+            position: data.position,
+            department: data.department,
+            employeeType: data.employee_type,
+            startDate: data.start_date ? new Date(data.start_date).toLocaleDateString() : "N/A",
+            endDate: data.end_date ? new Date(data.end_date).toLocaleDateString() : "N/A",
+            status: statusText,
+            isActive: data.is_active
+          }
+        });
+        toast({
+          title: "Verification Successful",
+          description: "Record matched in employee database.",
+          variant: "default",
         });
       }
-      
-      setLoading(false);
-    }, 1200);
+    } catch (error) {
+      console.error("Verification error:", error);
+      setVerificationResult({
+        verified: false,
+        message: "An unexpected error occurred. Please try again."
+      });
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    }
+    
+    setLoading(false);
   };
 
   return (
@@ -188,8 +242,12 @@ const EmployeeVerification = () => {
                                 <td className="py-2">{verificationResult.details.department}</td>
                               </tr>
                               <tr>
-                                <td className="py-2 pr-4 font-medium text-gray-700">Join Date:</td>
-                                <td className="py-2">{verificationResult.details.joinDate}</td>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Type:</td>
+                                <td className="py-2 capitalize">{verificationResult.details.employeeType}</td>
+                              </tr>
+                              <tr>
+                                <td className="py-2 pr-4 font-medium text-gray-700">Start Date:</td>
+                                <td className="py-2">{verificationResult.details.startDate}</td>
                               </tr>
                               <tr>
                                 <td className="py-2 pr-4 font-medium text-gray-700">End Date:</td>
@@ -198,7 +256,13 @@ const EmployeeVerification = () => {
                               <tr>
                                 <td className="py-2 pr-4 font-medium text-gray-700">Status:</td>
                                 <td className="py-2">
-                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                    verificationResult.details.status === 'Active'
+                                      ? 'bg-green-100 text-green-800'
+                                      : verificationResult.details.status === 'Completed'
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
                                     {verificationResult.details.status}
                                   </span>
                                 </td>
@@ -229,7 +293,6 @@ const EmployeeVerification = () => {
       </main>
 
       <Footer />
-      <EmailPopup />
     </>
   );
 };
