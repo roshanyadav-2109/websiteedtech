@@ -5,9 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
 interface ProfileSetupProps {
@@ -25,33 +24,10 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   // Competitive exam fields
   const [examType, setExamType] = useState('');
   const [studentStatus, setStudentStatus] = useState('');
-  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
-
-  const getSubjectsForExam = (exam: string) => {
-    if (exam === 'JEE') {
-      return ['Mathematics', 'Physics', 'Chemistry'];
-    } else if (exam === 'NEET') {
-      return ['Mathematics', 'Physics', 'Chemistry', 'Biology'];
-    }
-    return [];
-  };
-
-  const handleSubjectChange = (subject: string, checked: boolean) => {
-    if (checked) {
-      setSelectedSubjects([...selectedSubjects, subject]);
-    } else {
-      setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
-    }
-  };
-
-  const handleExamTypeChange = (exam: string) => {
-    setExamType(exam);
-    setSelectedSubjects([]); // Reset subjects when exam changes
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,14 +70,6 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
         });
         return;
       }
-      if (selectedSubjects.length === 0) {
-        toast({
-          title: "Subjects required",
-          description: "Please select at least one subject",
-          variant: "destructive",
-        });
-        return;
-      }
     }
 
     setIsLoading(true);
@@ -123,7 +91,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       } else if (programType === 'COMPETITIVE_EXAM') {
         profileData.exam_type = examType;
         profileData.student_status = studentStatus;
-        profileData.subjects = selectedSubjects;
+        profileData.subjects = null; // No subject selection needed
       }
 
       const { error } = await supabase
@@ -226,7 +194,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Exam Type *</Label>
-                  <Select value={examType} onValueChange={handleExamTypeChange} required>
+                  <Select value={examType} onValueChange={setExamType} required>
                     <SelectTrigger>
                       <SelectValue placeholder="Select exam" />
                     </SelectTrigger>
@@ -250,24 +218,6 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                     </SelectContent>
                   </Select>
                 </div>
-
-                {examType && (
-                  <div className="space-y-2">
-                    <Label>Subjects of Interest *</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {getSubjectsForExam(examType).map((subject) => (
-                        <div key={subject} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={subject}
-                            checked={selectedSubjects.includes(subject)}
-                            onCheckedChange={(checked) => handleSubjectChange(subject, checked as boolean)}
-                          />
-                          <Label htmlFor={subject}>{subject}</Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>

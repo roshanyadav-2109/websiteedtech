@@ -10,7 +10,6 @@ import ImportantDatesTab from "@/components/iitm/ImportantDatesTab";
 import SyllabusTab from "@/components/iitm/SyllabusTab";
 import IITMToolsTab from "@/components/iitm/IITMToolsTab";
 import PaidCoursesTab from "@/components/iitm/PaidCoursesTab";
-import TelegramBanner from "@/components/iitm/TelegramBanner";
 
 const IITMBSPrep = () => {
   const [activeTab, setActiveTab] = useState("notes");
@@ -25,18 +24,18 @@ const IITMBSPrep = () => {
             <p className="text-xl text-gray-600">Comprehensive resources for IITM BS Data Science & Electronic Systems</p>
           </div>
           
-          <TelegramBanner />
-          
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
-              <TabsTrigger value="notes">Notes</TabsTrigger>
-              <TabsTrigger value="pyqs">PYQs</TabsTrigger>
-              <TabsTrigger value="syllabus">Syllabus</TabsTrigger>
-              <TabsTrigger value="tools">Tools</TabsTrigger>
-              <TabsTrigger value="courses">Courses</TabsTrigger>
-              <TabsTrigger value="news">News</TabsTrigger>
-              <TabsTrigger value="dates">Important Dates</TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto pb-2">
+              <TabsList className="flex w-max min-w-full justify-start md:grid md:grid-cols-7 md:w-full">
+                <TabsTrigger value="notes" className="whitespace-nowrap">Notes</TabsTrigger>
+                <TabsTrigger value="pyqs" className="whitespace-nowrap">PYQs</TabsTrigger>
+                <TabsTrigger value="syllabus" className="whitespace-nowrap">Syllabus</TabsTrigger>
+                <TabsTrigger value="tools" className="whitespace-nowrap">Tools</TabsTrigger>
+                <TabsTrigger value="courses" className="whitespace-nowrap bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-semibold shadow-lg border-2 border-yellow-500 hover:from-yellow-500 hover:to-yellow-700">Courses</TabsTrigger>
+                <TabsTrigger value="news" className="whitespace-nowrap">News</TabsTrigger>
+                <TabsTrigger value="dates" className="whitespace-nowrap">Important Dates</TabsTrigger>
+              </TabsList>
+            </div>
             
             <TabsContent value="notes" className="mt-6">
               <BranchNotesTab />

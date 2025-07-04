@@ -1,11 +1,28 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { BookOpen, FileText, Calendar, Newspaper, Users, TrendingUp, Clock, Settings, Edit, User } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import ProfileSetup from "@/components/profile/ProfileSetup";
+import ProfileEditModal from "@/components/dashboard/ProfileEditModal";
+import { 
+  User, 
+  Settings, 
+  BookOpen, 
+  GraduationCap, 
+  Trophy,
+  Calendar,
+  FileText,
+  Download,
+  Clock,
+  Edit
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import ProfileEditModal from "./ProfileEditModal";
 
 interface UserProfile {
   program_type: string;
@@ -15,425 +32,329 @@ interface UserProfile {
   student_status?: string;
   subjects?: string[];
   student_name?: string;
+  profile_completed?: boolean;
 }
 
-interface ContentItem {
-  id: string;
-  title: string;
-  description?: string;
-  created_at: string;
+interface Employee {
+  employee_code: string;
+  full_name: string;
+  position: string;
+  department?: string;
+  verification_certificate_link?: string;
 }
 
-interface Community {
-  id: string;
-  name: string;
-  description?: string;
-  group_type?: string;
-  invite_link?: string;
-  created_at: string;
-  exam_type?: string;
-  level?: string;
-  branch?: string;
-  subject?: string;
-  class_level?: string;
-}
-
-const PersonalizedDashboard: React.FC = () => {
+const PersonalizedDashboard = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [notes, setNotes] = useState<ContentItem[]>([]);
-  const [pyqs, setPyqs] = useState<ContentItem[]>([]);
-  const [news, setNews] = useState<ContentItem[]>([]);
-  const [dates, setDates] = useState<ContentItem[]>([]);
-  const [communities, setCommunities] = useState<Community[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchUserProfile();
+      checkEmployeeStatus();
     }
   }, [user]);
 
-  useEffect(() => {
-    if (profile) {
-      fetchPersonalizedContent();
-    }
-  }, [profile]);
-
   const fetchUserProfile = async () => {
+    if (!user) return;
+
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .select('program_type, branch, level, exam_type, student_status, subjects, student_name')
-        .eq('id', user?.id)
+        .select('*')
+        .eq('id', user.id)
         .single();
 
-      if (data) {
-        setProfile(data);
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        return;
       }
+
+      setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
-    }
-  };
-
-  const fetchPersonalizedContent = async () => {
-    if (!profile) return;
-
-    setIsLoading(true);
-
-    try {
-      // Build filter conditions based on profile
-      let filterConditions: any = {};
-      
-      if (profile.program_type === 'IITM_BS') {
-        filterConditions = {
-          branch: profile.branch,
-          level: profile.level
-        };
-      } else if (profile.program_type === 'COMPETITIVE_EXAM') {
-        filterConditions = {
-          exam_type: profile.exam_type,
-          class_level: profile.student_status
-        };
-      }
-
-      // Fetch filtered content
-      const [notesData, pyqsData, newsData, datesData, communitiesData] = await Promise.all([
-        supabase.from('notes').select('*').match(filterConditions).limit(5),
-        supabase.from('pyqs').select('*').match(filterConditions).limit(5),
-        supabase.from('news_updates').select('*').match(filterConditions).limit(5),
-        supabase.from('important_dates').select('*').match(filterConditions).limit(5),
-        fetchFilteredCommunities()
-      ]);
-
-      setNotes(notesData.data || []);
-      setPyqs(pyqsData.data || []);
-      setNews(newsData.data || []);
-      setDates(datesData.data || []);
-      setCommunities(communitiesData || []);
-
-    } catch (error) {
-      console.error('Error fetching personalized content:', error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const fetchFilteredCommunities = async () => {
-    if (!profile) return [];
+  const checkEmployeeStatus = async () => {
+    if (!user?.email) return;
 
     try {
-      let query = supabase.from('communities').select('*').eq('is_active', true);
+      const { data, error } = await supabase
+        .from('employees')
+        .select('*')
+        .eq('email', user.email)
+        .single();
 
-      if (profile.program_type === 'IITM_BS') {
-        // Show Telegram groups for all IITM_BS students + filtered WhatsApp groups
-        query = query.or(`group_type.eq.telegram,and(group_type.eq.whatsapp,branch.eq.${profile.branch},level.eq.${profile.level})`);
-      } else if (profile.program_type === 'COMPETITIVE_EXAM') {
-        // Show Telegram groups for exam type + filtered WhatsApp groups by subjects
-        const subjectFilters = profile.subjects?.map(subject => `subject.eq.${subject}`).join(',') || '';
-        query = query.or(`and(group_type.eq.telegram,exam_type.eq.${profile.exam_type}),and(group_type.eq.whatsapp,exam_type.eq.${profile.exam_type},class_level.eq.${profile.student_status},or(${subjectFilters}))`);
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking employee status:', error);
+        return;
       }
 
-      const { data } = await query.limit(10);
-      return data || [];
+      if (data) {
+        setEmployee(data);
+      }
     } catch (error) {
-      console.error('Error fetching communities:', error);
-      return [];
+      console.error('Error checking employee status:', error);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800 mx-auto"></div>
-          <p className="text-gray-600 text-lg">Loading your personalized dashboard...</p>
+  const handleDownloadCertificate = () => {
+    if (employee?.verification_certificate_link) {
+      window.open(employee.verification_certificate_link, '_blank');
+    } else {
+      toast({
+        title: "Certificate Not Available",
+        description: "Verification certificate not yet generated.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getPersonalizedContent = () => {
+    if (!profile) return null;
+
+    const { program_type, exam_type, branch, level } = profile;
+
+    if (program_type === 'IITM_BS') {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-blue-500" />
+                Branch Notes
+              </CardTitle>
+              <CardDescription>
+                Access notes for {branch} - {level} level
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/exam-preparation/iitm-bs">
+                <Button className="w-full bg-blue-500 hover:bg-blue-600">
+                  View Notes
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-green-500" />
+                Previous Year Questions
+              </CardTitle>
+              <CardDescription>
+                PYQs for {branch} branch
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/exam-preparation/iitm-bs">
+                <Button className="w-full bg-green-500 hover:bg-green-600">
+                  View PYQs
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-yellow-500" />
+                IITM Tools
+              </CardTitle>
+              <CardDescription>
+                CGPA Calculator & Predictors
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/exam-preparation/iitm-bs">
+                <Button className="w-full bg-yellow-500 hover:bg-yellow-600">
+                  Use Tools
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
         </div>
+      );
+    }
+
+    if (program_type === 'COMPETITIVE_EXAM') {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-purple-500" />
+                {exam_type} Preparation
+              </CardTitle>
+              <CardDescription>
+                Access {exam_type} study materials and resources
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to={`/exam-preparation/${exam_type?.toLowerCase()}`}>
+                <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                  Start Preparation
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-indigo-500" />
+                Practice Tests
+              </CardTitle>
+              <CardDescription>
+                Take mock tests for {exam_type}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to={`/exam-preparation/${exam_type?.toLowerCase()}`}>
+                <Button className="w-full bg-indigo-500 hover:bg-indigo-600">
+                  Practice Now
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-royal"></div>
       </div>
     );
   }
 
-  const getWelcomeMessage = () => {
-    const name = profile?.student_name ? `, ${profile.student_name}` : '';
-    
-    if (profile?.program_type === 'IITM_BS') {
-      return `Welcome to your IITM BS ${profile.branch} dashboard${name}`;
-    } else if (profile?.program_type === 'COMPETITIVE_EXAM') {
-      return `Welcome to your ${profile.exam_type} preparation dashboard${name}`;
-    }
-    return `Welcome to your personalized dashboard${name}`;
-  };
-
-  const getSubtitle = () => {
-    if (profile?.program_type === 'IITM_BS') {
-      return `${profile.level} level • Personalized content for your academic journey`;
-    } else if (profile?.program_type === 'COMPETITIVE_EXAM') {
-      return `${profile.student_status} • Tailored resources for exam success`;
-    }
-    return 'Your personalized learning hub';
-  };
+  if (!profile?.profile_completed) {
+    return <ProfileSetup onComplete={fetchUserProfile} />;
+  }
 
   return (
-    <div className="space-y-8 animate-fade-in bg-white min-h-screen">
-      {/* Modern Welcome Section */}
-      <div className="relative overflow-hidden">
-        <Card className="border-0 shadow-sm bg-gray-50">
-          <CardHeader className="pb-6 pt-8">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <CardTitle className="text-3xl font-bold text-gray-900">
-                  {getWelcomeMessage()}
-                </CardTitle>
-                <CardDescription className="text-lg text-gray-600">
-                  {getSubtitle()}
-                </CardDescription>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center bg-green-50 px-3 py-2 rounded-lg border border-green-200">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-sm font-medium text-green-700">Active</span>
+    <div className="space-y-8">
+      {/* Profile Header */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={user?.user_metadata?.avatar_url} />
+                <AvatarFallback className="bg-royal text-white text-xl">
+                  {profile?.student_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Welcome, {profile?.student_name || 'Student'}!
+                </h2>
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge variant="secondary">
+                    {profile?.program_type === 'IITM_BS' ? 'IITM BS Student' : 'Competitive Exam Aspirant'}
+                  </Badge>
+                  {profile?.exam_type && (
+                    <Badge variant="outline">{profile.exam_type}</Badge>
+                  )}
+                  {profile?.branch && (
+                    <Badge variant="outline">{profile.branch}</Badge>
+                  )}
                 </div>
+              </div>
+            </div>
+            <Button onClick={() => setIsEditModalOpen(true)} variant="outline">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Profile
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Employee Section */}
+      {employee && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Employee Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p><strong>Employee Code:</strong> {employee.employee_code}</p>
+                <p><strong>Position:</strong> {employee.position}</p>
+                {employee.department && (
+                  <p><strong>Department:</strong> {employee.department}</p>
+                )}
+              </div>
+              <div className="flex items-center">
                 <Button 
-                  onClick={() => setShowProfileEdit(true)}
-                  variant="outline" 
-                  size="sm"
-                  className="flex items-center gap-2 hover:bg-gray-100"
+                  onClick={handleDownloadCertificate}
+                  variant="download"
+                  className="bg-green-600 text-white hover:bg-green-700 shadow-lg transform hover:scale-105 transition-all duration-200"
                 >
-                  <Settings className="h-4 w-4" />
-                  <span className="hidden md:inline">Edit Profile</span>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Verification Certificate
                 </Button>
               </div>
             </div>
-          </CardHeader>
+          </CardContent>
         </Card>
+      )}
+
+      {/* Personalized Content */}
+      <div>
+        <h3 className="text-xl font-semibold mb-6">Your Personalized Resources</h3>
+        {getPersonalizedContent()}
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Notes</p>
-                <p className="text-2xl font-bold text-gray-900">{notes.length}</p>
-              </div>
-              <BookOpen className="h-8 w-8 text-gray-400" />
-            </div>
-          </CardContent>
-        </Card>
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Quick Actions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link to="/courses">
+              <Button variant="outline" className="w-full justify-start">
+                <BookOpen className="h-4 w-4 mr-2" />
+                Browse Courses
+              </Button>
+            </Link>
+            <Link to="/career">
+              <Button variant="outline" className="w-full justify-start">
+                <Trophy className="h-4 w-4 mr-2" />
+                Career Opportunities
+              </Button>
+            </Link>
+            <Link to="/exam-preparation">
+              <Button variant="outline" className="w-full justify-start">
+                <Calendar className="h-4 w-4 mr-2" />
+                Exam Preparation
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">PYQs</p>
-                <p className="text-2xl font-bold text-gray-900">{pyqs.length}</p>
-              </div>
-              <FileText className="h-8 w-8 text-gray-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Communities</p>
-                <p className="text-2xl font-bold text-gray-900">{communities.length}</p>
-              </div>
-              <Users className="h-8 w-8 text-gray-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Updates</p>
-                <p className="text-2xl font-bold text-gray-900">{news.length}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-gray-400" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* Recent Notes */}
-        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <BookOpen className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Recent Notes</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {notes.length > 0 ? (
-              <div className="space-y-3">
-                {notes.slice(0, 3).map((note) => (
-                  <div key={note.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate text-gray-900">{note.title}</p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(note.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))}
-                <Link to="/exam-preparation">
-                  <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
-                    View All Notes
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm text-center py-4">No notes available yet</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent PYQs */}
-        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <FileText className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Recent PYQs</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {pyqs.length > 0 ? (
-              <div className="space-y-3">
-                {pyqs.slice(0, 3).map((pyq) => (
-                  <div key={pyq.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate text-gray-900">{pyq.title}</p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(pyq.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))}
-                <Link to="/exam-preparation">
-                  <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
-                    View All PYQs
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm text-center py-4">No PYQs available yet</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Latest News */}
-        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Newspaper className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Latest News</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {news.length > 0 ? (
-              <div className="space-y-3">
-                {news.slice(0, 3).map((item) => (
-                  <div key={item.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate text-gray-900">{item.title}</p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(item.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))}
-                <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
-                  View All News
-                </Button>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm text-center py-4">No news updates yet</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Important Dates */}
-        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Important Dates</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {dates.length > 0 ? (
-              <div className="space-y-3">
-                {dates.slice(0, 3).map((date) => (
-                  <div key={date.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate text-gray-900">{date.title}</p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(date.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))}
-                <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
-                  View All Dates
-                </Button>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm text-center py-4">No important dates yet</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Study Communities */}
-        <Card className="lg:col-span-2 hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Users className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Your Study Communities</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {communities.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {communities.slice(0, 4).map((community) => (
-                  <div key={community.id} className="p-4 border border-gray-200 rounded-xl hover:shadow-sm transition-all duration-300 bg-white">
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="font-semibold text-sm text-gray-900">{community.name}</p>
-                      <span className={`px-3 py-1 text-xs rounded-full font-medium ${
-                        community.group_type === 'telegram' 
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                          : 'bg-green-50 text-green-700 border border-green-200'
-                      }`}>
-                        {community.group_type === 'telegram' ? 'Telegram' : 'WhatsApp'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-600 leading-relaxed">{community.description}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm text-center py-8">No study communities available yet</p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Profile Edit Modal */}
-      <ProfileEditModal 
-        isOpen={showProfileEdit}
-        onClose={() => setShowProfileEdit(false)}
+      <ProfileEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         profile={profile}
         onProfileUpdate={setProfile}
       />
