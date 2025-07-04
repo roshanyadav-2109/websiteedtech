@@ -92,11 +92,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/employee-verification" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Employee Verification
-                </Link>
-              </li>
-              <li>
                 <Link to="/intern-verification" className="text-gray-300 hover:text-white transition-colors text-sm">
                   Intern Verification
                 </Link>
