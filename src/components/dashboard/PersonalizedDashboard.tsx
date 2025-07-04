@@ -40,13 +40,13 @@ interface Employee {
   verification_certificate_link?: string;
 }
 
-const PersonalizedDashboard = () => {
+const PersonalizedDashboard: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [employee, setEmployee] = useState<Employee | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (user) {
@@ -55,7 +55,7 @@ const PersonalizedDashboard = () => {
     }
   }, [user]);
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = async (): Promise<void> => {
     if (!user) return;
 
     try {
@@ -70,7 +70,7 @@ const PersonalizedDashboard = () => {
         return;
       }
 
-      setProfile(data);
+      setProfile(data as UserProfile);
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -78,7 +78,7 @@ const PersonalizedDashboard = () => {
     }
   };
 
-  const checkEmployeeStatus = async () => {
+  const checkEmployeeStatus = async (): Promise<void> => {
     if (!user?.email) return;
 
     try {
@@ -94,14 +94,14 @@ const PersonalizedDashboard = () => {
       }
 
       if (data) {
-        setEmployee(data);
+        setEmployee(data as Employee);
       }
     } catch (error) {
       console.error('Error checking employee status:', error);
     }
   };
 
-  const handleDownloadCertificate = () => {
+  const handleDownloadCertificate = (): void => {
     if (employee?.verification_certificate_link) {
       window.open(employee.verification_certificate_link, '_blank');
     } else {
@@ -113,70 +113,126 @@ const PersonalizedDashboard = () => {
     }
   };
 
+  const renderIITMContent = () => {
+    if (!profile) return null;
+
+    return (
+      <>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-blue-500" />
+              Branch Notes
+            </CardTitle>
+            <CardDescription>
+              Access notes for {profile.branch} - {profile.level} level
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/exam-preparation/iitm-bs">
+              <Button className="w-full bg-blue-500 hover:bg-blue-600">
+                View Notes
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-green-500" />
+              Previous Year Questions
+            </CardTitle>
+            <CardDescription>
+              PYQs for {profile.branch} branch
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/exam-preparation/iitm-bs">
+              <Button className="w-full bg-green-500 hover:bg-green-600">
+                View PYQs
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-yellow-500" />
+              IITM Tools
+            </CardTitle>
+            <CardDescription>
+              CGPA Calculator & Predictors
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/exam-preparation/iitm-bs">
+              <Button className="w-full bg-yellow-500 hover:bg-yellow-600">
+                Use Tools
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
+
+  const renderCompetitiveExamContent = () => {
+    if (!profile) return null;
+
+    return (
+      <>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-purple-500" />
+              {profile.exam_type} Preparation
+            </CardTitle>
+            <CardDescription>
+              Access {profile.exam_type} study materials and resources
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to={`/exam-preparation/${profile.exam_type?.toLowerCase()}`}>
+              <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                Start Preparation
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-indigo-500" />
+              Practice Tests
+            </CardTitle>
+            <CardDescription>
+              Take mock tests for {profile.exam_type}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to={`/exam-preparation/${profile.exam_type?.toLowerCase()}`}>
+              <Button className="w-full bg-indigo-500 hover:bg-indigo-600">
+                Practice Now
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
+
   const getPersonalizedContent = () => {
     if (!profile) return null;
 
-    const { program_type, exam_type, branch, level } = profile;
+    const { program_type } = profile;
 
     if (program_type === 'IITM_BS') {
       return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-blue-500" />
-                Branch Notes
-              </CardTitle>
-              <CardDescription>
-                Access notes for {branch} - {level} level
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to="/exam-preparation/iitm-bs">
-                <Button className="w-full bg-blue-500 hover:bg-blue-600">
-                  View Notes
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-green-500" />
-                Previous Year Questions
-              </CardTitle>
-              <CardDescription>
-                PYQs for {branch} branch
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to="/exam-preparation/iitm-bs">
-                <Button className="w-full bg-green-500 hover:bg-green-600">
-                  View PYQs
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-yellow-500" />
-                IITM Tools
-              </CardTitle>
-              <CardDescription>
-                CGPA Calculator & Predictors
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to="/exam-preparation/iitm-bs">
-                <Button className="w-full bg-yellow-500 hover:bg-yellow-600">
-                  Use Tools
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          {renderIITMContent()}
         </div>
       );
     }
@@ -184,43 +240,7 @@ const PersonalizedDashboard = () => {
     if (program_type === 'COMPETITIVE_EXAM') {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-purple-500" />
-                {exam_type} Preparation
-              </CardTitle>
-              <CardDescription>
-                Access {exam_type} study materials and resources
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to={`/exam-preparation/${exam_type?.toLowerCase()}`}>
-                <Button className="w-full bg-purple-500 hover:bg-purple-600">
-                  Start Preparation
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-indigo-500" />
-                Practice Tests
-              </CardTitle>
-              <CardDescription>
-                Take mock tests for {exam_type}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to={`/exam-preparation/${exam_type?.toLowerCase()}`}>
-                <Button className="w-full bg-indigo-500 hover:bg-indigo-600">
-                  Practice Now
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+          {renderCompetitiveExamContent()}
         </div>
       );
     }
@@ -315,106 +335,7 @@ const PersonalizedDashboard = () => {
         <h3 className="text-xl font-semibold mb-6">Your Personalized Resources</h3>
         {profile && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {profile.program_type === 'IITM_BS' ? (
-              <>
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-blue-500" />
-                      Branch Notes
-                    </CardTitle>
-                    <CardDescription>
-                      Access notes for {profile.branch} - {profile.level} level
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Link to="/exam-preparation/iitm-bs">
-                      <Button className="w-full bg-blue-500 hover:bg-blue-600">
-                        View Notes
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-green-500" />
-                      Previous Year Questions
-                    </CardTitle>
-                    <CardDescription>
-                      PYQs for {profile.branch} branch
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Link to="/exam-preparation/iitm-bs">
-                      <Button className="w-full bg-green-500 hover:bg-green-600">
-                        View PYQs
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Trophy className="h-5 w-5 text-yellow-500" />
-                      IITM Tools
-                    </CardTitle>
-                    <CardDescription>
-                      CGPA Calculator & Predictors
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Link to="/exam-preparation/iitm-bs">
-                      <Button className="w-full bg-yellow-500 hover:bg-yellow-600">
-                        Use Tools
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </>
-            ) : (
-              <>
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-purple-500" />
-                      {profile.exam_type} Preparation
-                    </CardTitle>
-                    <CardDescription>
-                      Access {profile.exam_type} study materials and resources
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Link to={`/exam-preparation/${profile.exam_type?.toLowerCase()}`}>
-                      <Button className="w-full bg-purple-500 hover:bg-purple-600">
-                        Start Preparation
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-indigo-500" />
-                      Practice Tests
-                    </CardTitle>
-                    <CardDescription>
-                      Take mock tests for {profile.exam_type}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Link to={`/exam-preparation/${profile.exam_type?.toLowerCase()}`}>
-                      <Button className="w-full bg-indigo-500 hover:bg-indigo-600">
-                        Practice Now
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </>
-            )}
+            {profile.program_type === 'IITM_BS' ? renderIITMContent() : renderCompetitiveExamContent()}
           </div>
         )}
       </div>
