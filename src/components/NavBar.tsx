@@ -113,7 +113,7 @@ const NavBar = () => {
               </div>
             ) : (
               <Link to="/auth">
-                <Button className="bg-royal hover:bg-royal-dark text-white">
+                <Button variant="signin" className="bg-royal hover:bg-royal-dark text-white">
                   Sign In
                 </Button>
               </Link>
@@ -174,7 +174,7 @@ const NavBar = () => {
                 </>
               ) : (
                 <Link to="/auth" className="block px-3 py-2">
-                  <Button className="w-full bg-royal hover:bg-royal-dark text-white">
+                  <Button variant="signin" className="w-full bg-royal hover:bg-royal-dark text-white">
                     Sign In
                   </Button>
                 </Link>

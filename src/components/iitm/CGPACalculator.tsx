@@ -4,50 +4,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { Calculator, RefreshCw } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calculator, RefreshCw, Plus, Minus } from "lucide-react";
 
 const CGPACalculator = () => {
-  const [courses, setCourses] = useState([
-    { name: "Course 1", credits: 4, grade: 10 },
-    { name: "Course 2", credits: 4, grade: 10 },
-    { name: "Course 3", credits: 3, grade: 10 },
-  ]);
-  const [cgpa, setCgpa] = useState(10);
   const [previousCgpa, setPreviousCgpa] = useState("");
-  const [previousCredits, setPreviousCredits] = useState("");
+  const [totalCourses, setTotalCourses] = useState("");
+  const [courses, setCourses] = useState([
+    { name: "Course 1", grade: "10" }
+  ]);
+  const [calculatedCgpa, setCalculatedCgpa] = useState(0);
 
-  const gradeReference = [
-    { letter: "S", points: "10" },
-    { letter: "A", points: "9" },
-    { letter: "B", points: "8" },
-    { letter: "C", points: "7" },
-    { letter: "D", points: "6" },
-    { letter: "E", points: "5" },
-    { letter: "U (Fail)", points: "4 or less" },
+  const gradeOptions = [
+    { value: "10", label: "S (10)" },
+    { value: "9", label: "A (9)" },
+    { value: "8", label: "B (8)" },
+    { value: "7", label: "C (7)" },
+    { value: "6", label: "D (6)" },
+    { value: "5", label: "E (5)" },
+    { value: "4", label: "U (4)" }
   ];
 
-  const handleNameChange = (index: number, value: string) => {
+  const handleCourseNameChange = (index: number, value: string) => {
     const updatedCourses = [...courses];
     updatedCourses[index].name = value;
     setCourses(updatedCourses);
   };
 
-  const handleCreditsChange = (index: number, value: string) => {
+  const handleGradeChange = (index: number, value: string) => {
     const updatedCourses = [...courses];
-    updatedCourses[index].credits = parseInt(value) || 0;
-    setCourses(updatedCourses);
-  };
-
-  const handleGradeChange = (index: number, value: number[]) => {
-    const updatedCourses = [...courses];
-    updatedCourses[index].grade = value[0];
+    updatedCourses[index].grade = value;
     setCourses(updatedCourses);
   };
 
   const addCourse = () => {
-    setCourses([...courses, { name: `Course ${courses.length + 1}`, credits: 4, grade: 10 }]);
+    setCourses([...courses, { name: `Course ${courses.length + 1}`, grade: "10" }]);
   };
 
   const removeCourse = (index: number) => {
@@ -59,33 +50,33 @@ const CGPACalculator = () => {
   };
 
   const calculateCGPA = () => {
-    let currentSemesterCredits = 0;
-    let currentSemesterPoints = 0;
+    // Calculate current semester CGPA
+    const currentSemesterGrades = courses.map(course => parseFloat(course.grade));
+    const currentSemesterCGPA = currentSemesterGrades.reduce((sum, grade) => sum + grade, 0) / currentSemesterGrades.length;
 
-    courses.forEach(course => {
-      currentSemesterCredits += course.credits;
-      currentSemesterPoints += (course.credits * course.grade);
-    });
-
-    const prevCgpaNum = parseFloat(previousCgpa) || 0;
-    const prevCreditsNum = parseInt(previousCredits) || 0;
-
-    const totalPoints = (prevCgpaNum * prevCreditsNum) + currentSemesterPoints;
-    const totalCredits = prevCreditsNum + currentSemesterCredits;
-
-    const calculatedCGPA = totalCredits ? (totalPoints / totalCredits) : 0;
-    setCgpa(parseFloat(calculatedCGPA.toFixed(2)));
+    // If previous CGPA and total courses are provided, calculate overall CGPA
+    if (previousCgpa && totalCourses) {
+      const prevCgpaNum = parseFloat(previousCgpa);
+      const totalCoursesNum = parseInt(totalCourses);
+      const currentCoursesNum = courses.length;
+      
+      // Weighted average formula
+      const totalGradePoints = (prevCgpaNum * totalCoursesNum) + (currentSemesterCGPA * currentCoursesNum);
+      const totalCourses = totalCoursesNum + currentCoursesNum;
+      const overallCGPA = totalGradePoints / totalCourses;
+      
+      setCalculatedCgpa(parseFloat(overallCGPA.toFixed(2)));
+    } else {
+      // Only current semester CGPA
+      setCalculatedCgpa(parseFloat(currentSemesterCGPA.toFixed(2)));
+    }
   };
 
-  const resetCGPACalculator = () => {
-    setCourses([
-      { name: "Course 1", credits: 4, grade: 10 },
-      { name: "Course 2", credits: 4, grade: 10 },
-      { name: "Course 3", credits: 3, grade: 10 },
-    ]);
-    setCgpa(10);
+  const resetCalculator = () => {
     setPreviousCgpa("");
-    setPreviousCredits("");
+    setTotalCourses("");
+    setCourses([{ name: "Course 1", grade: "10" }]);
+    setCalculatedCgpa(0);
   };
 
   return (
@@ -98,121 +89,108 @@ const CGPACalculator = () => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="space-y-6">
+          {/* Previous CGPA Section (Optional) */}
           <div className="p-4 rounded-md bg-blue-50 border border-blue-200">
-            <h4 className="font-semibold text-blue-800 mb-2 text-center">Grade Points Reference</h4>
-            <Table className="text-center my-2">
-              <TableHeader>
-                <TableRow>
-                  {gradeReference.map((grade) => (
-                    <TableHead key={grade.letter} className="text-center font-semibold px-2 h-10">{grade.letter}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  {gradeReference.map((grade) => (
-                    <TableCell key={grade.letter} className="px-2 py-2">{grade.points}</TableCell>
-                  ))}
-                </TableRow>
-              </TableBody>
-            </Table>
-            <p className="text-xs text-gray-600 mt-2 text-center">Use the grade points in the calculator below.</p>
+            <h4 className="font-semibold text-blue-800 mb-3">Previous Academic Record (Optional)</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="previous-cgpa">Previous CGPA</Label>
+                <Input
+                  id="previous-cgpa"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="10"
+                  value={previousCgpa}
+                  onChange={(e) => setPreviousCgpa(e.target.value)}
+                  placeholder="e.g., 8.5"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="total-courses">Total Courses Completed</Label>
+                <Input
+                  id="total-courses"
+                  type="number"
+                  min="0"
+                  value={totalCourses}
+                  onChange={(e) => setTotalCourses(e.target.value)}
+                  placeholder="e.g., 8"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-md bg-gray-50 border">
-            <div className="space-y-2">
-              <Label htmlFor="previous-cgpa">Previous CGPA (Optional)</Label>
-              <Input
-                id="previous-cgpa"
-                type="number"
-                step="0.01"
-                min="0"
-                max="10"
-                value={previousCgpa}
-                onChange={(e) => setPreviousCgpa(e.target.value)}
-                placeholder="e.g., 8.5"
-              />
+          {/* Current Courses Section */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-gray-800">Current Courses</h4>
+              <Button onClick={addCourse} variant="outline" size="sm">
+                <Plus className="h-4 w-4 mr-1" />
+                Add Course
+              </Button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="previous-credits">Total Credits Earned (Optional)</Label>
-              <Input
-                id="previous-credits"
-                type="number"
-                min="0"
-                value={previousCredits}
-                onChange={(e) => setPreviousCredits(e.target.value)}
-                placeholder="e.g., 30"
-              />
-            </div>
-          </div>
-          {courses.map((course, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-md bg-gray-50">
-              <div className="space-y-2">
-                <Label htmlFor={`course-${index}`}>Course Name</Label>
-                <Input
-                  id={`course-${index}`}
-                  value={course.name}
-                  onChange={(e) => handleNameChange(index, e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`credits-${index}`}>Credits</Label>
-                <Input
-                  id={`credits-${index}`}
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={course.credits}
-                  onChange={(e) => handleCreditsChange(index, e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label htmlFor={`grade-${index}`}>Grade: {course.grade}</Label>
+
+            {courses.map((course, index) => (
+              <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-md bg-gray-50 border">
+                <div className="space-y-2">
+                  <Label htmlFor={`course-${index}`}>Course Name</Label>
+                  <Input
+                    id={`course-${index}`}
+                    value={course.name}
+                    onChange={(e) => handleCourseNameChange(index, e.target.value)}
+                    placeholder="Enter course name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`grade-${index}`}>Grade</Label>
+                  <Select value={course.grade} onValueChange={(value) => handleGradeChange(index, value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select grade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {gradeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-end">
                   {courses.length > 1 && (
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      className="text-red-500 h-6 px-2"
                       onClick={() => removeCourse(index)}
+                      className="text-red-500 hover:text-red-700"
                     >
-                      Remove
+                      <Minus className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
-                <Slider
-                  id={`grade-${index}`}
-                  min={0}
-                  max={10}
-                  step={1}
-                  value={[course.grade]}
-                  onValueChange={(value) => handleGradeChange(index, value)}
-                />
-                <div className="text-xs text-gray-500 grid grid-cols-11 mt-1">
-                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((grade) => (
-                    <div key={grade} className="text-center">{grade}</div>
-                  ))}
-                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
-          <div className="flex justify-center gap-2">
-            <Button variant="outline" onClick={addCourse}>
-              Add Course
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-4">
+            <Button onClick={calculateCGPA} className="bg-royal hover:bg-royal-dark">
+              Calculate CGPA
             </Button>
-            <Button variant="outline" onClick={resetCGPACalculator} className="text-red-500">
+            <Button variant="outline" onClick={resetCalculator} className="text-red-500">
               <RefreshCw className="mr-2 h-4 w-4" /> Reset
             </Button>
           </div>
 
-          <Button onClick={calculateCGPA} className="w-full bg-royal hover:bg-royal-dark">
-            Calculate CGPA
-          </Button>
-
-          <div className="bg-gray-100 p-4 rounded-md text-center">
-            <h3 className="text-lg font-bold mb-2">Your CGPA</h3>
-            <div className="text-4xl font-bold text-royal">{cgpa}</div>
+          {/* Result */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg text-center border">
+            <h3 className="text-lg font-bold mb-2 text-gray-800">Your CGPA</h3>
+            <div className="text-4xl font-bold text-royal mb-2">{calculatedCgpa}</div>
+            {previousCgpa && totalCourses ? (
+              <p className="text-sm text-gray-600">Overall CGPA (including previous courses)</p>
+            ) : (
+              <p className="text-sm text-gray-600">Current semester CGPA</p>
+            )}
           </div>
         </div>
       </CardContent>

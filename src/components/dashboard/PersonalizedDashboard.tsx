@@ -1,11 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { BookOpen, FileText, Calendar, Newspaper, Users, TrendingUp, Clock, Star } from "lucide-react";
+import { BookOpen, FileText, Calendar, Newspaper, Users, TrendingUp, Clock, Settings, Edit, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import ProfileEditModal from "./ProfileEditModal";
 
 interface UserProfile {
   program_type: string;
@@ -47,6 +47,7 @@ const PersonalizedDashboard: React.FC = () => {
   const [dates, setDates] = useState<ContentItem[]>([]);
   const [communities, setCommunities] = useState<Community[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -146,7 +147,7 @@ const PersonalizedDashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-16">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-royal mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800 mx-auto"></div>
           <p className="text-gray-600 text-lg">Loading your personalized dashboard...</p>
         </div>
       </div>
@@ -174,26 +175,34 @@ const PersonalizedDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in bg-white min-h-screen">
       {/* Modern Welcome Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-royal/5 via-purple-50 to-blue-50 rounded-2xl"></div>
-        <Card className="relative border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-sm bg-gray-50">
           <CardHeader className="pb-6 pt-8">
             <div className="flex items-center justify-between">
               <div className="space-y-2">
-                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-royal to-purple-600 bg-clip-text text-transparent">
+                <CardTitle className="text-3xl font-bold text-gray-900">
                   {getWelcomeMessage()}
                 </CardTitle>
                 <CardDescription className="text-lg text-gray-600">
                   {getSubtitle()}
                 </CardDescription>
               </div>
-              <div className="hidden md:flex items-center space-x-2">
-                <div className="flex items-center bg-green-100 px-3 py-1 rounded-full">
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center bg-green-50 px-3 py-2 rounded-lg border border-green-200">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                   <span className="text-sm font-medium text-green-700">Active</span>
                 </div>
+                <Button 
+                  onClick={() => setShowProfileEdit(true)}
+                  variant="outline" 
+                  size="sm"
+                  className="flex items-center gap-2 hover:bg-gray-100"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span className="hidden md:inline">Edit Profile</span>
+                </Button>
               </div>
             </div>
           </CardHeader>
@@ -202,50 +211,50 @@ const PersonalizedDashboard: React.FC = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-600 text-sm font-medium">Notes</p>
-                <p className="text-2xl font-bold text-blue-700">{notes.length}</p>
+                <p className="text-gray-600 text-sm font-medium">Notes</p>
+                <p className="text-2xl font-bold text-gray-900">{notes.length}</p>
               </div>
-              <BookOpen className="h-8 w-8 text-blue-500" />
+              <BookOpen className="h-8 w-8 text-gray-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-600 text-sm font-medium">PYQs</p>
-                <p className="text-2xl font-bold text-green-700">{pyqs.length}</p>
+                <p className="text-gray-600 text-sm font-medium">PYQs</p>
+                <p className="text-2xl font-bold text-gray-900">{pyqs.length}</p>
               </div>
-              <FileText className="h-8 w-8 text-green-500" />
+              <FileText className="h-8 w-8 text-gray-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-600 text-sm font-medium">Communities</p>
-                <p className="text-2xl font-bold text-purple-700">{communities.length}</p>
+                <p className="text-gray-600 text-sm font-medium">Communities</p>
+                <p className="text-2xl font-bold text-gray-900">{communities.length}</p>
               </div>
-              <Users className="h-8 w-8 text-purple-500" />
+              <Users className="h-8 w-8 text-gray-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-600 text-sm font-medium">Updates</p>
-                <p className="text-2xl font-bold text-orange-700">{news.length}</p>
+                <p className="text-gray-600 text-sm font-medium">Updates</p>
+                <p className="text-2xl font-bold text-gray-900">{news.length}</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-orange-500" />
+              <TrendingUp className="h-8 w-8 text-gray-400" />
             </div>
           </CardContent>
         </Card>
@@ -254,14 +263,13 @@ const PersonalizedDashboard: React.FC = () => {
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Recent Notes */}
-        <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
+        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <BookOpen className="h-5 w-5 text-blue-500 mr-2" />
-                <CardTitle className="text-lg">Recent Notes</CardTitle>
+                <BookOpen className="h-5 w-5 text-gray-600 mr-2" />
+                <CardTitle className="text-lg text-gray-900">Recent Notes</CardTitle>
               </div>
-              <Star className="h-4 w-4 text-yellow-500" />
             </div>
           </CardHeader>
           <CardContent>
@@ -269,7 +277,7 @@ const PersonalizedDashboard: React.FC = () => {
               <div className="space-y-3">
                 {notes.slice(0, 3).map((note) => (
                   <div key={note.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate">{note.title}</p>
+                    <p className="font-medium text-sm truncate text-gray-900">{note.title}</p>
                     <div className="flex items-center mt-1 text-xs text-gray-500">
                       <Clock className="h-3 w-3 mr-1" />
                       {new Date(note.created_at).toLocaleDateString()}
@@ -277,7 +285,7 @@ const PersonalizedDashboard: React.FC = () => {
                   </div>
                 ))}
                 <Link to="/exam-preparation">
-                  <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-blue-50">
+                  <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
                     View All Notes
                   </Button>
                 </Link>
@@ -289,14 +297,13 @@ const PersonalizedDashboard: React.FC = () => {
         </Card>
 
         {/* Recent PYQs */}
-        <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-green-500">
+        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <FileText className="h-5 w-5 text-green-500 mr-2" />
-                <CardTitle className="text-lg">Recent PYQs</CardTitle>
+                <FileText className="h-5 w-5 text-gray-600 mr-2" />
+                <CardTitle className="text-lg text-gray-900">Recent PYQs</CardTitle>
               </div>
-              <Star className="h-4 w-4 text-yellow-500" />
             </div>
           </CardHeader>
           <CardContent>
@@ -304,7 +311,7 @@ const PersonalizedDashboard: React.FC = () => {
               <div className="space-y-3">
                 {pyqs.slice(0, 3).map((pyq) => (
                   <div key={pyq.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate">{pyq.title}</p>
+                    <p className="font-medium text-sm truncate text-gray-900">{pyq.title}</p>
                     <div className="flex items-center mt-1 text-xs text-gray-500">
                       <Clock className="h-3 w-3 mr-1" />
                       {new Date(pyq.created_at).toLocaleDateString()}
@@ -312,7 +319,7 @@ const PersonalizedDashboard: React.FC = () => {
                   </div>
                 ))}
                 <Link to="/exam-preparation">
-                  <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-green-50">
+                  <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
                     View All PYQs
                   </Button>
                 </Link>
@@ -324,14 +331,13 @@ const PersonalizedDashboard: React.FC = () => {
         </Card>
 
         {/* Latest News */}
-        <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-purple-500">
+        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <Newspaper className="h-5 w-5 text-purple-500 mr-2" />
-                <CardTitle className="text-lg">Latest News</CardTitle>
+                <Newspaper className="h-5 w-5 text-gray-600 mr-2" />
+                <CardTitle className="text-lg text-gray-900">Latest News</CardTitle>
               </div>
-              <Star className="h-4 w-4 text-yellow-500" />
             </div>
           </CardHeader>
           <CardContent>
@@ -339,14 +345,14 @@ const PersonalizedDashboard: React.FC = () => {
               <div className="space-y-3">
                 {news.slice(0, 3).map((item) => (
                   <div key={item.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate">{item.title}</p>
+                    <p className="font-medium text-sm truncate text-gray-900">{item.title}</p>
                     <div className="flex items-center mt-1 text-xs text-gray-500">
                       <Clock className="h-3 w-3 mr-1" />
                       {new Date(item.created_at).toLocaleDateString()}
                     </div>
                   </div>
                 ))}
-                <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-purple-50">
+                <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
                   View All News
                 </Button>
               </div>
@@ -357,14 +363,13 @@ const PersonalizedDashboard: React.FC = () => {
         </Card>
 
         {/* Important Dates */}
-        <Card className="hover:shadow-lg transition-all duration-300 border-l-4 border-l-orange-500">
+        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-orange-500 mr-2" />
-                <CardTitle className="text-lg">Important Dates</CardTitle>
+                <Calendar className="h-5 w-5 text-gray-600 mr-2" />
+                <CardTitle className="text-lg text-gray-900">Important Dates</CardTitle>
               </div>
-              <Star className="h-4 w-4 text-yellow-500" />
             </div>
           </CardHeader>
           <CardContent>
@@ -372,14 +377,14 @@ const PersonalizedDashboard: React.FC = () => {
               <div className="space-y-3">
                 {dates.slice(0, 3).map((date) => (
                   <div key={date.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate">{date.title}</p>
+                    <p className="font-medium text-sm truncate text-gray-900">{date.title}</p>
                     <div className="flex items-center mt-1 text-xs text-gray-500">
                       <Clock className="h-3 w-3 mr-1" />
                       {new Date(date.created_at).toLocaleDateString()}
                     </div>
                   </div>
                 ))}
-                <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-orange-50">
+                <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
                   View All Dates
                 </Button>
               </div>
@@ -390,27 +395,26 @@ const PersonalizedDashboard: React.FC = () => {
         </Card>
 
         {/* Study Communities */}
-        <Card className="lg:col-span-2 hover:shadow-lg transition-all duration-300 border-l-4 border-l-indigo-500">
+        <Card className="lg:col-span-2 hover:shadow-md transition-all duration-300 border border-gray-200">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <Users className="h-5 w-5 text-indigo-500 mr-2" />
-                <CardTitle className="text-lg">Your Study Communities</CardTitle>
+                <Users className="h-5 w-5 text-gray-600 mr-2" />
+                <CardTitle className="text-lg text-gray-900">Your Study Communities</CardTitle>
               </div>
-              <Star className="h-4 w-4 text-yellow-500" />
             </div>
           </CardHeader>
           <CardContent>
             {communities.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {communities.slice(0, 4).map((community) => (
-                  <div key={community.id} className="p-4 border rounded-xl hover:shadow-md transition-all duration-300 bg-gradient-to-r from-white to-gray-50">
+                  <div key={community.id} className="p-4 border border-gray-200 rounded-xl hover:shadow-sm transition-all duration-300 bg-white">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="font-semibold text-sm">{community.name}</p>
+                      <p className="font-semibold text-sm text-gray-900">{community.name}</p>
                       <span className={`px-3 py-1 text-xs rounded-full font-medium ${
                         community.group_type === 'telegram' 
-                          ? 'bg-blue-100 text-blue-700' 
-                          : 'bg-green-100 text-green-700'
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200' 
+                          : 'bg-green-50 text-green-700 border border-green-200'
                       }`}>
                         {community.group_type === 'telegram' ? 'Telegram' : 'WhatsApp'}
                       </span>
@@ -425,6 +429,14 @@ const PersonalizedDashboard: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Profile Edit Modal */}
+      <ProfileEditModal 
+        isOpen={showProfileEdit}
+        onClose={() => setShowProfileEdit(false)}
+        profile={profile}
+        onProfileUpdate={setProfile}
+      />
     </div>
   );
 };
