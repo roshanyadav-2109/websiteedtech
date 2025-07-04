@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,22 +33,11 @@ interface UserProfile {
   profile_completed?: boolean;
 }
 
-interface Employee {
-  employee_code: string;
-  full_name: string;
-  position: string;
-  department?: string;
-  employee_type?: string;
-  start_date?: string;
-  end_date?: string;
-  status?: string;
-}
-
 const PersonalizedDashboard: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [employee, setEmployee] = useState<Employee | null>(null);
+  const [employee, setEmployee] = useState<any>(null); // Using any to avoid type issues
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 
@@ -99,10 +87,10 @@ const PersonalizedDashboard: React.FC = () => {
     if (!user?.email) return;
 
     try {
-      // Query only existing columns from the employees table
+      // Query including the new verification_certificate_url column
       const { data, error } = await supabase
         .from('employees')
-        .select('employee_code, full_name, position, department, employee_type, start_date, end_date, status')
+        .select('employee_code, full_name, position, department, employee_type, start_date, end_date, status, verification_certificate_url')
         .eq('email', user.email)
         .single();
 
@@ -112,17 +100,7 @@ const PersonalizedDashboard: React.FC = () => {
       }
 
       if (data) {
-        const employeeData: Employee = {
-          employee_code: data.employee_code || '',
-          full_name: data.full_name || '',
-          position: data.position || '',
-          department: data.department || undefined,
-          employee_type: data.employee_type || undefined,
-          start_date: data.start_date || undefined,
-          end_date: data.end_date || undefined,
-          status: data.status || undefined
-        };
-        setEmployee(employeeData);
+        setEmployee(data);
       }
     } catch (error) {
       console.error('Error checking employee status:', error);
@@ -130,13 +108,19 @@ const PersonalizedDashboard: React.FC = () => {
   };
 
   const handleDownloadCertificate = () => {
-    // Since verification_certificate_url doesn't exist in the database,
-    // we'll show a message that certificate generation is not yet available
-    toast({
-      title: "Certificate Not Available",
-      description: "Verification certificate generation feature is coming soon.",
-      variant: "destructive"
-    });
+    if (employee?.verification_certificate_url) {
+      window.open(employee.verification_certificate_url, '_blank');
+      toast({
+        title: "Certificate Download",
+        description: "Opening verification certificate...",
+      });
+    } else {
+      toast({
+        title: "Certificate Not Available",
+        description: "Verification certificate not yet generated.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (loading) {
