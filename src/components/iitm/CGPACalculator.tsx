@@ -62,8 +62,8 @@ const CGPACalculator = () => {
       
       // Weighted average formula
       const totalGradePoints = (prevCgpaNum * totalCoursesNum) + (currentSemesterCGPA * currentCoursesNum);
-      const totalCourses = totalCoursesNum + currentCoursesNum;
-      const overallCGPA = totalGradePoints / totalCourses;
+      const totalCoursesCount = totalCoursesNum + currentCoursesNum;
+      const overallCGPA = totalGradePoints / totalCoursesCount;
       
       setCalculatedCgpa(parseFloat(overallCGPA.toFixed(2)));
     } else {
