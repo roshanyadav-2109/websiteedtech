@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -19,7 +18,6 @@ import {
   Calendar,
   FileText,
   Download,
-  Clock,
   Edit
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -302,7 +300,6 @@ const PersonalizedDashboard = () => {
               <div className="flex items-center">
                 <Button 
                   onClick={handleDownloadCertificate}
-                  variant="download"
                   className="bg-green-600 text-white hover:bg-green-700 shadow-lg transform hover:scale-105 transition-all duration-200"
                 >
                   <Download className="h-4 w-4 mr-2" />

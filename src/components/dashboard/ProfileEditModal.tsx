@@ -77,23 +77,9 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       } else if (programType === 'COMPETITIVE_EXAM') {
         updateData.exam_type = examType;
         updateData.student_status = studentStatus;
-        updateData.subjects = null; // Remove subject selection
+        updateData.subjects = null;
         updateData.branch = null;
         updateData.level = null;
-      }
-
-      // Save to updated_profiles table for history
-      const { error: historyError } = await supabase
-        .from('updated_profiles')
-        .insert({
-          profile_id: user.id,
-          ...updateData,
-          full_name: profile?.student_name,
-          email: user.email,
-        });
-
-      if (historyError) {
-        console.error('Error saving profile history:', historyError);
       }
 
       // Update main profiles table
