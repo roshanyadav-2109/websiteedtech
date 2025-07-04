@@ -72,7 +72,7 @@ const PersonalizedDashboard: React.FC = () => {
         return;
       }
 
-      setProfile(data);
+      setProfile(data as UserProfile);
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -96,7 +96,7 @@ const PersonalizedDashboard: React.FC = () => {
       }
 
       if (data) {
-        setEmployee(data);
+        setEmployee(data as Employee);
       }
     } catch (error) {
       console.error('Error checking employee status:', error);
