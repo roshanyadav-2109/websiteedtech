@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,7 @@ interface Employee {
   full_name: string;
   position: string;
   department?: string;
-  verification_certificate_link?: string;
+  verification_certificate_url?: string; // Fixed column name
 }
 
 const PersonalizedDashboard: React.FC = () => {
@@ -72,9 +71,8 @@ const PersonalizedDashboard: React.FC = () => {
         return;
       }
 
-      // Explicit type conversion to avoid complex inference
       if (data) {
-        const profileData: UserProfile = {
+        setProfile({
           program_type: data.program_type || '',
           branch: data.branch || undefined,
           level: data.level || undefined,
@@ -83,8 +81,7 @@ const PersonalizedDashboard: React.FC = () => {
           subjects: data.subjects || undefined,
           student_name: data.student_name || undefined,
           profile_completed: data.profile_completed || false
-        };
-        setProfile(profileData);
+        });
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -97,9 +94,10 @@ const PersonalizedDashboard: React.FC = () => {
     if (!user?.email) return;
 
     try {
+      // Updated query to use correct column names
       const { data, error } = await supabase
         .from('employees')
-        .select('employee_code, full_name, position, department, verification_certificate_link')
+        .select('employee_code, full_name, position, department, verification_certificate_url')
         .eq('email', user.email)
         .single();
 
@@ -108,16 +106,14 @@ const PersonalizedDashboard: React.FC = () => {
         return;
       }
 
-      // Explicit type conversion to avoid complex inference
       if (data) {
-        const employeeData: Employee = {
+        setEmployee({
           employee_code: data.employee_code || '',
           full_name: data.full_name || '',
           position: data.position || '',
           department: data.department || undefined,
-          verification_certificate_link: data.verification_certificate_link || undefined
-        };
-        setEmployee(employeeData);
+          verification_certificate_url: data.verification_certificate_url || undefined
+        });
       }
     } catch (error) {
       console.error('Error checking employee status:', error);
@@ -125,8 +121,8 @@ const PersonalizedDashboard: React.FC = () => {
   };
 
   const handleDownloadCertificate = () => {
-    if (employee?.verification_certificate_link) {
-      window.open(employee.verification_certificate_link, '_blank');
+    if (employee?.verification_certificate_url) {
+      window.open(employee.verification_certificate_url, '_blank');
     } else {
       toast({
         title: "Certificate Not Available",
