@@ -23,7 +23,7 @@ import {
 import { Link } from "react-router-dom";
 
 // Simplified type definitions to avoid deep type instantiation
-type UserProfile = {
+interface UserProfile {
   program_type: string;
   branch?: string;
   level?: string;
@@ -32,15 +32,15 @@ type UserProfile = {
   subjects?: string[];
   student_name?: string;
   profile_completed?: boolean;
-};
+}
 
-type Employee = {
+interface Employee {
   employee_code: string;
   full_name: string;
   position: string;
   department?: string;
   verification_certificate_link?: string;
-};
+}
 
 const PersonalizedDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -72,7 +72,20 @@ const PersonalizedDashboard: React.FC = () => {
         return;
       }
 
-      setProfile(data as UserProfile);
+      // Explicit type conversion to avoid complex inference
+      if (data) {
+        const profileData: UserProfile = {
+          program_type: data.program_type || '',
+          branch: data.branch || undefined,
+          level: data.level || undefined,
+          exam_type: data.exam_type || undefined,
+          student_status: data.student_status || undefined,
+          subjects: data.subjects || undefined,
+          student_name: data.student_name || undefined,
+          profile_completed: data.profile_completed || false
+        };
+        setProfile(profileData);
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -86,7 +99,7 @@ const PersonalizedDashboard: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('employees')
-        .select('*')
+        .select('employee_code, full_name, position, department, verification_certificate_link')
         .eq('email', user.email)
         .single();
 
@@ -95,8 +108,16 @@ const PersonalizedDashboard: React.FC = () => {
         return;
       }
 
+      // Explicit type conversion to avoid complex inference
       if (data) {
-        setEmployee(data as Employee);
+        const employeeData: Employee = {
+          employee_code: data.employee_code || '',
+          full_name: data.full_name || '',
+          position: data.position || '',
+          department: data.department || undefined,
+          verification_certificate_link: data.verification_certificate_link || undefined
+        };
+        setEmployee(employeeData);
       }
     } catch (error) {
       console.error('Error checking employee status:', error);
