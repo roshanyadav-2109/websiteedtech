@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,10 @@ interface Employee {
   full_name: string;
   position: string;
   department?: string;
-  verification_certificate_url?: string; // Fixed column name
+  employee_type?: string;
+  start_date?: string;
+  end_date?: string;
+  status?: string;
 }
 
 const PersonalizedDashboard: React.FC = () => {
@@ -72,7 +76,7 @@ const PersonalizedDashboard: React.FC = () => {
       }
 
       if (data) {
-        setProfile({
+        const profileData: UserProfile = {
           program_type: data.program_type || '',
           branch: data.branch || undefined,
           level: data.level || undefined,
@@ -81,7 +85,8 @@ const PersonalizedDashboard: React.FC = () => {
           subjects: data.subjects || undefined,
           student_name: data.student_name || undefined,
           profile_completed: data.profile_completed || false
-        });
+        };
+        setProfile(profileData);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -94,10 +99,10 @@ const PersonalizedDashboard: React.FC = () => {
     if (!user?.email) return;
 
     try {
-      // Updated query to use correct column names
+      // Query only existing columns from the employees table
       const { data, error } = await supabase
         .from('employees')
-        .select('employee_code, full_name, position, department, verification_certificate_url')
+        .select('employee_code, full_name, position, department, employee_type, start_date, end_date, status')
         .eq('email', user.email)
         .single();
 
@@ -107,13 +112,17 @@ const PersonalizedDashboard: React.FC = () => {
       }
 
       if (data) {
-        setEmployee({
+        const employeeData: Employee = {
           employee_code: data.employee_code || '',
           full_name: data.full_name || '',
           position: data.position || '',
           department: data.department || undefined,
-          verification_certificate_url: data.verification_certificate_url || undefined
-        });
+          employee_type: data.employee_type || undefined,
+          start_date: data.start_date || undefined,
+          end_date: data.end_date || undefined,
+          status: data.status || undefined
+        };
+        setEmployee(employeeData);
       }
     } catch (error) {
       console.error('Error checking employee status:', error);
@@ -121,15 +130,13 @@ const PersonalizedDashboard: React.FC = () => {
   };
 
   const handleDownloadCertificate = () => {
-    if (employee?.verification_certificate_url) {
-      window.open(employee.verification_certificate_url, '_blank');
-    } else {
-      toast({
-        title: "Certificate Not Available",
-        description: "Verification certificate not yet generated.",
-        variant: "destructive"
-      });
-    }
+    // Since verification_certificate_url doesn't exist in the database,
+    // we'll show a message that certificate generation is not yet available
+    toast({
+      title: "Certificate Not Available",
+      description: "Verification certificate generation feature is coming soon.",
+      variant: "destructive"
+    });
   };
 
   if (loading) {
@@ -303,6 +310,12 @@ const PersonalizedDashboard: React.FC = () => {
                 <p><strong>Position:</strong> {employee.position}</p>
                 {employee.department && (
                   <p><strong>Department:</strong> {employee.department}</p>
+                )}
+                {employee.employee_type && (
+                  <p><strong>Type:</strong> {employee.employee_type}</p>
+                )}
+                {employee.status && (
+                  <p><strong>Status:</strong> {employee.status}</p>
                 )}
               </div>
               <div className="flex items-center">
