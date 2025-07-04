@@ -33,11 +33,23 @@ interface UserProfile {
   profile_completed?: boolean;
 }
 
+interface Employee {
+  employee_code: string;
+  full_name: string;
+  position: string;
+  department?: string;
+  employee_type?: string;
+  start_date?: string;
+  end_date?: string;
+  status?: string;
+  verification_certificate_url?: string;
+}
+
 const PersonalizedDashboard: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [employee, setEmployee] = useState<any>(null); // Using any to avoid type issues
+  const [employee, setEmployee] = useState<Employee | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 
@@ -48,7 +60,7 @@ const PersonalizedDashboard: React.FC = () => {
     }
   }, [user]);
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = async (): Promise<void> => {
     if (!user) return;
 
     try {
@@ -83,7 +95,7 @@ const PersonalizedDashboard: React.FC = () => {
     }
   };
 
-  const checkEmployeeStatus = async () => {
+  const checkEmployeeStatus = async (): Promise<void> => {
     if (!user?.email) return;
 
     try {
@@ -100,14 +112,25 @@ const PersonalizedDashboard: React.FC = () => {
       }
 
       if (data) {
-        setEmployee(data);
+        const employeeData: Employee = {
+          employee_code: data.employee_code,
+          full_name: data.full_name,
+          position: data.position,
+          department: data.department,
+          employee_type: data.employee_type,
+          start_date: data.start_date,
+          end_date: data.end_date,
+          status: data.status,
+          verification_certificate_url: data.verification_certificate_url
+        };
+        setEmployee(employeeData);
       }
     } catch (error) {
       console.error('Error checking employee status:', error);
     }
   };
 
-  const handleDownloadCertificate = () => {
+  const handleDownloadCertificate = (): void => {
     if (employee?.verification_certificate_url) {
       window.open(employee.verification_certificate_url, '_blank');
       toast({
@@ -136,109 +159,105 @@ const PersonalizedDashboard: React.FC = () => {
   }
 
   // Render IITM content
-  const renderIITMContent = () => (
-    <>
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-blue-500" />
-            Branch Notes
-          </CardTitle>
-          <CardDescription>
-            Access notes for {profile?.branch} - {profile?.level} level
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link to="/exam-preparation/iitm-bs">
-            <Button className="w-full bg-blue-500 hover:bg-blue-600">
-              View Notes
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
+  const renderIITMContent = (): JSX.Element[] => [
+    <Card key="iitm-notes" className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BookOpen className="h-5 w-5 text-blue-500" />
+          Branch Notes
+        </CardTitle>
+        <CardDescription>
+          Access notes for {profile?.branch} - {profile?.level} level
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Link to="/exam-preparation/iitm-bs">
+          <Button className="w-full bg-blue-500 hover:bg-blue-600">
+            View Notes
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>,
 
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-green-500" />
-            Previous Year Questions
-          </CardTitle>
-          <CardDescription>
-            PYQs for {profile?.branch} branch
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link to="/exam-preparation/iitm-bs">
-            <Button className="w-full bg-green-500 hover:bg-green-600">
-              View PYQs
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
+    <Card key="iitm-pyqs" className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <FileText className="h-5 w-5 text-green-500" />
+          Previous Year Questions
+        </CardTitle>
+        <CardDescription>
+          PYQs for {profile?.branch} branch
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Link to="/exam-preparation/iitm-bs">
+          <Button className="w-full bg-green-500 hover:bg-green-600">
+            View PYQs
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>,
 
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-yellow-500" />
-            IITM Tools
-          </CardTitle>
-          <CardDescription>
-            CGPA Calculator & Predictors
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link to="/exam-preparation/iitm-bs">
-            <Button className="w-full bg-yellow-500 hover:bg-yellow-600">
-              Use Tools
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
-    </>
-  );
+    <Card key="iitm-tools" className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-yellow-500" />
+          IITM Tools
+        </CardTitle>
+        <CardDescription>
+          CGPA Calculator & Predictors
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Link to="/exam-preparation/iitm-bs">
+          <Button className="w-full bg-yellow-500 hover:bg-yellow-600">
+            Use Tools
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  ];
 
   // Render competitive exam content
-  const renderCompetitiveExamContent = () => (
-    <>
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-purple-500" />
-            {profile?.exam_type} Preparation
-          </CardTitle>
-          <CardDescription>
-            Access {profile?.exam_type} study materials and resources
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link to={`/exam-preparation/${profile?.exam_type?.toLowerCase()}`}>
-            <Button className="w-full bg-purple-500 hover:bg-purple-600">
-              Start Preparation
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
+  const renderCompetitiveExamContent = (): JSX.Element[] => [
+    <Card key="comp-prep" className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BookOpen className="h-5 w-5 text-purple-500" />
+          {profile?.exam_type} Preparation
+        </CardTitle>
+        <CardDescription>
+          Access {profile?.exam_type} study materials and resources
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Link to={`/exam-preparation/${profile?.exam_type?.toLowerCase()}`}>
+          <Button className="w-full bg-purple-500 hover:bg-purple-600">
+            Start Preparation
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>,
 
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-indigo-500" />
-            Practice Tests
-          </CardTitle>
-          <CardDescription>
-            Take mock tests for {profile?.exam_type}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Link to={`/exam-preparation/${profile?.exam_type?.toLowerCase()}`}>
-            <Button className="w-full bg-indigo-500 hover:bg-indigo-600">
-              Practice Now
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
-    </>
-  );
+    <Card key="comp-tests" className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <FileText className="h-5 w-5 text-indigo-500" />
+          Practice Tests
+        </CardTitle>
+        <CardDescription>
+          Take mock tests for {profile?.exam_type}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Link to={`/exam-preparation/${profile?.exam_type?.toLowerCase()}`}>
+          <Button className="w-full bg-indigo-500 hover:bg-indigo-600">
+            Practice Now
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  ];
 
   return (
     <div className="space-y-8">
