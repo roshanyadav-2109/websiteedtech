@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, BookOpen, GraduationCap } from "lucide-react";
 
@@ -45,6 +46,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
   const [level, setLevel] = useState('');
   const [examType, setExamType] = useState('');
   const [studentStatus, setStudentStatus] = useState('');
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
 
   // Initialize form with current profile data
   useEffect(() => {
@@ -55,8 +57,22 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       setLevel(profile.level || '');
       setExamType(profile.exam_type || '');
       setStudentStatus(profile.student_status || '');
+      setSelectedSubjects(profile.subjects || []);
     }
   }, [profile]);
+
+  const competitiveExamSubjects = [
+    'Physics', 'Chemistry', 'Mathematics', 'Biology',
+    'English', 'General Knowledge', 'Reasoning'
+  ];
+
+  const handleSubjectChange = (subject: string, checked: boolean) => {
+    if (checked) {
+      setSelectedSubjects([...selectedSubjects, subject]);
+    } else {
+      setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
+    }
+  };
 
   const handleSave = async () => {
     if (!user) return;
@@ -77,12 +93,11 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       } else if (programType === 'COMPETITIVE_EXAM') {
         updateData.exam_type = examType;
         updateData.student_status = studentStatus;
-        updateData.subjects = null;
+        updateData.subjects = selectedSubjects;
         updateData.branch = null;
         updateData.level = null;
       }
 
-      // Update main profiles table
       const { error } = await supabase
         .from('profiles')
         .update(updateData)
@@ -236,6 +251,22 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                       <SelectItem value="Dropper">Dropper</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div>
+                  <Label>Subjects of Interest</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {competitiveExamSubjects.map((subject) => (
+                      <div key={subject} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={subject}
+                          checked={selectedSubjects.includes(subject)}
+                          onCheckedChange={(checked) => handleSubjectChange(subject, !!checked)}
+                        />
+                        <Label htmlFor={subject} className="text-sm">{subject}</Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>

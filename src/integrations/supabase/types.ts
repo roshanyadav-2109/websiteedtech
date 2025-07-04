@@ -170,7 +170,6 @@ export type Database = {
           start_date: string | null
           status: string | null
           updated_at: string | null
-          verification_certificate_url: string | null
         }
         Insert: {
           created_at?: string | null
@@ -185,7 +184,6 @@ export type Database = {
           start_date?: string | null
           status?: string | null
           updated_at?: string | null
-          verification_certificate_url?: string | null
         }
         Update: {
           created_at?: string | null
@@ -200,7 +198,6 @@ export type Database = {
           start_date?: string | null
           status?: string | null
           updated_at?: string | null
-          verification_certificate_url?: string | null
         }
         Relationships: []
       }
