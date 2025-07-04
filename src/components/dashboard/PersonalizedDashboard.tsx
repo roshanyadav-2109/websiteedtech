@@ -22,7 +22,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-interface UserProfile {
+// Simplified type definitions to avoid deep type instantiation
+type UserProfile = {
   program_type: string;
   branch?: string;
   level?: string;
@@ -31,15 +32,15 @@ interface UserProfile {
   subjects?: string[];
   student_name?: string;
   profile_completed?: boolean;
-}
+};
 
-interface Employee {
+type Employee = {
   employee_code: string;
   full_name: string;
   position: string;
   department?: string;
   verification_certificate_link?: string;
-}
+};
 
 const PersonalizedDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -56,7 +57,7 @@ const PersonalizedDashboard: React.FC = () => {
     }
   }, [user]);
 
-  const fetchUserProfile = async (): Promise<void> => {
+  const fetchUserProfile = async () => {
     if (!user) return;
 
     try {
@@ -79,7 +80,7 @@ const PersonalizedDashboard: React.FC = () => {
     }
   };
 
-  const checkEmployeeStatus = async (): Promise<void> => {
+  const checkEmployeeStatus = async () => {
     if (!user?.email) return;
 
     try {
@@ -102,7 +103,7 @@ const PersonalizedDashboard: React.FC = () => {
     }
   };
 
-  const handleDownloadCertificate = (): void => {
+  const handleDownloadCertificate = () => {
     if (employee?.verification_certificate_link) {
       window.open(employee.verification_certificate_link, '_blank');
     } else {
@@ -126,6 +127,7 @@ const PersonalizedDashboard: React.FC = () => {
     return <ProfileSetup onComplete={fetchUserProfile} />;
   }
 
+  // Render IITM content
   const renderIITMContent = () => (
     <>
       <Card className="hover:shadow-lg transition-shadow">
@@ -187,6 +189,7 @@ const PersonalizedDashboard: React.FC = () => {
     </>
   );
 
+  // Render competitive exam content
   const renderCompetitiveExamContent = () => (
     <>
       <Card className="hover:shadow-lg transition-shadow">
