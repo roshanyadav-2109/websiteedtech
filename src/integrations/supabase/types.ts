@@ -170,6 +170,7 @@ export type Database = {
           start_date: string | null
           status: string | null
           updated_at: string | null
+          verification_certificate_url: string | null
         }
         Insert: {
           created_at?: string | null
@@ -184,6 +185,7 @@ export type Database = {
           start_date?: string | null
           status?: string | null
           updated_at?: string | null
+          verification_certificate_url?: string | null
         }
         Update: {
           created_at?: string | null
@@ -198,6 +200,7 @@ export type Database = {
           start_date?: string | null
           status?: string | null
           updated_at?: string | null
+          verification_certificate_url?: string | null
         }
         Relationships: []
       }
@@ -787,6 +790,66 @@ export type Database = {
           rating?: number | null
           testimonial_text?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      updated_profiles: {
+        Row: {
+          branch: string | null
+          class: string | null
+          created_at: string
+          email: string | null
+          exam: string | null
+          exam_type: string | null
+          full_name: string | null
+          id: string
+          level: string | null
+          phone: string | null
+          program_type: string | null
+          role: string | null
+          selected_subjects: string[] | null
+          student_name: string | null
+          student_status: string | null
+          subjects: string[] | null
+          user_id: string
+        }
+        Insert: {
+          branch?: string | null
+          class?: string | null
+          created_at?: string
+          email?: string | null
+          exam?: string | null
+          exam_type?: string | null
+          full_name?: string | null
+          id?: string
+          level?: string | null
+          phone?: string | null
+          program_type?: string | null
+          role?: string | null
+          selected_subjects?: string[] | null
+          student_name?: string | null
+          student_status?: string | null
+          subjects?: string[] | null
+          user_id: string
+        }
+        Update: {
+          branch?: string | null
+          class?: string | null
+          created_at?: string
+          email?: string | null
+          exam?: string | null
+          exam_type?: string | null
+          full_name?: string | null
+          id?: string
+          level?: string | null
+          phone?: string | null
+          program_type?: string | null
+          role?: string | null
+          selected_subjects?: string[] | null
+          student_name?: string | null
+          student_status?: string | null
+          subjects?: string[] | null
           user_id?: string
         }
         Relationships: []

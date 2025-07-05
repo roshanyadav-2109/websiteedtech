@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle, XCircle, FileText, HelpCircle, Info } from "lucide-react";
+import { CheckCircle, XCircle, FileText, HelpCircle, Info, Download } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "@/components/ui/use-toast";
@@ -86,7 +86,8 @@ const InternVerification = () => {
             startDate: data.start_date ? new Date(data.start_date).toLocaleDateString() : "N/A",
             endDate: data.end_date ? new Date(data.end_date).toLocaleDateString() : "N/A",
             status: statusText,
-            isActive: data.is_active
+            isActive: data.is_active,
+            verificationCertificateUrl: data.verification_certificate_url
           }
         });
         toast({
@@ -109,6 +110,18 @@ const InternVerification = () => {
     }
     
     setLoading(false);
+  };
+
+  const handleDownloadCertificate = () => {
+    if (verificationResult?.details?.verificationCertificateUrl) {
+      window.open(verificationResult.details.verificationCertificateUrl, '_blank');
+    } else {
+      toast({
+        title: "Certificate Not Available",
+        description: "Verification certificate not yet generated.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -171,13 +184,13 @@ const InternVerification = () => {
                     <p className="text-xs text-gray-500">Enter the full name exactly as provided in employment documents</p>
                   </div>
                   
-                  <Button 
+                  <button
                     type="submit"
-                    disabled={loading} 
-                    className="w-full bg-royal hover:bg-royal-dark text-white py-2 h-12"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-royal to-royal-dark hover:from-royal-dark hover:to-royal text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
                     {loading ? "Verifying..." : "Verify Employee"}
-                  </Button>
+                  </button>
                 </form>
                 
                 {verificationResult && (
@@ -258,9 +271,13 @@ const InternVerification = () => {
                         </div>
 
                         <div className="mt-4 text-center">
-                          <Button className="bg-royal hover:bg-royal-dark text-white">
+                          <button
+                            onClick={handleDownloadCertificate}
+                            className="inline-flex items-center gap-2 bg-gradient-to-r from-royal to-royal-dark hover:from-royal-dark hover:to-royal text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                          >
+                            <Download className="h-4 w-4" />
                             Download Verification Certificate
-                          </Button>
+                          </button>
                         </div>
                       </div>
                     )}
