@@ -79,14 +79,20 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
 
       await supabase.from('updated_profiles').insert(historyData);
 
-      // Then update the main profiles table
+      // Then update the main profiles table with proper branch mapping
       const updateData: any = {
         student_name: studentName,
         program_type: programType,
       };
 
       if (programType === 'IITM_BS') {
-        updateData.branch = branch;
+        // Map the branch values correctly for the database
+        const branchMapping: { [key: string]: string } = {
+          'Data Science and Applications': 'data-science',
+          'Electronic Systems': 'electronic-systems'
+        };
+        
+        updateData.branch = branchMapping[branch] || branch;
         updateData.level = level;
         updateData.exam_type = null;
         updateData.student_status = null;
@@ -112,10 +118,15 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
 
       if (error) throw error;
 
-      // Update local profile state
+      // Update local profile state with display values
       const updatedProfile = {
         ...profile,
-        ...updateData
+        student_name: studentName,
+        program_type: programType,
+        branch: programType === 'IITM_BS' ? branch : undefined,
+        level: programType === 'IITM_BS' ? level : undefined,
+        exam_type: programType === 'COMPETITIVE_EXAM' ? examType : undefined,
+        student_status: programType === 'COMPETITIVE_EXAM' ? studentStatus : undefined,
       } as UserProfile;
       
       onProfileUpdate(updatedProfile);

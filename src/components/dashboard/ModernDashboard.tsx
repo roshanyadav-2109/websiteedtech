@@ -85,30 +85,30 @@ const ModernDashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+    <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-gray-900">
               Welcome back, {profile?.student_name || user?.email?.split('@')[0]}
             </h1>
-            <p className="text-gray-400 mt-2">Ready to continue your learning journey?</p>
+            <p className="text-gray-600 mt-2">Ready to continue your learning journey?</p>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+            <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900">
               <Bell className="h-5 w-5" />
             </Button>
             <Button 
               variant="outline" 
               onClick={() => setIsEditModalOpen(true)}
-              className="border-gray-600 text-white hover:bg-gray-800"
+              className="border-gray-300 text-gray-700 hover:bg-gray-100"
             >
               <Settings className="h-4 w-4 mr-2" />
               Settings
@@ -118,46 +118,46 @@ const ModernDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Total Downloads</CardTitle>
-              <Download className="h-4 w-4 text-blue-400" />
+              <CardTitle className="text-sm font-medium text-gray-600">Total Downloads</CardTitle>
+              <Download className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.totalDownloads}</div>
-              <p className="text-xs text-gray-400">+12% from last month</p>
+              <div className="text-2xl font-bold text-gray-900">{stats.totalDownloads}</div>
+              <p className="text-xs text-gray-500">+12% from last month</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Courses Enrolled</CardTitle>
-              <BookOpen className="h-4 w-4 text-green-400" />
+              <CardTitle className="text-sm font-medium text-gray-600">Courses Enrolled</CardTitle>
+              <BookOpen className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.coursesEnrolled}</div>
-              <p className="text-xs text-gray-400">Active subscriptions</p>
+              <div className="text-2xl font-bold text-gray-900">{stats.coursesEnrolled}</div>
+              <p className="text-xs text-gray-500">Active subscriptions</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Study Streak</CardTitle>
-              <TrendingUp className="h-4 w-4 text-orange-400" />
+              <CardTitle className="text-sm font-medium text-gray-600">Study Streak</CardTitle>
+              <TrendingUp className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.studyStreak} days</div>
-              <p className="text-xs text-gray-400">Keep it up!</p>
+              <div className="text-2xl font-bold text-gray-900">{stats.studyStreak} days</div>
+              <p className="text-xs text-gray-500">Keep it up!</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-300">Completion Rate</CardTitle>
-              <Target className="h-4 w-4 text-purple-400" />
+              <CardTitle className="text-sm font-medium text-gray-600">Completion Rate</CardTitle>
+              <Target className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{stats.completionRate}%</div>
+              <div className="text-2xl font-bold text-gray-900">{stats.completionRate}%</div>
               <Progress value={stats.completionRate} className="mt-2 h-1" />
             </CardContent>
           </Card>
@@ -166,7 +166,7 @@ const ModernDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Overview */}
           <div className="lg:col-span-2">
-            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+            <Card className="bg-white border border-gray-200 shadow-sm">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -174,15 +174,15 @@ const ModernDashboard = () => {
                       <User className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-white">Profile Overview</CardTitle>
-                      <CardDescription className="text-gray-400">Your academic journey</CardDescription>
+                      <CardTitle className="text-gray-900">Profile Overview</CardTitle>
+                      <CardDescription className="text-gray-600">Your academic journey</CardDescription>
                     </div>
                   </div>
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => setIsEditModalOpen(true)}
-                    className="border-gray-600 text-white hover:bg-gray-700"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100"
                   >
                     Edit Profile
                   </Button>
@@ -193,9 +193,9 @@ const ModernDashboard = () => {
                   <>
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label className="text-sm font-medium text-gray-400">Program Type</label>
+                        <label className="text-sm font-medium text-gray-600">Program Type</label>
                         <div className="mt-1">
-                          <Badge variant="secondary" className="bg-blue-900/50 text-blue-300 border-blue-800">
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
                             {profile.program_type === 'IITM_BS' ? 'IITM BS Degree' : 'Competitive Exam'}
                           </Badge>
                         </div>
@@ -204,12 +204,12 @@ const ModernDashboard = () => {
                       {profile.program_type === 'IITM_BS' && (
                         <>
                           <div>
-                            <label className="text-sm font-medium text-gray-400">Branch</label>
-                            <p className="mt-1 text-white">{profile.branch || 'Not specified'}</p>
+                            <label className="text-sm font-medium text-gray-600">Branch</label>
+                            <p className="mt-1 text-gray-900">{profile.branch || 'Not specified'}</p>
                           </div>
                           <div>
-                            <label className="text-sm font-medium text-gray-400">Level</label>
-                            <p className="mt-1 text-white capitalize">{profile.level || 'Not specified'}</p>
+                            <label className="text-sm font-medium text-gray-600">Level</label>
+                            <p className="mt-1 text-gray-900 capitalize">{profile.level || 'Not specified'}</p>
                           </div>
                         </>
                       )}
@@ -217,12 +217,12 @@ const ModernDashboard = () => {
                       {profile.program_type === 'COMPETITIVE_EXAM' && (
                         <>
                           <div>
-                            <label className="text-sm font-medium text-gray-400">Exam Type</label>
-                            <p className="mt-1 text-white">{profile.exam_type || 'Not specified'}</p>
+                            <label className="text-sm font-medium text-gray-600">Exam Type</label>
+                            <p className="mt-1 text-gray-900">{profile.exam_type || 'Not specified'}</p>
                           </div>
                           <div>
-                            <label className="text-sm font-medium text-gray-400">Student Status</label>
-                            <p className="mt-1 text-white">{profile.student_status || 'Not specified'}</p>
+                            <label className="text-sm font-medium text-gray-600">Student Status</label>
+                            <p className="mt-1 text-gray-900">{profile.student_status || 'Not specified'}</p>
                           </div>
                         </>
                       )}
@@ -230,8 +230,8 @@ const ModernDashboard = () => {
                   </>
                 ) : (
                   <div className="text-center py-8">
-                    <User className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400 mb-4">Complete your profile to get personalized content</p>
+                    <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">Complete your profile to get personalized content</p>
                     <Button 
                       onClick={() => setIsEditModalOpen(true)}
                       className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
@@ -246,27 +246,27 @@ const ModernDashboard = () => {
 
           {/* Quick Actions */}
           <div>
-            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+            <Card className="bg-white border border-gray-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Star className="h-5 w-5 text-yellow-400" />
+                <CardTitle className="text-gray-900 flex items-center gap-2">
+                  <Star className="h-5 w-5 text-yellow-500" />
                   Quick Actions
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700">
+                <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-gray-900 hover:bg-gray-100">
                   <BookOpen className="h-4 w-4 mr-2" />
                   Browse Courses
                 </Button>
-                <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700">
+                <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-gray-900 hover:bg-gray-100">
                   <Download className="h-4 w-4 mr-2" />
                   Download Resources
                 </Button>
-                <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700">
+                <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-gray-900 hover:bg-gray-100">
                   <Calendar className="h-4 w-4 mr-2" />
                   Important Dates
                 </Button>
-                <Button variant="ghost" className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700">
+                <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-gray-900 hover:bg-gray-100">
                   <Award className="h-4 w-4 mr-2" />
                   Achievements
                 </Button>
@@ -274,31 +274,31 @@ const ModernDashboard = () => {
             </Card>
 
             {/* Recent Activity */}
-            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm mt-6">
+            <Card className="bg-white border border-gray-200 shadow-sm mt-6">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-blue-400" />
+                <CardTitle className="text-gray-900 flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-blue-500" />
                   Recent Activity
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-1 bg-green-900/50 rounded">
-                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                  <div className="p-1 bg-green-100 rounded">
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-white">Downloaded JEE Physics notes</p>
-                    <p className="text-xs text-gray-400">2 hours ago</p>
+                    <p className="text-sm text-gray-900">Downloaded JEE Physics notes</p>
+                    <p className="text-xs text-gray-500">2 hours ago</p>
                   </div>
                 </div>
-                <Separator className="bg-gray-700" />
+                <Separator className="bg-gray-200" />
                 <div className="flex items-center gap-3">
-                  <div className="p-1 bg-blue-900/50 rounded">
-                    <BookOpen className="h-4 w-4 text-blue-400" />
+                  <div className="p-1 bg-blue-100 rounded">
+                    <BookOpen className="h-4 w-4 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-white">Enrolled in Math course</p>
-                    <p className="text-xs text-gray-400">1 day ago</p>
+                    <p className="text-sm text-gray-900">Enrolled in Math course</p>
+                    <p className="text-xs text-gray-500">1 day ago</p>
                   </div>
                 </div>
               </CardContent>
