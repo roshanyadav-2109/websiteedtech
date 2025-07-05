@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/use-toast";
@@ -46,7 +45,6 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
   const [level, setLevel] = useState('');
   const [examType, setExamType] = useState('');
   const [studentStatus, setStudentStatus] = useState('');
-  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
 
   // Initialize form with current profile data
   useEffect(() => {
@@ -57,28 +55,31 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
       setLevel(profile.level || '');
       setExamType(profile.exam_type || '');
       setStudentStatus(profile.student_status || '');
-      setSelectedSubjects(profile.subjects || []);
     }
   }, [profile]);
-
-  const competitiveExamSubjects = [
-    'Physics', 'Chemistry', 'Mathematics', 'Biology',
-    'English', 'General Knowledge', 'Reasoning'
-  ];
-
-  const handleSubjectChange = (subject: string, checked: boolean) => {
-    if (checked) {
-      setSelectedSubjects([...selectedSubjects, subject]);
-    } else {
-      setSelectedSubjects(selectedSubjects.filter(s => s !== subject));
-    }
-  };
 
   const handleSave = async () => {
     if (!user) return;
 
     setLoading(true);
     try {
+      // First, save to updated_profiles for history
+      const historyData = {
+        user_id: user.id,
+        student_name: studentName,
+        program_type: programType,
+        branch: programType === 'IITM_BS' ? branch : null,
+        level: programType === 'IITM_BS' ? level : null,
+        exam_type: programType === 'COMPETITIVE_EXAM' ? examType : null,
+        student_status: programType === 'COMPETITIVE_EXAM' ? studentStatus : null,
+        full_name: studentName,
+        email: user.email,
+        role: 'student'
+      };
+
+      await supabase.from('updated_profiles').insert(historyData);
+
+      // Then update the main profiles table
       const updateData: any = {
         student_name: studentName,
         program_type: programType,
@@ -92,10 +93,16 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
         updateData.subjects = null;
       } else if (programType === 'COMPETITIVE_EXAM') {
         updateData.exam_type = examType;
-        updateData.student_status = studentStatus;
-        updateData.subjects = selectedSubjects;
+        // Use consistent status values
+        const statusMap: { [key: string]: string } = {
+          '11th': 'Class 11',
+          '12th': 'Class 12',
+          'Dropper': 'Dropper'
+        };
+        updateData.student_status = statusMap[studentStatus] || studentStatus;
         updateData.branch = null;
         updateData.level = null;
+        updateData.subjects = null;
       }
 
       const { error } = await supabase
@@ -206,6 +213,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                       <SelectValue placeholder="Select level" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="qualifier">Qualifier</SelectItem>
                       <SelectItem value="foundation">Foundation</SelectItem>
                       <SelectItem value="diploma">Diploma</SelectItem>
                       <SelectItem value="degree">Degree</SelectItem>
@@ -251,22 +259,6 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                       <SelectItem value="Dropper">Dropper</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div>
-                  <Label>Subjects of Interest</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {competitiveExamSubjects.map((subject) => (
-                      <div key={subject} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={subject}
-                          checked={selectedSubjects.includes(subject)}
-                          onCheckedChange={(checked) => handleSubjectChange(subject, !!checked)}
-                        />
-                        <Label htmlFor={subject} className="text-sm">{subject}</Label>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </CardContent>
             </Card>

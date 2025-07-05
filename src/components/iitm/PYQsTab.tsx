@@ -6,7 +6,6 @@ import { Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminAddButton from "@/components/admin/AdminAddButton";
-import { ShimmerButton } from "../ui/shimmer-button";
 import { useIITMBranchPyqs } from "./hooks/useIITMBranchPyqs";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 
@@ -130,16 +129,15 @@ const PYQsTab = () => {
                 )}
               </CardHeader>
               <CardFooter className="flex justify-between">
-                <ShimmerButton
+                <Button
+                  variant="download"
                   onClick={() => handleDownloadClick(pyq.id, pyq.file_link || undefined)}
-                  background="rgba(26, 86, 219, 0.8)"
-                  borderRadius="var(--radius)"
                   disabled={!pyq.file_link}
+                  className="flex items-center gap-2"
                 >
-                  <span className="flex items-center text-white">
-                      <Download className="h-4 w-4 mr-2" /> Download
-                  </span>
-                </ShimmerButton>
+                  <Download className="h-4 w-4" />
+                  Download
+                </Button>
                 <div className="flex items-center">
                   <span className="text-sm text-gray-500">{downloadCounts[pyq.id] || pyq.downloads || 0}</span>
                   <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
