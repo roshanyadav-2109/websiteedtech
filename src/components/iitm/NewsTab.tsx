@@ -1,58 +1,20 @@
 
-import React, { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
-
-interface News {
-  id: string;
-  title: string;
-  description: string;
-  content: string;
-  exam_type: string;
-  tag: string;
-  date_time: string;
-  is_featured: boolean;
-  is_important: boolean;
-  branch: string;
-  level: string;
-  button_text: string | null;
-  button_url: string | null;
-}
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 
 const NewsTab = () => {
-  const [news, setNews] = useState<News[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const { newsUpdates, contentLoading } = useBackend();
+  const [expandedItems, setExpandedItems] = React.useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const { data, error } = await supabase
-          .from('news_updates')
-          .select('*')
-          .eq('is_active', true)
-          .or('exam_type.eq.IITM_BS,exam_type.is.null')
-          .order('date_time', { ascending: false });
-
-        if (error) throw error;
-        setNews(data || []);
-      } catch (error: any) {
-        setError("Failed to fetch news updates. Please try again later.");
-        console.error("Error fetching news updates:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchNews();
-  }, []);
+  // Filter news for IITM BS
+  const iitmNews = newsUpdates.filter(news => 
+    news.exam_type === 'IITM_BS' || news.exam_type === 'IITM BS' || !news.exam_type
+  );
 
   const toggleExpanded = (id: string) => {
     const newExpanded = new Set(expandedItems);
@@ -64,26 +26,22 @@ const NewsTab = () => {
     setExpandedItems(newExpanded);
   };
 
-  if (isLoading) {
+  if (contentLoading) {
     return (
       <div className="flex justify-center items-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
       </div>
     );
   }
-
-  if (error) {
-    return <div className="text-center py-8 text-red-500">{error}</div>;
-  }
   
   return (
     <div className="space-y-4">
-      {news.length === 0 ? (
+      {iitmNews.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-gray-600">No news updates available for IITM BS at the moment.</p>
         </div>
       ) : (
-        news.map((newsItem) => (
+        iitmNews.map((newsItem) => (
           <Card key={newsItem.id}>
             <Collapsible onOpenChange={() => toggleExpanded(newsItem.id)}>
               <CardHeader>

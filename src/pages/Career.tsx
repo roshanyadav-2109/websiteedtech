@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -27,8 +28,16 @@ import { useBackend } from "@/components/BackendIntegratedWrapper";
 const Career = () => {
   const { jobs, contentLoading } = useBackend();
 
-  // Filter active jobs with real-time updates
-  const openings = jobs.filter(job => job.is_active);
+  // Filter active jobs with real-time updates - Fix JSON handling
+  const openings = jobs.filter(job => job.is_active).map(job => ({
+    ...job,
+    // Ensure requirements is always an array
+    requirements: Array.isArray(job.requirements) ? job.requirements : 
+                 typeof job.requirements === 'string' ? [job.requirements] : [],
+    // Ensure skills is always an array  
+    skills: Array.isArray(job.skills) ? job.skills :
+           typeof job.skills === 'string' ? [job.skills] : []
+  }));
 
   // Career email subscription form
   const [email, setEmail] = useState("");
@@ -181,6 +190,17 @@ const Career = () => {
                           {job.description && (
                             <div className="pt-2">
                               <p className="text-sm text-gray-600 mb-2">{job.description}</p>
+                            </div>
+                          )}
+
+                          {job.requirements && job.requirements.length > 0 && (
+                            <div className="pt-2">
+                              <h4 className="text-sm font-semibold mb-1">Requirements:</h4>
+                              <ul className="text-xs text-gray-600 list-disc list-inside">
+                                {job.requirements.slice(0, 3).map((req, index) => (
+                                  <li key={index}>{req}</li>
+                                ))}
+                              </ul>
                             </div>
                           )}
                         </div>

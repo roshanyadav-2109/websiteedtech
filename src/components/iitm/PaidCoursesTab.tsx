@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CourseCardSkeleton from "@/components/courses/CourseCardSkeleton";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import CourseFilters from "./CourseFilters";
@@ -10,7 +10,7 @@ const PaidCoursesTab = () => {
   const [level, setLevel] = useState("all");
   const { courses, contentLoading } = useBackend();
 
-  // Filter IITM courses with real-time updates
+  // Filter IITM courses with real-time updates - handle both variations
   const iitmCourses = courses.filter(course => {
     return course.exam_category === 'IITM BS' || course.exam_category === 'IITM_BS';
   });

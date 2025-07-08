@@ -22,9 +22,16 @@ const Courses = () => {
     { id: "JEE", name: "JEE" }
   ];
 
+  // Real-time filtering based on selected category
   const filteredCourses = selectedCategory === "all" 
     ? courses 
-    : courses.filter(course => course.exam_category === selectedCategory);
+    : courses.filter(course => {
+        // Handle both "IITM BS" and "IITM_BS" variations
+        if (selectedCategory === "IITM BS") {
+          return course.exam_category === "IITM BS" || course.exam_category === "IITM_BS";
+        }
+        return course.exam_category === selectedCategory;
+      });
 
   return (
     <>
