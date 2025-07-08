@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CourseCardSkeleton from "@/components/courses/CourseCardSkeleton";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 import CourseFilters from "./CourseFilters";
@@ -10,14 +10,17 @@ const PaidCoursesTab = () => {
   const [level, setLevel] = useState("all");
   const { courses, contentLoading } = useBackend();
 
-  const iitmCourses = courses.filter(course => course.exam_category === 'IITM BS');
+  // Filter IITM courses with real-time updates
+  const iitmCourses = courses.filter(course => {
+    return course.exam_category === 'IITM BS' || course.exam_category === 'IITM_BS';
+  });
   
   const filteredCourses = iitmCourses.filter(course => {
-    const branchSlug = course.branch?.toLowerCase().replace(' ', '-') || '';
+    const branchSlug = course.branch?.toLowerCase().replace(/\s+/g, '-') || '';
     const levelSlug = course.level?.toLowerCase() || '';
 
-    const branchMatch = branch === "all" || branchSlug === branch;
-    const levelMatch = level === "all" || levelSlug === level;
+    const branchMatch = branch === "all" || branchSlug === branch || course.branch === branch;
+    const levelMatch = level === "all" || levelSlug === level || course.level === level;
     return branchMatch && levelMatch;
   });
 

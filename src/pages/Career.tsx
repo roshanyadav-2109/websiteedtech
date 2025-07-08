@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import EmailPopup from "@/components/EmailPopup";
@@ -23,47 +22,13 @@ import {
   FileText,
   Loader2
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-
-interface Job {
-  id: string;
-  title: string;
-  job_type: string;
-  location: string;
-  stipend?: string;
-  duration?: string;
-  deadline?: string;
-  skills: string[];
-  description: string;
-  requirements: string[];
-  application_url?: string;
-}
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 
 const Career = () => {
-  const [openings, setOpenings] = useState<Job[]>([]);
-  const [isLoadingJobs, setIsLoadingJobs] = useState(true);
+  const { jobs, contentLoading } = useBackend();
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      setIsLoadingJobs(true);
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('is_active', true)
-        .order('is_featured', { ascending: false })
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error("Error fetching jobs:", error);
-        setOpenings([]);
-      } else {
-        setOpenings(data as Job[]);
-      }
-      setIsLoadingJobs(false);
-    };
-
-    fetchJobs();
-  }, []);
+  // Filter active jobs with real-time updates
+  const openings = jobs.filter(job => job.is_active);
 
   // Career email subscription form
   const [email, setEmail] = useState("");
@@ -75,7 +40,7 @@ const Career = () => {
     
     if (email) {
       setIsSubmitting(true);
-      const emailFieldId = "entry.1179165163"; // Email field ID (confirmed)
+      const emailFieldId = "entry.1179165163";
       
       const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLScvl-2m-e6VBprNctakB4a8kzEvaOZCdN-LxTxJ2qGGOKTzZA/formResponse";
       const formUrl = `${baseUrl}?${emailFieldId}=${encodeURIComponent(email)}`;
@@ -108,10 +73,7 @@ const Career = () => {
     e.preventDefault();
     setVerifying(true);
     
-    // Simulated verification logic - in a real app, this would be an API call
     setTimeout(() => {
-      // This is just a mockup behavior 
-      // In a real implementation, this would be a check against a database
       if (empId === "UI12345" && empName.toLowerCase() === "john doe") {
         setVerificationResult("success");
       } else {
@@ -166,7 +128,7 @@ const Career = () => {
               </p>
             </div>
 
-            {isLoadingJobs ? (
+            {contentLoading ? (
               <div className="flex justify-center items-center py-12">
                 <Loader2 className="h-12 w-12 animate-spin text-royal" />
               </div>
@@ -184,7 +146,7 @@ const Career = () => {
                         <div className="flex justify-between items-start">
                           <div>
                             <CardTitle className="text-xl">{job.title}</CardTitle>
-                            <CardDescription className="mt-1">Unknown IITians</CardDescription>
+                            <CardDescription className="mt-1">{job.company}</CardDescription>
                           </div>
                           <Badge variant={job.job_type === "Remote" ? "outline" : "secondary"} className="bg-royal/10 text-royal">
                             {job.job_type}
@@ -219,16 +181,6 @@ const Career = () => {
                           {job.description && (
                             <div className="pt-2">
                               <p className="text-sm text-gray-600 mb-2">{job.description}</p>
-                            </div>
-                          )}
-                          
-                          {job.skills && job.skills.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {job.skills.map((skill, index) => (
-                                <Badge key={index} variant="outline" className="bg-gray-100 text-gray-800">
-                                  {skill}
-                                </Badge>
-                              ))}
                             </div>
                           )}
                         </div>

@@ -1,7 +1,8 @@
+
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useDownloadHandler } from '@/hooks/useDownloadHandler';
-import { useContentManagement } from '@/hooks/useContentManagement';
+import { useRealtimeContentManagement } from '@/hooks/useRealtimeContentManagement';
 import { Course } from '@/components/admin/courses/types';
 
 interface BackendContextType {
@@ -15,19 +16,14 @@ interface BackendContextType {
   notes: any[];
   pyqs: any[];
   courses: Course[];
+  importantDates: any[];
+  newsUpdates: any[];
+  studyGroups: any[];
+  jobs: any[];
+  communities: any[];
   contentLoading: boolean;
-  addNote: (noteData: any) => Promise<boolean>;
-  addPyq: (pyqData: any) => Promise<boolean>;
-  createCourse: (courseData: any) => Promise<void>;
-  deleteNote: (noteId: string) => Promise<boolean>;
-  deletePyq: (pyqId: string) => Promise<boolean>;
-  deleteCourse: (courseId: string) => Promise<void>;
-  updateNote: (noteId: string, updateData: any) => Promise<boolean>;
-  updatePyq: (pyqId: string, updateData: any) => Promise<boolean>;
-  updateCourse: (courseId: string, updateData: any) => Promise<void>;
-  refreshNotes: () => Promise<void>;
-  refreshPyqs: () => Promise<void>;
-  refreshCourses: () => Promise<void>;
+  getFilteredContent: (profile: any) => any;
+  refreshAll: () => Promise<void>;
 }
 
 const BackendContext = createContext<BackendContextType | undefined>(undefined);
@@ -48,30 +44,28 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
   const { isAdmin, isSuperAdmin, isLoading: isAdminLoading } = useAuth();
   const { handleDownload, downloadCounts, updateDownloadCount, isInitialized: isDownloadCountsInitialized } = useDownloadHandler();
   
-  // UseContentManagement now fetches notes/pyqs/courses with is_active filtering
   const {
     notes,
     pyqs,
     courses,
+    importantDates,
+    newsUpdates,
+    studyGroups,
+    jobs,
+    communities,
     loading: contentLoading,
-    addNote,
-    addPyq,
-    createCourse,
-    deleteNote,
-    deletePyq,
-    deleteCourse,
-    updateNote,
-    updatePyq,
-    updateCourse,
-    refreshNotes,
-    refreshPyqs,
-    refreshCourses
-  } = useContentManagement();
+    getFilteredContent,
+    refreshAll
+  } = useRealtimeContentManagement();
 
   console.log('BackendIntegratedWrapper - Admin status:', { isAdmin, isSuperAdmin, isAdminLoading });
-  console.log('BackendIntegratedWrapper - Download counts initialized:', isDownloadCountsInitialized);
+  console.log('BackendIntegratedWrapper - Content loaded:', { 
+    notes: notes.length, 
+    pyqs: pyqs.length, 
+    courses: courses.length,
+    jobs: jobs.length
+  });
 
-  // context value
   const contextValue: BackendContextType = {
     isAdmin,
     isSuperAdmin,
@@ -83,19 +77,14 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     notes,
     pyqs,
     courses,
+    importantDates,
+    newsUpdates,
+    studyGroups,
+    jobs,
+    communities,
     contentLoading,
-    addNote,
-    addPyq,
-    createCourse,
-    deleteNote,
-    deletePyq,
-    deleteCourse,
-    updateNote,
-    updatePyq,
-    updateCourse,
-    refreshNotes,
-    refreshPyqs,
-    refreshCourses
+    getFilteredContent,
+    refreshAll
   };
 
   return (

@@ -51,7 +51,16 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
     if (profile) {
       setStudentName(profile.student_name || '');
       setProgramType(profile.program_type || '');
-      setBranch(profile.branch || '');
+      
+      // Map database branch values to display values
+      if (profile.branch === 'data-science') {
+        setBranch('Data Science and Applications');
+      } else if (profile.branch === 'electronic-systems') {
+        setBranch('Electronic Systems');
+      } else {
+        setBranch(profile.branch || '');
+      }
+      
       setLevel(profile.level || '');
       setExamType(profile.exam_type || '');
       setStudentStatus(profile.student_status || '');
@@ -63,12 +72,20 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
 
     setLoading(true);
     try {
+      // Map display branch values to database values
+      let dbBranch = branch;
+      if (branch === 'Data Science and Applications') {
+        dbBranch = 'data-science';
+      } else if (branch === 'Electronic Systems') {
+        dbBranch = 'electronic-systems';
+      }
+
       // First, save to updated_profiles for history
       const historyData = {
         user_id: user.id,
         student_name: studentName,
         program_type: programType,
-        branch: programType === 'IITM_BS' ? branch : null,
+        branch: programType === 'IITM_BS' ? dbBranch : null,
         level: programType === 'IITM_BS' ? level : null,
         exam_type: programType === 'COMPETITIVE_EXAM' ? examType : null,
         student_status: programType === 'COMPETITIVE_EXAM' ? studentStatus : null,
@@ -77,35 +94,29 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
         role: 'student'
       };
 
-      await supabase.from('updated_profiles').insert(historyData);
+      const { error: historyError } = await supabase
+        .from('updated_profiles')
+        .insert(historyData);
 
-      // Then update the main profiles table with proper branch mapping
+      if (historyError) {
+        console.warn('History insert failed:', historyError);
+      }
+
+      // Then update the main profiles table
       const updateData: any = {
         student_name: studentName,
         program_type: programType,
       };
 
       if (programType === 'IITM_BS') {
-        // Map the branch values correctly for the database
-        const branchMapping: { [key: string]: string } = {
-          'Data Science and Applications': 'data-science',
-          'Electronic Systems': 'electronic-systems'
-        };
-        
-        updateData.branch = branchMapping[branch] || branch;
+        updateData.branch = dbBranch;
         updateData.level = level;
         updateData.exam_type = null;
         updateData.student_status = null;
         updateData.subjects = null;
       } else if (programType === 'COMPETITIVE_EXAM') {
         updateData.exam_type = examType;
-        // Use consistent status values
-        const statusMap: { [key: string]: string } = {
-          '11th': 'Class 11',
-          '12th': 'Class 12',
-          'Dropper': 'Dropper'
-        };
-        updateData.student_status = statusMap[studentStatus] || studentStatus;
+        updateData.student_status = studentStatus;
         updateData.branch = null;
         updateData.level = null;
         updateData.subjects = null;
@@ -265,8 +276,8 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="11th">11th</SelectItem>
-                      <SelectItem value="12th">12th</SelectItem>
+                      <SelectItem value="Class 11">Class 11</SelectItem>
+                      <SelectItem value="Class 12">Class 12</SelectItem>
                       <SelectItem value="Dropper">Dropper</SelectItem>
                     </SelectContent>
                   </Select>

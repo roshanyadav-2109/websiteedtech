@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/components/ui/use-toast";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 import { 
   User, 
   BookOpen, 
@@ -31,50 +32,23 @@ interface UserProfile {
   student_name?: string;
 }
 
-interface ContentItem {
-  id: string;
-  title: string;
-  description?: string;
-  created_at: string;
-}
-
-interface Community {
-  id: string;
-  name: string;
-  description?: string;
-  group_type?: string;
-  invite_link?: string;
-  created_at: string;
-  exam_type?: string;
-  level?: string;
-  branch?: string;
-  subject?: string;
-  class_level?: string;
-}
-
 const ModernDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { getFilteredContent, contentLoading } = useBackend();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [notes, setNotes] = useState<ContentItem[]>([]);
-  const [pyqs, setPyqs] = useState<ContentItem[]>([]);
-  const [news, setNews] = useState<ContentItem[]>([]);
-  const [dates, setDates] = useState<ContentItem[]>([]);
-  const [communities, setCommunities] = useState<Community[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Get filtered content based on profile
+  const filteredContent = getFilteredContent(profile);
+  const { notes, pyqs, courses, importantDates, newsUpdates } = filteredContent;
 
   useEffect(() => {
     if (user) {
       fetchUserProfile();
     }
   }, [user]);
-
-  useEffect(() => {
-    if (profile) {
-      fetchPersonalizedContent();
-    }
-  }, [profile]);
 
   const fetchUserProfile = async () => {
     try {
@@ -101,66 +75,6 @@ const ModernDashboard = () => {
     }
   };
 
-  const fetchPersonalizedContent = async () => {
-    if (!profile) return;
-
-    try {
-      // Build filter conditions based on profile
-      let filterConditions: any = {};
-      
-      if (profile.program_type === 'IITM_BS') {
-        filterConditions = {
-          branch: profile.branch,
-          level: profile.level
-        };
-      } else if (profile.program_type === 'COMPETITIVE_EXAM') {
-        filterConditions = {
-          exam_type: profile.exam_type,
-          class_level: profile.student_status
-        };
-      }
-
-      // Fetch filtered content
-      const [notesData, pyqsData, newsData, datesData, communitiesData] = await Promise.all([
-        supabase.from('notes').select('*').match(filterConditions).limit(5),
-        supabase.from('pyqs').select('*').match(filterConditions).limit(5),
-        supabase.from('news_updates').select('*').match(filterConditions).limit(5),
-        supabase.from('important_dates').select('*').match(filterConditions).limit(5),
-        fetchFilteredCommunities()
-      ]);
-
-      setNotes(notesData.data || []);
-      setPyqs(pyqsData.data || []);
-      setNews(newsData.data || []);
-      setDates(datesData.data || []);
-      setCommunities(communitiesData || []);
-
-    } catch (error) {
-      console.error('Error fetching personalized content:', error);
-    }
-  };
-
-  const fetchFilteredCommunities = async () => {
-    if (!profile) return [];
-
-    try {
-      let query = supabase.from('communities').select('*').eq('is_active', true);
-
-      if (profile.program_type === 'IITM_BS') {
-        query = query.or(`group_type.eq.telegram,and(group_type.eq.whatsapp,branch.eq.${profile.branch},level.eq.${profile.level})`);
-      } else if (profile.program_type === 'COMPETITIVE_EXAM') {
-        const subjectFilters = profile.subjects?.map(subject => `subject.eq.${subject}`).join(',') || '';
-        query = query.or(`and(group_type.eq.telegram,exam_type.eq.${profile.exam_type}),and(group_type.eq.whatsapp,exam_type.eq.${profile.exam_type},class_level.eq.${profile.student_status},or(${subjectFilters}))`);
-      }
-
-      const { data } = await query.limit(10);
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching communities:', error);
-      return [];
-    }
-  };
-
   const handleProfileUpdate = (updatedProfile: UserProfile) => {
     setProfile(updatedProfile);
   };
@@ -169,7 +83,8 @@ const ModernDashboard = () => {
     const name = profile?.student_name ? `, ${profile.student_name}` : '';
     
     if (profile?.program_type === 'IITM_BS') {
-      return `Welcome to your IITM BS ${profile.branch} dashboard${name}`;
+      const branchName = profile.branch === 'data-science' ? 'Data Science' : 'Electronic Systems';
+      return `Welcome to your IITM BS ${branchName} dashboard${name}`;
     } else if (profile?.program_type === 'COMPETITIVE_EXAM') {
       return `Welcome to your ${profile.exam_type} preparation dashboard${name}`;
     }
@@ -185,7 +100,7 @@ const ModernDashboard = () => {
     return 'Your personalized learning hub';
   };
 
-  if (loading) {
+  if (loading || contentLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
@@ -245,12 +160,12 @@ const ModernDashboard = () => {
 
           <Card className="bg-white border border-gray-200 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Communities</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Courses</CardTitle>
               <Download className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{communities.length}</div>
-              <p className="text-xs text-gray-500">Study groups</p>
+              <div className="text-2xl font-bold text-gray-900">{courses.length}</div>
+              <p className="text-xs text-gray-500">Available courses</p>
             </CardContent>
           </Card>
 
@@ -260,7 +175,7 @@ const ModernDashboard = () => {
               <Newspaper className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{news.length}</div>
+              <div className="text-2xl font-bold text-gray-900">{newsUpdates.length}</div>
               <p className="text-xs text-gray-500">Latest news</p>
             </CardContent>
           </Card>
@@ -308,7 +223,11 @@ const ModernDashboard = () => {
                         <>
                           <div>
                             <label className="text-sm font-medium text-gray-600">Branch</label>
-                            <p className="mt-1 text-gray-900">{profile.branch || 'Not specified'}</p>
+                            <p className="mt-1 text-gray-900">
+                              {profile.branch === 'data-science' ? 'Data Science and Applications' : 
+                               profile.branch === 'electronic-systems' ? 'Electronic Systems' : 
+                               profile.branch || 'Not specified'}
+                            </p>
                           </div>
                           <div>
                             <label className="text-sm font-medium text-gray-600">Level</label>
@@ -379,7 +298,7 @@ const ModernDashboard = () => {
                     </div>
                   </div>
                 ))}
-                {news.slice(0, 1).map((item) => (
+                {newsUpdates.slice(0, 1).map((item) => (
                   <div key={item.id} className="flex items-center gap-3">
                     <div className="p-1 bg-purple-100 rounded">
                       <Newspaper className="h-4 w-4 text-purple-600" />
@@ -483,9 +402,9 @@ const ModernDashboard = () => {
               </div>
             </CardHeader>
             <CardContent>
-              {news.length > 0 ? (
+              {newsUpdates.length > 0 ? (
                 <div className="space-y-3">
-                  {news.slice(0, 3).map((item) => (
+                  {newsUpdates.slice(0, 3).map((item) => (
                     <div key={item.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                       <p className="font-medium text-sm truncate text-gray-900">{item.title}</p>
                       <div className="flex items-center mt-1 text-xs text-gray-500">
@@ -506,7 +425,7 @@ const ModernDashboard = () => {
         </div>
 
         {/* Important Dates */}
-        {dates.length > 0 && (
+        {importantDates.length > 0 && (
           <Card className="mt-8 hover:shadow-md transition-all duration-300 border border-gray-200">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -518,12 +437,12 @@ const ModernDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {dates.slice(0, 6).map((date) => (
+                {importantDates.slice(0, 6).map((date) => (
                   <div key={date.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                     <p className="font-medium text-sm truncate text-gray-900">{date.title}</p>
                     <div className="flex items-center mt-1 text-xs text-gray-500">
                       <Clock className="h-3 w-3 mr-1" />
-                      {new Date(date.created_at).toLocaleDateString()}
+                      {new Date(date.date_value || date.created_at).toLocaleDateString()}
                     </div>
                   </div>
                 ))}
