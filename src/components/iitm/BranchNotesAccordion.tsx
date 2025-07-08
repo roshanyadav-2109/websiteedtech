@@ -7,11 +7,11 @@ import { Download, FileText, Trash2, Edit } from "lucide-react";
 import { Note } from "./hooks/useIITMBranchNotes";
 import { useAuth } from "@/hooks/useAuth";
 import { useIITMBranchNotesManager } from "./hooks/useIITMBranchNotesManager";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 
 export interface BranchNotesAccordionProps {
   groupedNotes: Record<string, Note[]>;
   level: string;
-  handleDownload: (noteId: string) => void;
   currentSubjects: string[];
   loading: boolean;
   onNotesChange?: () => void;
@@ -20,13 +20,13 @@ export interface BranchNotesAccordionProps {
 const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
   groupedNotes,
   level,
-  handleDownload,
   currentSubjects,
   loading,
   onNotesChange,
 }) => {
   const { isAdmin } = useAuth();
   const { deleteIITMNote } = useIITMBranchNotesManager();
+  const { handleDownload, downloadCounts } = useBackend();
 
   const handleDeleteNote = async (noteId: string, noteTitle: string) => {
     if (!isAdmin) return;
@@ -36,6 +36,12 @@ const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
       if (success && onNotesChange) {
         onNotesChange();
       }
+    }
+  };
+
+  const handleDownloadClick = async (noteId: string, fileUrl?: string) => {
+    if (fileUrl) {
+      await handleDownload(noteId, 'notes', fileUrl);
     }
   };
 
@@ -89,13 +95,14 @@ const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
                       <CardFooter className="flex justify-between pt-0">
                         <Button
                           size="sm"
-                          onClick={() => handleDownload(note.id)}
+                          onClick={() => handleDownloadClick(note.id, note.file_link || undefined)}
                           className="bg-royal hover:bg-royal-dark text-white text-xs"
+                          disabled={!note.file_link}
                         >
                           <Download className="h-3 w-3 mr-1" /> Download
                         </Button>
                         <div className="flex items-center">
-                          <span className="text-xs text-gray-500">{note.downloads}</span>
+                          <span className="text-xs text-gray-500">{downloadCounts[note.id] || note.downloads || 0}</span>
                         </div>
                       </CardFooter>
                     </Card>

@@ -22,11 +22,6 @@ const BranchNotesTab = () => {
     setSpecialization("all");
   }, [branch, level]);
 
-  const handleDownload = (noteId: string) => {
-    console.log(`Downloading note: ${noteId}`);
-    // Actual download logic would go here
-  };
-
   const availableSpecializations = getAvailableSpecializations();
   const currentSubjects = getCurrentSubjects(specialization);
 
@@ -97,7 +92,6 @@ const BranchNotesTab = () => {
         <BranchNotesAccordion
           groupedNotes={groupedNotes}
           level={level}
-          handleDownload={handleDownload}
           currentSubjects={currentSubjects}
           loading={loading}
           onNotesChange={reloadNotes}

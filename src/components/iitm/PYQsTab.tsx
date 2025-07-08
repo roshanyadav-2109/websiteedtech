@@ -4,9 +4,8 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/comp
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminAddButton from "@/components/admin/AdminAddButton";
-import { useIITMBranchPyqs } from "./hooks/useIITMBranchPyqs";
 import { useBackend } from "@/components/BackendIntegratedWrapper";
 
 const PYQsTab = () => {
@@ -15,23 +14,34 @@ const PYQsTab = () => {
   const [examType, setExamType] = useState("quiz1");
   const [year, setYear] = useState("2023");
   
-  const { handleDownload, downloadCounts, updateDownloadCount } = useBackend();
+  const { handleDownload, downloadCounts, pyqs, contentLoading } = useBackend();
   
-  const {
-    pyqs,
-    loading,
-    groupedPyqs,
-    getCurrentSubjects,
-    getAvailableSpecializations,
-  } = useIITMBranchPyqs(branch, level, examType);
+  // Filter PYQs for IITM BS with real-time updates
+  const iitmPyqs = pyqs.filter(pyq => {
+    return (pyq.exam_type === 'IITM_BS' || pyq.exam_type === 'IITM BS') &&
+           pyq.branch === branch &&
+           pyq.level === level;
+  });
 
-  // Get available years from the fetched PYQs
-  const availableYears = [...new Set(pyqs.map(pyq => pyq.year.toString()))].sort().reverse();
+  // Get available years from the filtered PYQs
+  const availableYears = [...new Set(iitmPyqs.map(pyq => pyq.year?.toString() || '2023'))].sort().reverse();
 
-  // Filter PYQs by selected year
-  const filteredPYQs = pyqs.filter(pyq =>
-    pyq.year.toString() === year
-  );
+  // Filter PYQs by selected year and exam type
+  const filteredPYQs = iitmPyqs.filter(pyq => {
+    const yearMatch = pyq.year?.toString() === year;
+    // For qualifier level, don't filter by exam type
+    if (level === "qualifier") {
+      return yearMatch;
+    }
+    return yearMatch;
+  });
+
+  // Set default year if available years change
+  useEffect(() => {
+    if (availableYears.length > 0 && !availableYears.includes(year)) {
+      setYear(availableYears[0]);
+    }
+  }, [availableYears, year]);
 
   const handleDownloadClick = async (pyqId: string, fileUrl?: string) => {
     await handleDownload(pyqId, 'pyqs', fileUrl);
@@ -108,7 +118,7 @@ const PYQsTab = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        {loading ? (
+        {contentLoading ? (
           <div className="col-span-3 flex justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-royal"></div>
           </div>
@@ -140,11 +150,11 @@ const PYQsTab = () => {
                   Download
                 </ShimmerButton>
                 <div className="flex items-center">
-                  <span className="text-sm text-gray-500">{downloadCounts[pyq.id] || pyq.downloads || 0}</span>
+                  <span className="text-sm text-gray-500">{downloadCounts[pyq.id] || pyq.download_count || 0}</span>
                   <div className="ml-2 bg-gray-200 h-1.5 w-16 rounded-full overflow-hidden">
                     <div 
                       className="bg-royal h-full rounded-full" 
-                      style={{ width: `${Math.min(100, ((downloadCounts[pyq.id] || pyq.downloads || 0) / 100) * 100)}%` }}
+                      style={{ width: `${Math.min(100, ((downloadCounts[pyq.id] || pyq.download_count || 0) / 100) * 100)}%` }}
                     ></div>
                   </div>
                 </div>
@@ -153,7 +163,7 @@ const PYQsTab = () => {
           ))
         )}
         
-        {!loading && filteredPYQs.length === 0 && (
+        {!contentLoading && filteredPYQs.length === 0 && (
           <div className="col-span-3 text-center py-8 text-gray-500">
             No papers available for this selection. Please try another filter combination.
           </div>

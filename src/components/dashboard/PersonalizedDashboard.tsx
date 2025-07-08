@@ -1,442 +1,288 @@
-import React, { useState, useEffect } from 'react';
+
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { BookOpen, FileText, Calendar, Users, TrendingUp, Clock, Download, ExternalLink } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { BookOpen, FileText, Calendar, Newspaper, Users, TrendingUp, Clock, Settings, Edit, User } from "lucide-react";
-import { Link } from "react-router-dom";
-import ProfileEditModal from "./ProfileEditModal";
+import { useBackend } from "@/components/BackendIntegratedWrapper";
 
-interface UserProfile {
-  program_type: string;
-  branch?: string;
-  level?: string;
-  exam_type?: string;
-  student_status?: string;
-  subjects?: string[];
-  student_name?: string;
+interface PersonalizedDashboardProps {
+  profile: any;
 }
 
-interface ContentItem {
-  id: string;
-  title: string;
-  description?: string;
-  created_at: string;
-}
-
-interface Community {
-  id: string;
-  name: string;
-  description?: string;
-  group_type?: string;
-  invite_link?: string;
-  created_at: string;
-  exam_type?: string;
-  level?: string;
-  branch?: string;
-  subject?: string;
-  class_level?: string;
-}
-
-const PersonalizedDashboard: React.FC = () => {
+const PersonalizedDashboard: React.FC<PersonalizedDashboardProps> = ({ profile }) => {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [notes, setNotes] = useState<ContentItem[]>([]);
-  const [pyqs, setPyqs] = useState<ContentItem[]>([]);
-  const [news, setNews] = useState<ContentItem[]>([]);
-  const [dates, setDates] = useState<ContentItem[]>([]);
-  const [communities, setCommunities] = useState<Community[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const { getFilteredContent, courses, notes, pyqs, importantDates, newsUpdates, communities, handleDownload } = useBackend();
 
-  useEffect(() => {
-    if (user) {
-      fetchUserProfile();
-    }
-  }, [user]);
+  // Get filtered content based on user profile
+  const filteredContent = getFilteredContent(profile);
 
-  useEffect(() => {
-    if (profile) {
-      fetchPersonalizedContent();
-    }
-  }, [profile]);
+  // For IITM BS users, further filter by branch and level
+  const getIITMFilteredContent = () => {
+    if (profile?.program_type !== 'IITM_BS') return filteredContent;
 
-  const fetchUserProfile = async () => {
-    try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('program_type, branch, level, exam_type, student_status, subjects, student_name')
-        .eq('id', user?.id)
-        .single();
-
-      if (data) {
-        setProfile(data);
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
+    return {
+      ...filteredContent,
+      courses: courses.filter(course => 
+        course.exam_category === 'IITM BS' && 
+        course.branch === profile.branch && 
+        course.level === profile.level
+      ),
+      notes: notes.filter(note => 
+        (note.exam_type === 'IITM_BS' || note.exam_type === 'IITM BS') &&
+        note.branch === profile.branch && 
+        note.level === profile.level
+      ),
+      pyqs: pyqs.filter(pyq => 
+        (pyq.exam_type === 'IITM_BS' || pyq.exam_type === 'IITM BS') &&
+        pyq.branch === profile.branch && 
+        pyq.level === profile.level
+      ),
+      importantDates: importantDates.filter(date => 
+        (date.exam_type === 'IITM_BS' || date.exam_type === 'IITM BS') &&
+        date.branch === profile.branch && 
+        date.level === profile.level
+      ),
+      newsUpdates: newsUpdates.filter(news => 
+        (news.exam_type === 'IITM_BS' || news.exam_type === 'IITM BS') &&
+        news.branch === profile.branch && 
+        news.level === profile.level
+      ),
+      communities: communities.filter(community => 
+        (community.exam_type === 'IITM_BS' || community.exam_type === 'IITM BS') &&
+        community.branch === profile.branch && 
+        community.level === profile.level
+      )
+    };
   };
 
-  const fetchPersonalizedContent = async () => {
-    if (!profile) return;
+  const personalizedContent = getIITMFilteredContent();
 
-    setIsLoading(true);
-
-    try {
-      // Build filter conditions based on profile
-      let filterConditions: any = {};
-      
-      if (profile.program_type === 'IITM_BS') {
-        filterConditions = {
-          branch: profile.branch,
-          level: profile.level
-        };
-      } else if (profile.program_type === 'COMPETITIVE_EXAM') {
-        filterConditions = {
-          exam_type: profile.exam_type,
-          class_level: profile.student_status
-        };
-      }
-
-      // Fetch filtered content
-      const [notesData, pyqsData, newsData, datesData, communitiesData] = await Promise.all([
-        supabase.from('notes').select('*').match(filterConditions).limit(5),
-        supabase.from('pyqs').select('*').match(filterConditions).limit(5),
-        supabase.from('news_updates').select('*').match(filterConditions).limit(5),
-        supabase.from('important_dates').select('*').match(filterConditions).limit(5),
-        fetchFilteredCommunities()
-      ]);
-
-      setNotes(notesData.data || []);
-      setPyqs(pyqsData.data || []);
-      setNews(newsData.data || []);
-      setDates(datesData.data || []);
-      setCommunities(communitiesData || []);
-
-    } catch (error) {
-      console.error('Error fetching personalized content:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDownloadClick = async (contentId: string, fileUrl?: string, type: 'notes' | 'pyqs' = 'notes') => {
+    await handleDownload(contentId, type, fileUrl);
   };
-
-  const fetchFilteredCommunities = async () => {
-    if (!profile) return [];
-
-    try {
-      let query = supabase.from('communities').select('*').eq('is_active', true);
-
-      if (profile.program_type === 'IITM_BS') {
-        // Show Telegram groups for all IITM_BS students + filtered WhatsApp groups
-        query = query.or(`group_type.eq.telegram,and(group_type.eq.whatsapp,branch.eq.${profile.branch},level.eq.${profile.level})`);
-      } else if (profile.program_type === 'COMPETITIVE_EXAM') {
-        // Show Telegram groups for exam type + filtered WhatsApp groups by subjects
-        const subjectFilters = profile.subjects?.map(subject => `subject.eq.${subject}`).join(',') || '';
-        query = query.or(`and(group_type.eq.telegram,exam_type.eq.${profile.exam_type}),and(group_type.eq.whatsapp,exam_type.eq.${profile.exam_type},class_level.eq.${profile.student_status},or(${subjectFilters}))`);
-      }
-
-      const { data } = await query.limit(10);
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching communities:', error);
-      return [];
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-800 mx-auto"></div>
-          <p className="text-gray-600 text-lg">Loading your personalized dashboard...</p>
-        </div>
-      </div>
-    );
-  }
 
   const getWelcomeMessage = () => {
-    const name = profile?.student_name ? `, ${profile.student_name}` : '';
-    
     if (profile?.program_type === 'IITM_BS') {
-      return `Welcome to your IITM BS ${profile.branch} dashboard${name}`;
+      return `Welcome back! Here's your personalized IITM BS ${profile.branch?.replace('-', ' ')} - ${profile.level} dashboard.`;
     } else if (profile?.program_type === 'COMPETITIVE_EXAM') {
-      return `Welcome to your ${profile.exam_type} preparation dashboard${name}`;
+      return `Welcome back! Here's your personalized ${profile.exam_type} preparation dashboard.`;
     }
-    return `Welcome to your personalized dashboard${name}`;
+    return "Welcome back! Here's your personalized learning dashboard.";
   };
 
-  const getSubtitle = () => {
+  const getProgramBadge = () => {
     if (profile?.program_type === 'IITM_BS') {
-      return `${profile.level} level • Personalized content for your academic journey`;
+      return (
+        <div className="flex gap-2">
+          <Badge variant="default" className="bg-royal text-white">IITM BS</Badge>
+          <Badge variant="outline">{profile.branch?.replace('-', ' ')}</Badge>
+          <Badge variant="outline">{profile.level}</Badge>
+        </div>
+      );
     } else if (profile?.program_type === 'COMPETITIVE_EXAM') {
-      return `${profile.student_status} • Tailored resources for exam success`;
+      return (
+        <div className="flex gap-2">
+          <Badge variant="default" className="bg-green-600 text-white">{profile.exam_type}</Badge>
+          <Badge variant="outline">Class {profile.student_status}</Badge>
+        </div>
+      );
     }
-    return 'Your personalized learning hub';
+    return null;
   };
+
+  // Get upcoming important dates (next 5)
+  const upcomingDates = personalizedContent.importantDates
+    .filter(date => new Date(date.date_value) >= new Date())
+    .sort((a, b) => new Date(a.date_value).getTime() - new Date(b.date_value).getTime())
+    .slice(0, 5);
+
+  // Get recent news (last 3)
+  const recentNews = personalizedContent.newsUpdates
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 3);
 
   return (
-    <div className="space-y-8 animate-fade-in bg-white min-h-screen">
-      {/* Modern Welcome Section */}
-      <div className="relative overflow-hidden">
-        <Card className="border-0 shadow-sm bg-gray-50">
-          <CardHeader className="pb-6 pt-8">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <CardTitle className="text-3xl font-bold text-gray-900">
-                  {getWelcomeMessage()}
-                </CardTitle>
-                <CardDescription className="text-lg text-gray-600">
-                  {getSubtitle()}
-                </CardDescription>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center bg-green-50 px-3 py-2 rounded-lg border border-green-200">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                  <span className="text-sm font-medium text-green-700">Active</span>
-                </div>
-                <Button 
-                  onClick={() => setShowProfileEdit(true)}
-                  variant="outline" 
-                  size="sm"
-                  className="flex items-center gap-2 hover:bg-gray-100"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span className="hidden md:inline">Edit Profile</span>
-                </Button>
-              </div>
+    <div className="space-y-6">
+      {/* Welcome Section */}
+      <Card className="bg-gradient-to-r from-royal/10 to-royal/5 border-royal/20">
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-2xl">Hello, {profile?.full_name || user?.email}!</CardTitle>
+              <CardDescription className="text-lg mt-2">
+                {getWelcomeMessage()}
+              </CardDescription>
             </div>
-          </CardHeader>
-        </Card>
-      </div>
+            {getProgramBadge()}
+          </div>
+        </CardHeader>
+      </Card>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Notes</p>
-                <p className="text-2xl font-bold text-gray-900">{notes.length}</p>
-              </div>
-              <BookOpen className="h-8 w-8 text-gray-400" />
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Available Courses</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{personalizedContent.courses.length}</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">PYQs</p>
-                <p className="text-2xl font-bold text-gray-900">{pyqs.length}</p>
-              </div>
-              <FileText className="h-8 w-8 text-gray-400" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Study Notes</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{personalizedContent.notes.length}</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Communities</p>
-                <p className="text-2xl font-bold text-gray-900">{communities.length}</p>
-              </div>
-              <Users className="h-8 w-8 text-gray-400" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Practice Papers</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{personalizedContent.pyqs.length}</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border border-gray-200 hover:shadow-md transition-all duration-300">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm font-medium">Updates</p>
-                <p className="text-2xl font-bold text-gray-900">{news.length}</p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-gray-400" />
-            </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Communities</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{personalizedContent.communities.length}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* Recent Notes */}
-        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <BookOpen className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Recent Notes</CardTitle>
-              </div>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Important Dates */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Upcoming Important Dates
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {notes.length > 0 ? (
+            {upcomingDates.length > 0 ? (
               <div className="space-y-3">
-                {notes.slice(0, 3).map((note) => (
-                  <div key={note.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate text-gray-900">{note.title}</p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(note.created_at).toLocaleDateString()}
+                {upcomingDates.map((date) => (
+                  <div key={date.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-medium">{date.title}</p>
+                      <p className="text-sm text-muted-foreground">{date.description}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">{new Date(date.date_value).toLocaleDateString()}</p>
+                      {date.category && <Badge variant="outline" className="text-xs">{date.category}</Badge>}
                     </div>
                   </div>
                 ))}
-                <Link to="/exam-preparation">
-                  <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
-                    View All Notes
-                  </Button>
-                </Link>
               </div>
             ) : (
-              <p className="text-gray-500 text-sm text-center py-4">No notes available yet</p>
+              <p className="text-muted-foreground">No upcoming dates available.</p>
             )}
           </CardContent>
         </Card>
 
-        {/* Recent PYQs */}
-        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <FileText className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Recent PYQs</CardTitle>
-              </div>
-            </div>
+        {/* Recent News */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Recent News & Updates
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {pyqs.length > 0 ? (
+            {recentNews.length > 0 ? (
               <div className="space-y-3">
-                {pyqs.slice(0, 3).map((pyq) => (
-                  <div key={pyq.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate text-gray-900">{pyq.title}</p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(pyq.created_at).toLocaleDateString()}
+                {recentNews.map((news) => (
+                  <div key={news.id} className="p-3 border rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium">{news.title}</h4>
+                        <p className="text-sm text-muted-foreground mt-1">{news.description}</p>
+                      </div>
+                      {news.is_important && <Badge className="bg-red-500 text-white">Important</Badge>}
                     </div>
-                  </div>
-                ))}
-                <Link to="/exam-preparation">
-                  <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
-                    View All PYQs
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm text-center py-4">No PYQs available yet</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Latest News */}
-        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Newspaper className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Latest News</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {news.length > 0 ? (
-              <div className="space-y-3">
-                {news.slice(0, 3).map((item) => (
-                  <div key={item.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate text-gray-900">{item.title}</p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(item.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))}
-                <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
-                  View All News
-                </Button>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm text-center py-4">No news updates yet</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Important Dates */}
-        <Card className="hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Important Dates</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {dates.length > 0 ? (
-              <div className="space-y-3">
-                {dates.slice(0, 3).map((date) => (
-                  <div key={date.id} className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <p className="font-medium text-sm truncate text-gray-900">{date.title}</p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(date.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                ))}
-                <Button variant="outline" size="sm" className="w-full mt-3 hover:bg-gray-50">
-                  View All Dates
-                </Button>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm text-center py-4">No important dates yet</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Study Communities */}
-        <Card className="lg:col-span-2 hover:shadow-md transition-all duration-300 border border-gray-200">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Users className="h-5 w-5 text-gray-600 mr-2" />
-                <CardTitle className="text-lg text-gray-900">Your Study Communities</CardTitle>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {communities.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {communities.slice(0, 4).map((community) => (
-                  <div key={community.id} className="p-4 border border-gray-200 rounded-xl hover:shadow-sm transition-all duration-300 bg-white">
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="font-semibold text-sm text-gray-900">{community.name}</p>
-                      <span className={`px-3 py-1 text-xs rounded-full font-medium ${
-                        community.group_type === 'telegram' 
-                          ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                          : 'bg-green-50 text-green-700 border border-green-200'
-                      }`}>
-                        {community.group_type === 'telegram' ? 'Telegram' : 'WhatsApp'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-600 leading-relaxed">{community.description}</p>
+                    {news.button_text && news.button_url && (
+                      <Button size="sm" variant="outline" className="mt-2" asChild>
+                        <a href={news.button_url} target="_blank" rel="noopener noreferrer">
+                          {news.button_text}
+                          <ExternalLink className="h-3 w-3 ml-1" />
+                        </a>
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm text-center py-8">No study communities available yet</p>
+              <p className="text-muted-foreground">No recent news available.</p>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Profile Edit Modal */}
-      <ProfileEditModal 
-        isOpen={showProfileEdit}
-        onClose={() => setShowProfileEdit(false)}
-        profile={profile}
-        onProfileUpdate={setProfile}
-      />
+      {/* Recent Study Materials */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Study Materials</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Recent Notes */}
+            <div>
+              <h4 className="font-medium mb-3">Latest Notes</h4>
+              {personalizedContent.notes.slice(0, 3).map((note) => (
+                <div key={note.id} className="flex items-center justify-between p-2 border rounded mb-2">
+                  <div>
+                    <p className="text-sm font-medium">{note.title}</p>
+                    <p className="text-xs text-muted-foreground">{note.subject}</p>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleDownloadClick(note.id, note.file_link, 'notes')}
+                    disabled={!note.file_link}
+                  >
+                    <Download className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            {/* Recent PYQs */}
+            <div>
+              <h4 className="font-medium mb-3">Latest Practice Papers</h4>
+              {personalizedContent.pyqs.slice(0, 3).map((pyq) => (
+                <div key={pyq.id} className="flex items-center justify-between p-2 border rounded mb-2">
+                  <div>
+                    <p className="text-sm font-medium">{pyq.title}</p>
+                    <p className="text-xs text-muted-foreground">{pyq.subject} - {pyq.year}</p>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => handleDownloadClick(pyq.id, pyq.file_link, 'pyqs')}
+                    disabled={!pyq.file_link}
+                  >
+                    <Download className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
