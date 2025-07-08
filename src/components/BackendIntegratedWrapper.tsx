@@ -25,16 +25,16 @@ interface BackendContextType {
   contentLoading: boolean;
   getFilteredContent: (profile: any) => any;
   refreshAll: () => Promise<void>;
-  // CRUD operations
+  // CRUD operations - Updated to match actual hook return types
   addNote: (data: any) => Promise<boolean>;
   addPyq: (data: any) => Promise<boolean>;
   deleteNote: (id: string) => Promise<boolean>;
   deletePyq: (id: string) => Promise<boolean>;
   updateNote: (id: string, data: any) => Promise<boolean>;
   updatePyq: (id: string, data: any) => Promise<boolean>;
-  createCourse: (data: any) => Promise<boolean>;
-  updateCourse: (id: string, data: any) => Promise<boolean>;
-  deleteCourse: (id: string) => Promise<boolean>;
+  createCourse: (data: any) => Promise<void>;
+  updateCourse: (id: string, data: any) => Promise<void>;
+  deleteCourse: (id: string) => Promise<void>;
   refreshNotes: () => Promise<void>;
   refreshPyqs: () => Promise<void>;
 }
