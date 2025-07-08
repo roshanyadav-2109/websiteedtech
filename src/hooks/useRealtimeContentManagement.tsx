@@ -19,6 +19,40 @@ export interface ContentItem {
   download_count?: number;
 }
 
+export interface StudyGroup {
+  id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  exam_type?: string;
+  branch?: string;
+  level?: string;
+  class_level?: string;
+  group_type?: string;
+  invite_link?: string;
+  subjects?: string[];
+  created_by?: string;
+  updated_at: string;
+}
+
+export interface Community {
+  id: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  exam_type?: string;
+  branch?: string;
+  level?: string;
+  class_level?: string;
+  group_type: string;
+  group_link: string;
+  subject?: string;
+  is_active?: boolean;
+  member_count?: number;
+  created_by?: string;
+  updated_at: string;
+}
+
 export interface Job {
   id: string;
   title: string;
@@ -43,9 +77,9 @@ export const useRealtimeContentManagement = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [importantDates, setImportantDates] = useState<ContentItem[]>([]);
   const [newsUpdates, setNewsUpdates] = useState<ContentItem[]>([]);
-  const [studyGroups, setStudyGroups] = useState<ContentItem[]>([]);
+  const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [communities, setCommunities] = useState<ContentItem[]>([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -337,14 +371,48 @@ export const useRealtimeContentManagement = () => {
       });
     };
 
+    const filterStudyGroupsByProfile = (groups: StudyGroup[]) => {
+      return groups.filter(group => {
+        if (profile.program_type === 'IITM_BS') {
+          return (
+            group.exam_type === 'IITM_BS' ||
+            (group.branch === profile.branch && group.level === profile.level)
+          );
+        } else if (profile.program_type === 'COMPETITIVE_EXAM') {
+          return (
+            group.exam_type === profile.exam_type ||
+            group.class_level === profile.student_status
+          );
+        }
+        return true;
+      });
+    };
+
+    const filterCommunitiesByProfile = (communities: Community[]) => {
+      return communities.filter(community => {
+        if (profile.program_type === 'IITM_BS') {
+          return (
+            community.exam_type === 'IITM_BS' ||
+            (community.branch === profile.branch && community.level === profile.level)
+          );
+        } else if (profile.program_type === 'COMPETITIVE_EXAM') {
+          return (
+            community.exam_type === profile.exam_type ||
+            community.class_level === profile.student_status
+          );
+        }
+        return true;
+      });
+    };
+
     return {
       notes: filterByProfile(notes),
       pyqs: filterByProfile(pyqs),
       courses: filterCoursesByProfile(courses),
       importantDates: filterByProfile(importantDates),
       newsUpdates: filterByProfile(newsUpdates),
-      studyGroups: filterByProfile(studyGroups),
-      communities: filterByProfile(communities)
+      studyGroups: filterStudyGroupsByProfile(studyGroups),
+      communities: filterCommunitiesByProfile(communities)
     };
   }, [notes, pyqs, courses, importantDates, newsUpdates, studyGroups, communities]);
 

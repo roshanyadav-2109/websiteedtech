@@ -3,6 +3,7 @@ import React, { createContext, useContext, ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useDownloadHandler } from '@/hooks/useDownloadHandler';
 import { useRealtimeContentManagement } from '@/hooks/useRealtimeContentManagement';
+import { useContentManagement } from '@/hooks/useContentManagement';
 import { Course } from '@/components/admin/courses/types';
 
 interface BackendContextType {
@@ -24,6 +25,18 @@ interface BackendContextType {
   contentLoading: boolean;
   getFilteredContent: (profile: any) => any;
   refreshAll: () => Promise<void>;
+  // CRUD operations
+  addNote: (data: any) => Promise<boolean>;
+  addPyq: (data: any) => Promise<boolean>;
+  deleteNote: (id: string) => Promise<boolean>;
+  deletePyq: (id: string) => Promise<boolean>;
+  updateNote: (id: string, data: any) => Promise<boolean>;
+  updatePyq: (id: string, data: any) => Promise<boolean>;
+  createCourse: (data: any) => Promise<boolean>;
+  updateCourse: (id: string, data: any) => Promise<boolean>;
+  deleteCourse: (id: string) => Promise<boolean>;
+  refreshNotes: () => Promise<void>;
+  refreshPyqs: () => Promise<void>;
 }
 
 const BackendContext = createContext<BackendContextType | undefined>(undefined);
@@ -58,6 +71,21 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     refreshAll
   } = useRealtimeContentManagement();
 
+  // Get CRUD operations from content management hook
+  const {
+    addNote,
+    addPyq,
+    deleteNote,
+    deletePyq,
+    updateNote,
+    updatePyq,
+    createCourse,
+    updateCourse,
+    deleteCourse,
+    refreshNotes,
+    refreshPyqs
+  } = useContentManagement();
+
   console.log('BackendIntegratedWrapper - Admin status:', { isAdmin, isSuperAdmin, isAdminLoading });
   console.log('BackendIntegratedWrapper - Content loaded:', { 
     notes: notes.length, 
@@ -84,7 +112,19 @@ export const BackendIntegratedWrapper: React.FC<BackendIntegratedWrapperProps> =
     communities,
     contentLoading,
     getFilteredContent,
-    refreshAll
+    refreshAll,
+    // CRUD operations
+    addNote,
+    addPyq,
+    deleteNote,
+    deletePyq,
+    updateNote,
+    updatePyq,
+    createCourse,
+    updateCourse,
+    deleteCourse,
+    refreshNotes,
+    refreshPyqs
   };
 
   return (
