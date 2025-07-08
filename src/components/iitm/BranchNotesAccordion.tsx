@@ -95,9 +95,9 @@ const BranchNotesAccordion: React.FC<BranchNotesAccordionProps> = ({
                       <CardFooter className="flex justify-between pt-0">
                         <Button
                           size="sm"
-                          onClick={() => handleDownloadClick(note.id, note.file_link || undefined)}
+                          onClick={() => handleDownloadClick(note.id, (note as any).file_link)}
                           className="bg-royal hover:bg-royal-dark text-white text-xs"
-                          disabled={!note.file_link}
+                          disabled={!(note as any).file_link}
                         >
                           <Download className="h-3 w-3 mr-1" /> Download
                         </Button>
