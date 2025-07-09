@@ -44,7 +44,7 @@ const Footer = () => {
               <img
                 src="/lovable-uploads/UI_logo.png"
                 alt="Unknown IITians"
-                className="h-12 w-12 filter brightness-0"
+                className="h-12 w-12 "
               />
               <span className="text-xl font-semibold text-white">Unknown IITians</span>
             </div>
