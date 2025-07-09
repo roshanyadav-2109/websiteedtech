@@ -63,7 +63,7 @@ const Footer = () => {
                   <img 
                     src="https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png" 
                     alt="YouTube" 
-                    className="w-8 h-8 object-contain"
+                    className="w-7 h-7 object-contain"
                   />
                 </a>
                 <a 
@@ -75,7 +75,7 @@ const Footer = () => {
                   <img 
                     src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
                     alt="LinkedIn" 
-                    className="w-8 h-8 object-contain"
+                    className="w-7 h-7object-contain"
                   />
                 </a>
                 <a 
@@ -87,7 +87,7 @@ const Footer = () => {
                   <img 
                     src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
                     alt="Instagram" 
-                    className="w-8 h-8 object-contain"
+                    className="w-7 h-7 object-contain"
                   />
                 </a>
                 <a 
@@ -99,7 +99,7 @@ const Footer = () => {
                   <img 
                     src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
                     alt="WhatsApp" 
-                    className="w-8 h-8 object-contain"
+                    className="w-7 h-7 object-contain"
                   />
                 </a>
                 <a 
@@ -111,7 +111,7 @@ const Footer = () => {
                   <img 
                     src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" 
                     alt="Telegram" 
-                    className="w-8 h-8 object-contain"
+                    className="w-7 h-7 object-contain"
                   />
                 </a>
               </div>
