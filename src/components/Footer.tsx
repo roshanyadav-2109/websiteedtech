@@ -224,13 +224,10 @@ const Footer = () => {
             </p>
             <div className="flex space-x-6">
               <Link to="/privacy-policy" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Privacy
+                Privacy Policy
               </Link>
               <Link to="/terms-of-service" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Terms
-              </Link>
-              <a href="mailto:contact@unknowniitians.com" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Contact
+                Terms of service
               </a>
             </div>
           </div>
