@@ -227,7 +227,7 @@ const Footer = () => {
                 Privacy Policy
               </Link>
               <Link to="/terms-of-service" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Terms of service
+                Terms and Conditions
               </a>
             </div>
           </div>
