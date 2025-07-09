@@ -114,15 +114,14 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MapPin size={16} className="text-royal flex-shrink-0 mt-1" />
                 <span className="text-gray-300 text-sm">
-                  123 Education Street<br />
-                  Mumbai, Maharashtra 400001
+                  New Delhi, Delhi, India <br />
                 </span>
               </div>
             </div>
 
             {/* Compact Newsletter Section */}
             <div className="pt-4 border-t border-gray-700">
-              <h4 className="text-sm font-medium mb-2 text-royal">Stay Updated</h4>
+              <h4 className="text-sm font-medium mb-2 text-white">Stay Updated</h4>
               <form onSubmit={handleNewsletterSubmit} className="space-y-2">
                 <Input
                   type="email"
@@ -160,17 +159,6 @@ const Footer = () => {
                 <Link to="/faq" className="text-gray-300 hover:text-white transition-colors text-sm">
                   FAQ
                 </Link>
-              </li>
-              <li>
-                <a href="mailto:support@unknowniitians.com" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Support
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center space-x-1">
-                  <MessageCircle size={14} />
-                  <span>Live Chat</span>
-                </a>
               </li>
             </ul>
           </div>
