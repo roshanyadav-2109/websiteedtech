@@ -48,8 +48,8 @@ const Footer = () => {
                 className="h-10 w-auto filter brightness-0 invert"
               />
             </div>
-            <p className="text-gray-300 text-sm leading-relaxed">
-              Empowering students with quality education and comprehensive exam preparation resources for JEE, NEET, and IITM BS programs.
+            <p className="text-gray-200 text-sm leading-relaxed">
+              We believe every learner deserves the freedom to shape their own journey. Our platform supports diverse paths by offering resources that prioritize clarity, real-world relevance, and individual choice over rigid systems.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
