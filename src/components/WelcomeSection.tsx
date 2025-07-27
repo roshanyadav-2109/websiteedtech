@@ -12,7 +12,7 @@ const WelcomeSection = () => {
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
               <span className="text-gray-900">Student's Most </span>
               <span className="text-royal">Trusted</span><br />
-              <span className="text-gray-900">Educational Website</span>
+              <span className="text-gray-900">Educational Platform</span>
             </h2>
             <p className="text-lg text-gray-600 mb-8">
               Ignite Your Passion, Shape Your Future with Education!
