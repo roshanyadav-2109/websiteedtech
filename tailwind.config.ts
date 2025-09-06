@@ -135,13 +135,13 @@ export default {
             transform: "translate(calc(100cqw - 100%), 0)",
           },
         },
-        'marquee-smooth': {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(calc(-100% - var(--gap)))' }
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(calc(-100% - var(--gap)))' }
         },
-        'marquee-reverse-smooth': {
-          '0%': { transform: 'translateX(calc(-100% - var(--gap)))' },
-          '100%': { transform: 'translateX(0)' }
+        'marquee-reverse': {
+          from: { transform: 'translateX(calc(-100% - var(--gap)))' },
+          to: { transform: 'translateX(0)' }
         }
 			},
 			animation: {
@@ -153,8 +153,8 @@ export default {
 				'scale-in': 'scale-in 0.4s ease-out',
         "shimmer-slide": "shimmer-slide var(--speed) ease-in-out infinite alternate",
         "spin-around": "spin-around calc(var(--speed) * 2) infinite linear",
-        'marquee-smooth': 'marquee-smooth 40s ease-in-out infinite',
-        'marquee-reverse-smooth': 'marquee-reverse-smooth 45s ease-in-out infinite',
+        marquee: 'marquee var(--duration) linear infinite',
+        'marquee-reverse': 'marquee-reverse var(--duration) linear infinite',
 			},
 			boxShadow: {
 				'premium': '0 4px 20px rgba(0, 0, 0, 0.1)',
