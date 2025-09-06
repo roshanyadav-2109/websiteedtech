@@ -34,35 +34,37 @@ export function TestimonialsSection({
           </p>
         </div>
 
-        <div className="relative flex w-full flex-col items-center justify-center overflow-hidden space-y-6">
+        <div className="relative flex w-full flex-col items-center justify-center overflow-hidden space-y-4">
           {/* First Row - Moving Left to Right */}
-          <div className="flex w-full overflow-hidden">
-            <div className="flex animate-marquee gap-4 whitespace-nowrap">
-              {[...Array(4)].map((_, setIndex) => (
+          <div className="flex overflow-hidden [--gap:1rem] [gap:var(--gap)] [--duration:30s]">
+            <div className="flex shrink-0 justify-around [gap:var(--gap)] animate-marquee">
+              {[...Array(3)].map((_, setIndex) => (
                 testimonials.slice(0, 4).map((testimonial, i) => (
-                  <div key={`row1-${setIndex}-${i}`} className="flex-shrink-0">
-                    <TestimonialCard {...testimonial} />
-                  </div>
+                  <TestimonialCard 
+                    key={`row1-${setIndex}-${i}`}
+                    {...testimonial}
+                  />
                 ))
               ))}
             </div>
           </div>
 
           {/* Second Row - Moving Right to Left */}
-          <div className="flex w-full overflow-hidden">
-            <div className="flex animate-marquee-reverse gap-4 whitespace-nowrap">
-              {[...Array(4)].map((_, setIndex) => (
+          <div className="flex overflow-hidden [--gap:1rem] [gap:var(--gap)] [--duration:35s]">
+            <div className="flex shrink-0 justify-around [gap:var(--gap)] animate-marquee-reverse">
+              {[...Array(3)].map((_, setIndex) => (
                 testimonials.slice(4, 8).map((testimonial, i) => (
-                  <div key={`row2-${setIndex}-${i}`} className="flex-shrink-0">
-                    <TestimonialCard {...testimonial} />
-                  </div>
+                  <TestimonialCard 
+                    key={`row2-${setIndex}-${i}`}
+                    {...testimonial}
+                  />
                 ))
               ))}
             </div>
           </div>
 
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/6 bg-gradient-to-r from-background via-background/80 to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/6 bg-gradient-to-l from-background via-background/80 to-transparent" />
         </div>
       </div>
     </section>
