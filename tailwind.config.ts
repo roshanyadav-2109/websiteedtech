@@ -19,6 +19,9 @@ export default {
 			}
 		},
 		extend: {
+			maxWidth: {
+				container: "1280px",
+			},
 			fontFamily: {
 				sans: ['Inter', 'sans-serif'],
 				poppins: ['Poppins', 'sans-serif'],
@@ -132,6 +135,10 @@ export default {
             transform: "translate(calc(100cqw - 100%), 0)",
           },
         },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(calc(-100% - var(--gap)))' }
+        }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -142,6 +149,7 @@ export default {
 				'scale-in': 'scale-in 0.4s ease-out',
         "shimmer-slide": "shimmer-slide var(--speed) ease-in-out infinite alternate",
         "spin-around": "spin-around calc(var(--speed) * 2) infinite linear",
+        marquee: 'marquee var(--duration) linear infinite',
 			},
 			boxShadow: {
 				'premium': '0 4px 20px rgba(0, 0, 0, 0.1)',
