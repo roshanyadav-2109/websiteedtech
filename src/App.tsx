@@ -36,18 +36,18 @@ const App = () => (
     <AuthProvider>
       <BackendIntegratedWrapper>
         <TooltipProvider>
-          <EmailPopup />
           <Toaster />
           <Sonner />
+          <EmailPopup />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/courses" element={<Courses />} />
-              <Route path="/exam-preparation" element={<ExamPreparation />} />
+              <Route path="/exam-preparation/*" element={<ExamPreparation />} />
               <Route path="/exam-preparation/jee/*" element={<JEEPrepRoutes />} />
               <Route path="/exam-preparation/neet/*" element={<NEETPrepRoutes />} />
-              <Route path="/exam-preparation/iitm-bs/*" element={<IITMBSPrepRoutes />} />
+              <Route path="/exam-preparation/iitmbs/*" element={<IITMBSPrepRoutes />} />
               <Route path="/career" element={<Career />} />
               <Route path="/about" element={<About />} />
               <Route path="/dashboard" element={<Dashboard />} />
