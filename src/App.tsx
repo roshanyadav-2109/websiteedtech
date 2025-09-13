@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,9 +10,9 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Courses from "./pages/Courses";
 import ExamPreparation from "./pages/ExamPreparation";
-import JEEPrep from "./pages/JEEPrep";
-import NEETPrep from "./pages/NEETPrep";
-import IITMBSPrep from "./pages/IITMBSPrep";
+import JEEPrepRoutes from "./pages/JEEPrepRoutes";
+import NEETPrepRoutes from "./pages/NEETPrepRoutes";
+import IITMBSPrepRoutes from "./pages/IITMBSPrepRoutes";
 import Career from "./pages/Career";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
@@ -37,18 +36,18 @@ const App = () => (
     <AuthProvider>
       <BackendIntegratedWrapper>
         <TooltipProvider>
+          <EmailPopup />
           <Toaster />
           <Sonner />
-          <EmailPopup />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/exam-preparation" element={<ExamPreparation />} />
-              <Route path="/exam-preparation/jee" element={<JEEPrep />} />
-              <Route path="/exam-preparation/neet" element={<NEETPrep />} />
-              <Route path="/exam-preparation/iitm-bs" element={<IITMBSPrep />} />
+              <Route path="/exam-preparation/jee/*" element={<JEEPrepRoutes />} />
+              <Route path="/exam-preparation/neet/*" element={<NEETPrepRoutes />} />
+              <Route path="/exam-preparation/iitm-bs/*" element={<IITMBSPrepRoutes />} />
               <Route path="/career" element={<Career />} />
               <Route path="/about" element={<About />} />
               <Route path="/dashboard" element={<Dashboard />} />
