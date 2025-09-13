@@ -130,18 +130,24 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           height: 2
         }}
       />
-      <h3 className={cn(
-        "text-base sm:text-xl font-medium mb-4",
-        isCenter ? "text-primary-foreground" : "text-foreground"
-      )}>
-        {testimonial.testimonial}
-      </h3>
-      <p className={cn(
-        "absolute bottom-8 left-8 right-8 mt-2 text-sm italic",
-        isCenter ? "text-primary-foreground/80" : "text-muted-foreground"
-      )}>
-        - {testimonial.by}
-      </p>
+      <div className="flex flex-col h-full">
+        <div className="flex-1 overflow-hidden">
+          <p className={cn(
+            "text-xs sm:text-sm font-normal leading-relaxed line-clamp-6",
+            isCenter ? "text-primary-foreground" : "text-foreground"
+          )}>
+            {testimonial.testimonial}
+          </p>
+        </div>
+        <div className="mt-4 pt-2 border-t border-current/20">
+          <p className={cn(
+            "text-xs font-medium",
+            isCenter ? "text-primary-foreground/90" : "text-muted-foreground"
+          )}>
+            {testimonial.by}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
