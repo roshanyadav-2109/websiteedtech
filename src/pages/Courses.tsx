@@ -10,6 +10,7 @@ import CourseCard from "@/components/courses/CourseCard";
 import CoursesHeader from "@/components/courses/CoursesHeader";
 import WhyChooseUsSection from "@/components/courses/WhyChooseUsSection";
 import CategoryFilter from "@/components/courses/CategoryFilter";
+import { StaggerTestimonials } from "@/components/ui/stagger-testimonials";
 
 const Courses = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -74,6 +75,20 @@ const Courses = () => {
         </section>
 
         <WhyChooseUsSection />
+        
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                What Our Students Say
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Real experiences from IITM BS students and graduates
+              </p>
+            </div>
+            <StaggerTestimonials />
+          </div>
+        </section>
       </main>
 
       <Footer />
