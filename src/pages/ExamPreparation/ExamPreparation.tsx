@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import EmailPopup from '@/components/EmailPopup';
@@ -92,7 +92,7 @@ const ExamPreparationHome = () => {
                     <Card className="h-full hover:shadow-xl transition-all duration-300 border-none shadow-premium overflow-hidden group">
                       <div className={`h-2 bg-gradient-to-r ${exam.color}`}></div>
                       <CardContent className="p-8 flex flex-col h-full">
-                        <div className={`w-16 h-16 bg-gradient-to-r ${exam.color} rounded-full flex items-center justify-center mb-6 text-white transition-transform duration-300 group-hover:scale-110 p-4`}>
+                        <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${exam.color} flex items-center justify-center mb-6 text-white transition-transform duration-300 group-hover:scale-110 p-4`}>
                           <exam.icon className="h-8 w-8" />
                         </div>
                         
