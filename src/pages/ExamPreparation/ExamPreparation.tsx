@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { BookOpen, FileText, Users, Calendar, Bell, GraduationCap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import JEEPrepRoutes from './JEE/JEEPrepRoutes';
+import IITMBSPrepRoutes from './IITMBS/IITMBSPrepRoutes';
 
 const ExamPreparationHome = () => {
   const examTypes = [
@@ -22,7 +23,7 @@ const ExamPreparationHome = () => {
     },
     {
       title: "IIT Madras BS Degree - UG",
-      path: "/exam-preparation/iitm-bs",
+      path: "/exam-preparation/iitmbs",
       description: "Resources for IIT Madras Bachelor of Science programs",
       icon: GraduationCap,
       color: "from-green-500 to-teal-600",
@@ -91,7 +92,7 @@ const ExamPreparationHome = () => {
                     <Card className="h-full hover:shadow-xl transition-all duration-300 border-none shadow-premium overflow-hidden group">
                       <div className={`h-2 bg-gradient-to-r ${exam.color}`}></div>
                       <CardContent className="p-8 flex flex-col h-full">
-                        <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${exam.color} flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform duration-300 p-4`}>
+                        <div className={`w-16 h-16 bg-gradient-to-r ${exam.color} rounded-full flex items-center justify-center mb-6 text-white transition-transform duration-300 group-hover:scale-110 p-4`}>
                           <exam.icon className="h-8 w-8" />
                         </div>
                         
@@ -100,7 +101,7 @@ const ExamPreparationHome = () => {
                         
                         <div className="grid grid-cols-2 gap-y-2 mb-8">
                           {exam.features.map((feature, i) => (
-                            <div key={i} className="flex items-center">
+                            <div className="flex items-center" key={i}>
                               <svg className="h-5 w-5 text-royal mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                               </svg>
@@ -153,7 +154,7 @@ const ExamPreparationHome = () => {
                   icon: Bell
                 }
               ].map((feature, index) => (
-                <Card key={index} className="border-none shadow-md hover:shadow-lg transition-all">
+                <Card className="border-none shadow-md hover:shadow-lg transition-all" key={index}>
                   <CardContent className="p-6 flex flex-col items-center text-center">
                     <div className="rounded-full bg-royal/10 p-4 mb-4">
                       <feature.icon className="h-6 w-6 text-royal" />
@@ -177,6 +178,7 @@ const ExamPreparation = () => {
     <Routes>
       <Route index element={<ExamPreparationHome />} />
       <Route path="jee/*" element={<JEEPrepRoutes />} />
+      <Route path="iitmbs/*" element={<IITMBSPrepRoutes />} />
       {/* Add other exam routes here as needed */}
     </Routes>
   );
